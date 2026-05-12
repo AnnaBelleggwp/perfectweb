@@ -1,0 +1,81 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+
+const SRC_DIR = path.resolve(import.meta.dirname, '../../');
+
+const SOURCE_FILES = [
+	'components/sections/HeroSection.astro',
+	'components/sections/AboutSection.astro',
+	'components/sections/ServicesNumbered.astro',
+	'components/sections/PortfolioEditorial.astro',
+	'components/sections/ProcessSection.astro',
+	'components/sections/ReviewsSection.astro',
+	'components/sections/FaqSection.astro',
+	'components/sections/ContactSection.astro',
+	'components/sections/FooterSection.astro',
+	'components/navigation/SiteNav.astro',
+	'styles/global.css',
+	'scripts/bootstrap.ts',
+	'scripts/gsap.ts',
+	'scripts/dot-grid.ts',
+	'scripts/lenis.ts',
+	'scripts/scroll-spy.ts',
+	'scripts/theme.ts',
+	'scripts/code-rain.ts',
+	'pages/index.astro',
+	'layouts/MainLayout.astro',
+	'data/site-content.ts',
+];
+
+const MIN_LINE_LENGTH = 8;
+const MAX_LINE_LENGTH = 90;
+
+const collectLines = (): string[] => {
+	const allLines: string[] = [];
+
+	for (const relPath of SOURCE_FILES) {
+		const fullPath = path.join(SRC_DIR, relPath);
+		let content: string;
+		try {
+			content = fs.readFileSync(fullPath, 'utf-8');
+		} catch {
+			continue;
+		}
+
+		const raw = content.split('\n');
+		for (const line of raw) {
+			const trimmed = line.trimEnd();
+			const stripped = trimmed.replace(/^\t+/, (m) => '  '.repeat(m.length));
+
+			if (stripped.length < MIN_LINE_LENGTH) continue;
+			if (/^\s*\/\//.test(stripped)) continue;
+			if (/^\s*\/?\*/.test(stripped)) continue;
+			if (/^\s*<!--/.test(stripped)) continue;
+			if (/^\s*-{3,}$/.test(stripped)) continue;
+			if (/^\s*import\s/.test(stripped) && stripped.length < 20) continue;
+
+			const cut = stripped.length > MAX_LINE_LENGTH
+				? stripped.slice(0, MAX_LINE_LENGTH) + '…'
+				: stripped;
+
+			allLines.push(cut);
+		}
+	}
+
+	// Shuffle deterministically with simple seed
+	for (let i = allLines.length - 1; i > 0; i--) {
+		const j = (i * 7 + 13) % (i + 1);
+		[allLines[i], allLines[j]] = [allLines[j], allLines[i]];
+	}
+
+	return allLines;
+};
+
+const codeLines = collectLines();
+---
+
+<div class="background-layer" aria-hidden="true"></div>
+<script is:inline define:vars={{ codeLines }}>
+	window.__BG_CODE_LINES__ = codeLines;
+</script>

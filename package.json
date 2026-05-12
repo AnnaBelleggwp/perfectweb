@@ -1,0 +1,28 @@
+{
+  "name": "perfectweb",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "start": "node ./dist/server/entry.mjs",
+    "start:prod": "HOST=${HOST:-0.0.0.0} PORT=${PORT:-3000} node ./dist/server/entry.mjs",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/node": "^9.5.5",
+    "@fontsource/alumni-sans": "^5.2.8",
+    "@tailwindcss/vite": "^4.2.2",
+    "astro": "^5.18.1",
+    "autoprefixer": "^10.5.0",
+    "gsap": "^3.15.0",
+    "lenis": "^1.3.23",
+    "postcss": "^8.5.10",
+    "sharp": "^0.34.5",
+    "tailwindcss": "^4.2.2"
+  }
+}

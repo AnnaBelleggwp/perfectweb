@@ -1,0 +1,361 @@
+{
+  "about": {
+    "title": "Рад знакомству!",
+    "bodyMarkup": "Привет! Я веб-разработчик и UI/UX-дизайнер. Делаю сайты и веб-сервисы для бизнеса [[«под ключ»]]: от структуры и визуала до [[backend-логики, админки и интеграций]]. Работаю с: [[Astro, HTML5, CSS3, JavaScript (ES6+), TypeScript, PHP, Node.js, React]], а также [[REST API, JSON, Webhook, SMTP, SQL базы данных]].",
+    "approach": "коротко и по делу. финальная версия после согласования контента.",
+    "stack": [
+      "Figma",
+      "Astro",
+      "React",
+      "TypeScript",
+      "GSAP",
+      "Tailwind",
+      "Webflow"
+    ],
+    "stats": [
+      {
+        "value": 3,
+        "suffix": "",
+        "label": "года опыта"
+      },
+      {
+        "value": 15,
+        "suffix": "+",
+        "label": "проектов"
+      },
+      {
+        "value": 19,
+        "suffix": "",
+        "label": "клиентов"
+      }
+    ]
+  },
+  "services": [
+    {
+      "id": "design",
+      "label": "веб-дизайн",
+      "desc": "проектирую интерфейсы с нуля — от вайрфреймов до финального ui. фокус на визуальной иерархии, читаемости и деталях которые замечают не сразу.",
+      "items": [
+        "ui/ux дизайн",
+        "figma",
+        "прототипирование",
+        "дизайн-система",
+        "адаптив"
+      ]
+    },
+    {
+      "id": "dev",
+      "label": "разработка",
+      "desc": "верстаю и собираю сайты на современном стеке. код чистый, компоненты переиспользуемые, производительность на первом месте.",
+      "items": [
+        "astro",
+        "react",
+        "typescript",
+        "tailwind",
+        "seo"
+      ]
+    },
+    {
+      "id": "motion",
+      "label": "анимация",
+      "desc": "добавляю движение которое усиливает смысл, а не отвлекает. scroll-триггеры, микровзаимодействия, плавные переходы между состояниями.",
+      "items": [
+        "gsap",
+        "scroll-анимации",
+        "lenis",
+        "svg-анимация",
+        "микровзаимодействия"
+      ]
+    },
+    {
+      "id": "webflow",
+      "label": "webflow",
+      "desc": "собираю сайты в webflow с полноценными анимациями и cms. заказчик редактирует контент сам — без разработчика и без риска сломать верстку.",
+      "items": [
+        "webflow cms",
+        "interactions",
+        "e-commerce",
+        "интеграции",
+        "обучение"
+      ]
+    }
+  ],
+  "portfolio": [
+    {
+      "id": "portfolio-1",
+      "colSpan": 2,
+      "rowSpan": 2,
+      "hue": 214,
+      "animDur": 4,
+      "category": "корпоративный сайт",
+      "title": "mervice.ru",
+      "client": "клиент / индустрия",
+      "description": "краткое описание задачи и решения. финальный текст после согласования.",
+      "tags": [
+        "React",
+        "Figma",
+        "Next.js"
+      ],
+      "year": 2024,
+      "duration": "6 недель",
+      "liveUrl": "#",
+      "caseUrl": "#",
+      "preview": {
+        "assetId": "87f54a1a3ca64ac79a4210e8d66afd6c",
+        "alt": "mervice.ru",
+        "width": 2000,
+        "height": 2000,
+        "originalUrl": "/api/cms/media/file/87f54a1a3ca64ac79a4210e8d66afd6c/original-2000w.webp",
+        "variants": [
+          {
+            "url": "/api/cms/media/file/87f54a1a3ca64ac79a4210e8d66afd6c/w2000.webp",
+            "width": 2000,
+            "height": 2000,
+            "format": "webp"
+          },
+          {
+            "url": "/api/cms/media/file/87f54a1a3ca64ac79a4210e8d66afd6c/w2000.webp",
+            "width": 2000,
+            "height": 2000,
+            "format": "webp"
+          },
+          {
+            "url": "/api/cms/media/file/87f54a1a3ca64ac79a4210e8d66afd6c/w2000.webp",
+            "width": 2000,
+            "height": 2000,
+            "format": "webp"
+          },
+          {
+            "url": "/api/cms/media/file/87f54a1a3ca64ac79a4210e8d66afd6c/w2000.webp",
+            "width": 2000,
+            "height": 2000,
+            "format": "webp"
+          },
+          {
+            "url": "/api/cms/media/file/87f54a1a3ca64ac79a4210e8d66afd6c/w2000.webp",
+            "width": 2000,
+            "height": 2000,
+            "format": "webp"
+          },
+          {
+            "url": "/api/cms/media/file/87f54a1a3ca64ac79a4210e8d66afd6c/w2000.webp",
+            "width": 2000,
+            "height": 2000,
+            "format": "webp"
+          }
+        ],
+        "blurDataUrl": "data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAAAwAwCdASoYABgAPwFytFGrJqUiqAqpYCAJaQAAOob2L8gAAP7vn1Zd8/AAGMgAAAA="
+      },
+      "detail": null,
+      "mockup": null,
+      "published": true
+    },
+    {
+      "id": "portfolio-2",
+      "colSpan": 1,
+      "rowSpan": 1,
+      "hue": 268,
+      "animDur": 3,
+      "category": "интернет-магазин",
+      "title": "ваш будущий магазин",
+      "client": "клиент / индустрия",
+      "description": "краткое описание задачи и решения.",
+      "tags": [
+        "TypeScript",
+        "Tailwind",
+        "Stripe"
+      ],
+      "year": 2024,
+      "duration": "8 недель",
+      "liveUrl": "#",
+      "caseUrl": "#",
+      "preview": {
+        "assetId": "7a6cf3499bae4cb28aa49e4625e6f52f",
+        "alt": "название второго",
+        "width": 2000,
+        "height": 2000,
+        "originalUrl": "/api/cms/media/file/7a6cf3499bae4cb28aa49e4625e6f52f/original-2000w.webp",
+        "variants": [
+          {
+            "url": "/api/cms/media/file/7a6cf3499bae4cb28aa49e4625e6f52f/w2000.webp",
+            "width": 2000,
+            "height": 2000,
+            "format": "webp"
+          },
+          {
+            "url": "/api/cms/media/file/7a6cf3499bae4cb28aa49e4625e6f52f/w2000.webp",
+            "width": 2000,
+            "height": 2000,
+            "format": "webp"
+          },
+          {
+            "url": "/api/cms/media/file/7a6cf3499bae4cb28aa49e4625e6f52f/w2000.webp",
+            "width": 2000,
+            "height": 2000,
+            "format": "webp"
+          },
+          {
+            "url": "/api/cms/media/file/7a6cf3499bae4cb28aa49e4625e6f52f/w2000.webp",
+            "width": 2000,
+            "height": 2000,
+            "format": "webp"
+          },
+          {
+            "url": "/api/cms/media/file/7a6cf3499bae4cb28aa49e4625e6f52f/w2000.webp",
+            "width": 2000,
+            "height": 2000,
+            "format": "webp"
+          },
+          {
+            "url": "/api/cms/media/file/7a6cf3499bae4cb28aa49e4625e6f52f/w2000.webp",
+            "width": 2000,
+            "height": 2000,
+            "format": "webp"
+          }
+        ],
+        "blurDataUrl": "data:image/webp;base64,UklGRkYAAABXRUJQVlA4IDoAAABQAwCdASoYABgAPwF4tFOrJyUiqAgBYCAJaQAALniDFh5C8AD+5fdm42IjoMwWBZZIXx/XzYLDAAAA"
+      },
+      "detail": null,
+      "mockup": null,
+      "published": true
+    },
+    {
+      "id": "portfolio-3",
+      "colSpan": 1,
+      "rowSpan": 1,
+      "hue": 152,
+      "animDur": 2.5,
+      "category": "лендинг",
+      "title": "ваш будущий лендинг",
+      "client": "клиент / индустрия",
+      "description": "краткое описание задачи и решения.",
+      "tags": [
+        "Astro",
+        "GSAP",
+        "Figma"
+      ],
+      "year": 2023,
+      "duration": "3 недели",
+      "liveUrl": "#",
+      "caseUrl": "#",
+      "preview": {
+        "assetId": "020be61ecb6244db83193c0bd0211f5d",
+        "alt": "название третьего",
+        "width": 2000,
+        "height": 2000,
+        "originalUrl": "/api/cms/media/file/020be61ecb6244db83193c0bd0211f5d/original-2000w.webp",
+        "variants": [
+          {
+            "url": "/api/cms/media/file/020be61ecb6244db83193c0bd0211f5d/w2000.webp",
+            "width": 2000,
+            "height": 2000,
+            "format": "webp"
+          },
+          {
+            "url": "/api/cms/media/file/020be61ecb6244db83193c0bd0211f5d/w2000.webp",
+            "width": 2000,
+            "height": 2000,
+            "format": "webp"
+          },
+          {
+            "url": "/api/cms/media/file/020be61ecb6244db83193c0bd0211f5d/w2000.webp",
+            "width": 2000,
+            "height": 2000,
+            "format": "webp"
+          },
+          {
+            "url": "/api/cms/media/file/020be61ecb6244db83193c0bd0211f5d/w2000.webp",
+            "width": 2000,
+            "height": 2000,
+            "format": "webp"
+          },
+          {
+            "url": "/api/cms/media/file/020be61ecb6244db83193c0bd0211f5d/w2000.webp",
+            "width": 2000,
+            "height": 2000,
+            "format": "webp"
+          },
+          {
+            "url": "/api/cms/media/file/020be61ecb6244db83193c0bd0211f5d/w2000.webp",
+            "width": 2000,
+            "height": 2000,
+            "format": "webp"
+          }
+        ],
+        "blurDataUrl": "data:image/webp;base64,UklGRkYAAABXRUJQVlA4IDoAAABQAwCdASoYABgAPwF4tFOrJyUiqAgBYCAJaQAALniDFh5C8AD+5fdm42IjoMwWBZZIXx/XzYLDAAAA"
+      },
+      "detail": null,
+      "mockup": null,
+      "published": true
+    },
+    {
+      "id": "portfolio-4",
+      "colSpan": 2,
+      "rowSpan": 1,
+      "hue": 328,
+      "animDur": 3.5,
+      "category": "веб-приложение",
+      "title": "ваше будущее веб-приложение",
+      "client": "клиент / индустрия",
+      "description": "краткое описание задачи и решения.",
+      "tags": [
+        "React",
+        "Node.js",
+        "PostgreSQL"
+      ],
+      "year": 2023,
+      "duration": "12 недель",
+      "liveUrl": "#",
+      "caseUrl": "#",
+      "preview": {
+        "assetId": "f5ec0079359142fea81485a58a82b5be",
+        "alt": "название четвёртого",
+        "width": 2560,
+        "height": 1280,
+        "originalUrl": "/api/cms/media/file/f5ec0079359142fea81485a58a82b5be/original-2560w.webp",
+        "variants": [
+          {
+            "url": "/api/cms/media/file/f5ec0079359142fea81485a58a82b5be/w2560.webp",
+            "width": 2560,
+            "height": 1280,
+            "format": "webp"
+          },
+          {
+            "url": "/api/cms/media/file/f5ec0079359142fea81485a58a82b5be/w2560.webp",
+            "width": 2560,
+            "height": 1280,
+            "format": "webp"
+          },
+          {
+            "url": "/api/cms/media/file/f5ec0079359142fea81485a58a82b5be/w2560.webp",
+            "width": 2560,
+            "height": 1280,
+            "format": "webp"
+          },
+          {
+            "url": "/api/cms/media/file/f5ec0079359142fea81485a58a82b5be/w2560.webp",
+            "width": 2560,
+            "height": 1280,
+            "format": "webp"
+          },
+          {
+            "url": "/api/cms/media/file/f5ec0079359142fea81485a58a82b5be/w2560.webp",
+            "width": 2560,
+            "height": 1280,
+            "format": "webp"
+          },
+          {
+            "url": "/api/cms/media/file/f5ec0079359142fea81485a58a82b5be/w2560.webp",
+            "width": 2560,
+            "height": 1280,
+            "format": "webp"
+          }
+        ],
+        "blurDataUrl": "data:image/webp;base64,UklGRkQAAABXRUJQVlA4IDgAAABQAwCdASoYAAwAPwFqrE8rJiQiMAgBYCAJaQAAW4FY4DExNAD+5b2YuMdIy/Z/ZxdOH6DAPaAAAA=="
+      },
+      "detail": null,
+      "mockup": null,
+      "published": true
+    }
+  ]
+}

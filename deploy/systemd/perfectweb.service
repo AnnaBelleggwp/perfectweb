@@ -1,0 +1,19 @@
+[Unit]
+Description=Perfectweb Astro Server
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/var/www/perfectweb
+Environment=NODE_ENV=production
+Environment=HOST=0.0.0.0
+Environment=PORT=3000
+Environment=CMS_TOKEN=change-me
+ExecStart=/usr/bin/node /var/www/perfectweb/dist/server/entry.mjs
+Restart=always
+RestartSec=2
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,60 @@
+---
+import GlobalBackground from '../components/background/GlobalBackground.astro';
+import SiteNav from '../components/navigation/SiteNav.astro';
+import HeroSection from '../components/sections/HeroSection.astro';
+import AboutSection from '../components/sections/AboutSection.astro';
+import ServicesNumbered from '../components/sections/ServicesNumbered.astro';
+import PortfolioEditorial from '../components/sections/PortfolioEditorial.astro';
+import ProcessSection from '../components/sections/ProcessSection.astro';
+import ReviewsSection from '../components/sections/ReviewsSection.astro';
+import FaqSection from '../components/sections/FaqSection.astro';
+import ContactSection from '../components/sections/ContactSection.astro';
+import FooterSection from '../components/sections/FooterSection.astro';
+import MainLayout from '../layouts/MainLayout.astro';
+import { readSiteContent } from '../lib/cms/content-service';
+
+const siteContent = await readSiteContent();
+---
+
+<MainLayout
+	title="perfectweb"
+	description="персональный лендинг-портфолио с акцентом на анимации, стеклянные карточки и премиальный визуал."
+>
+	<GlobalBackground />
+
+	<header class="page-header">
+		<div class="site-shell">
+			<SiteNav />
+		</div>
+	</header>
+
+	<div class="above-fold">
+		<main class="site-shell above-fold__main">
+			<HeroSection />
+		</main>
+	</div>
+
+	<div class="site-shell page-stack">
+		<AboutSection about={siteContent.about} />
+		<ServicesNumbered services={siteContent.services} />
+	</div>
+
+	<div class="site-shell page-stack">
+		<PortfolioEditorial portfolio={siteContent.portfolio} />
+	</div>
+
+	<div class="site-shell page-stack">
+		<ProcessSection />
+		<ReviewsSection />
+		<FaqSection />
+		<ContactSection />
+	</div>
+
+	<FooterSection />
+
+	<script>
+		import { bootstrapApp } from '../scripts/bootstrap';
+
+		bootstrapApp();
+	</script>
+</MainLayout>

@@ -1,0 +1,702 @@
+---
+type Review = {
+	name: string;
+	role: string;
+	project: string;
+	date: string;
+	stars: number;
+	quote: string;
+};
+
+const reviews: Review[] = [
+	{
+		name: 'иван петров',
+		role: 'основатель студии',
+		project: 'orbital.studio',
+		date: '03.2026',
+		stars: 5,
+		quote:
+			'собрали лендинг студии за две недели — от первого макета до продакшена. анимации тонкие, ни одного лишнего движения. получили ровно ту эстетику, за которой пришли.',
+	},
+	{
+		name: 'анна смирнова',
+		role: 'продакт-менеджер',
+		project: 'nova fintech',
+		date: '01.2026',
+		stars: 5,
+		quote:
+			'редкий случай, когда подрядчик сам предлагает идеи сильнее твоих. интерфейс личного кабинета переделали с нуля — конверсия в активацию выросла на 18%.',
+	},
+	{
+		name: 'олег зайцев',
+		role: 'арт-директор',
+		project: 'grid agency',
+		date: '11.2025',
+		stars: 5,
+		quote:
+			'чистая типографика, выверенная сетка, живые микровзаимодействия. коллеги пишут в директ — спрашивают, кто делал. всех отправляю сюда.',
+	},
+];
+
+const hashCode = (input: string): number => {
+	let hash = 2166136261;
+	for (let i = 0; i < input.length; i++) {
+		hash ^= input.charCodeAt(i);
+		hash = Math.imul(hash, 16777619);
+	}
+	return hash >>> 0;
+};
+
+const mulberry32 = (seed: number) => {
+	let t = seed >>> 0;
+	return () => {
+		t = (t + 0x6d2b79f5) >>> 0;
+		let r = t;
+		r = Math.imul(r ^ (r >>> 15), r | 1);
+		r ^= r + Math.imul(r ^ (r >>> 7), r | 61);
+		return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+	};
+};
+
+const pixelAvatar = (seedInput: string) => {
+	const size = 7;
+	const rand = mulberry32(hashCode(seedInput));
+	const mid = Math.ceil(size / 2);
+	const cells: string[] = [];
+	const goldThreshold = 0.86;
+	const fillThreshold = 0.5;
+	for (let y = 0; y < size; y++) {
+		for (let x = 0; x < mid; x++) {
+			const r = rand();
+			if (r < fillThreshold) continue;
+			const pixelClass = r > goldThreshold ? 'avatar-pixel avatar-pixel--accent' : 'avatar-pixel';
+			cells.push(
+				`<rect class="${pixelClass}" x="${x}" y="${y}" width="1" height="1"/>`,
+			);
+			const mirrorX = size - 1 - x;
+			if (mirrorX !== x) {
+				cells.push(
+					`<rect class="${pixelClass}" x="${mirrorX}" y="${y}" width="1" height="1"/>`,
+				);
+			}
+		}
+	}
+	return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges" width="100%" height="100%"><rect class="avatar-bg" width="${size}" height="${size}"/>${cells.join('')}</svg>`;
+};
+---
+
+<section id="reviews" class="section-anchor reviews-section">
+	<header class="reviews-header">
+		<span class="reviews-kicker section-mark">отзывы</span>
+		<button
+			type="button"
+			class="reviews-link"
+			data-hover-fill
+			data-label="написать отзыв"
+		>
+			написать отзыв
+		</button>
+	</header>
+
+	<div class="reviews-stage" data-reviews-stage>
+		<button
+			type="button"
+			class="reviews-nav reviews-nav--prev"
+			data-reviews-prev
+			aria-label="предыдущий отзыв"
+		>
+			<span aria-hidden="true">‹</span>
+		</button>
+
+		<div class="reviews-deck" data-reviews-deck aria-live="polite">
+			{reviews.map((review, index) => (
+				<article
+					class="reviews-card"
+					data-reviews-card
+					data-depth={index}
+					aria-hidden={index === 0 ? 'false' : 'true'}
+					tabindex={index === 0 ? 0 : -1}
+				>
+					<div class="reviews-card__top">
+						<div
+							class="reviews-avatar"
+							aria-hidden="true"
+							set:html={pixelAvatar(review.name)}
+						/>
+						<div class="reviews-id">
+							<p class="reviews-name">{review.name}</p>
+							<p class="reviews-role">{review.role}</p>
+						</div>
+						<div class="reviews-stars" aria-label={`оценка ${review.stars} из 5`}>
+							{Array.from({ length: 5 }).map((_, i) => (
+								<span
+									class={`reviews-star${i < review.stars ? ' is-on' : ''}`}
+									aria-hidden="true"
+								>
+									★
+								</span>
+							))}
+						</div>
+					</div>
+
+					<blockquote class="reviews-quote">
+						<p>{review.quote}</p>
+					</blockquote>
+
+					<footer class="reviews-card__foot">
+						<span class="reviews-project">{review.project}</span>
+						<span class="reviews-dot" aria-hidden="true">•</span>
+						<span class="reviews-date">{review.date}</span>
+					</footer>
+				</article>
+			))}
+		</div>
+
+		<button
+			type="button"
+			class="reviews-nav reviews-nav--next"
+			data-reviews-next
+			aria-label="следующий отзыв"
+		>
+			<span aria-hidden="true">›</span>
+		</button>
+	</div>
+
+	<footer class="reviews-footer">
+		<div class="reviews-dots" role="tablist" aria-label="навигация по отзывам">
+			{reviews.map((_, index) => (
+				<button
+					type="button"
+					class="reviews-dot-btn"
+					data-reviews-dot
+					data-index={index}
+					role="tab"
+					aria-selected={index === 0 ? 'true' : 'false'}
+					aria-label={`отзыв ${index + 1}`}
+				/>
+			))}
+		</div>
+		<p class="reviews-counter" data-reviews-counter>
+			<span data-reviews-current>01</span>
+			<span class="reviews-counter__sep">/</span>
+			<span>{String(reviews.length).padStart(2, '0')}</span>
+		</p>
+	</footer>
+</section>
+
+<style>
+	.reviews-section {
+		display: flex;
+		flex-direction: column;
+		gap: clamp(1.5rem, 3vw, 2.25rem);
+		padding-block: var(--section-padding);
+	}
+
+	.reviews-link {
+		--hero-fill-size: 0px;
+		--hero-fill-target: 220px;
+		--hero-fill-x: 50%;
+		--hero-fill-y: 50%;
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		font-family: inherit;
+		font-size: clamp(2.2rem, 4.4vw, 2.8rem);
+		font-weight: 300;
+		line-height: 1;
+		letter-spacing: inherit;
+		text-transform: inherit;
+		color: var(--color-text);
+		white-space: nowrap;
+		cursor: pointer;
+		transition: color 180ms ease;
+	}
+
+	.reviews-link:focus-visible {
+		outline: none;
+	}
+
+	.reviews-link::after {
+		content: attr(data-label);
+		position: absolute;
+		inset: 0;
+		color: var(--color-accent);
+		white-space: nowrap;
+		pointer-events: none;
+		mask-image: radial-gradient(
+			circle var(--hero-fill-size) at var(--hero-fill-x) var(--hero-fill-y),
+			#000 96%,
+			transparent 100%
+		);
+		-webkit-mask-image: radial-gradient(
+			circle var(--hero-fill-size) at var(--hero-fill-x) var(--hero-fill-y),
+			#000 96%,
+			transparent 100%
+		);
+		transition: --hero-fill-size 680ms cubic-bezier(0.22, 0.8, 0.24, 1);
+	}
+
+	.reviews-link.is-hovered::after {
+		--hero-fill-size: var(--hero-fill-target);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.reviews-link::after {
+			transition: none;
+		}
+	}
+
+	.reviews-header {
+		display: flex;
+		flex-wrap: nowrap;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: clamp(0.75rem, 2vw, 1.5rem);
+	}
+
+	@media (max-width: 640px) {
+		.reviews-link {
+			font-size: clamp(1.4rem, 5.5vw, 1.9rem);
+		}
+	}
+
+
+	.reviews-stage {
+		position: relative;
+		display: grid;
+		grid-template-columns: auto 1fr auto;
+		align-items: center;
+		gap: clamp(0.75rem, 2vw, 1.5rem);
+		min-height: 480px;
+	}
+
+	.reviews-deck {
+		position: relative;
+		width: min(100%, 420px);
+		aspect-ratio: 320 / 440;
+		margin-inline: auto;
+		perspective: 1400px;
+		transform-style: preserve-3d;
+	}
+
+	.reviews-card {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 1.1rem;
+		padding: clamp(1.1rem, 2.4vw, 1.6rem);
+		border-radius: 14px;
+		background: var(--card-bg);
+		border: var(--card-border);
+		box-shadow: var(--card-shadow);
+		transform-style: preserve-3d;
+		transform-origin: 50% 50%;
+		transition:
+			transform 540ms cubic-bezier(0.22, 1, 0.36, 1),
+			opacity 420ms ease,
+			filter 420ms ease;
+		will-change: transform, opacity;
+	}
+
+	.reviews-card[data-depth="0"] {
+		transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+		opacity: 1;
+		filter: none;
+		z-index: 5;
+		cursor: default;
+	}
+
+	.reviews-card[data-depth="1"] {
+		transform: translate3d(14px, 10px, -60px) rotate(3deg) scale(0.96);
+		opacity: 0.82;
+		filter: blur(0.3px) saturate(0.92);
+		z-index: 4;
+		cursor: pointer;
+	}
+
+	.reviews-card[data-depth="2"] {
+		transform: translate3d(26px, 20px, -130px) rotate(5deg) scale(0.92);
+		opacity: 0.55;
+		filter: blur(0.6px) saturate(0.85);
+		z-index: 3;
+		cursor: pointer;
+	}
+
+	.reviews-card[data-depth="3"] {
+		transform: translate3d(-22px, 18px, -200px) rotate(-4deg) scale(0.88);
+		opacity: 0.32;
+		filter: blur(1px) saturate(0.78);
+		z-index: 2;
+		cursor: pointer;
+	}
+
+	.reviews-card[data-depth="4"] {
+		transform: translate3d(-32px, 8px, -260px) rotate(-6deg) scale(0.84);
+		opacity: 0.18;
+		filter: blur(1.4px) saturate(0.7);
+		z-index: 1;
+		cursor: pointer;
+	}
+
+	.reviews-card__top {
+		display: grid;
+		grid-template-columns: 56px 1fr auto;
+		align-items: center;
+		gap: 0.85rem;
+	}
+
+		.reviews-avatar {
+		width: 56px;
+		height: 56px;
+		border-radius: 6px;
+		overflow: hidden;
+		border: 1px solid var(--divider-subtle);
+			background: var(--avatar-bg);
+			image-rendering: pixelated;
+		}
+
+		.reviews-avatar :global(svg) {
+			width: 100%;
+			height: 100%;
+		}
+
+		.reviews-avatar :global(.avatar-bg) {
+			fill: var(--avatar-bg);
+		}
+
+		.reviews-avatar :global(.avatar-pixel) {
+			fill: var(--avatar-pixel);
+		}
+
+		.reviews-avatar :global(.avatar-pixel--accent) {
+			fill: var(--avatar-pixel-accent);
+		}
+
+	.reviews-id {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+		min-width: 0;
+	}
+
+	.reviews-name {
+		margin: 0;
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: var(--color-text);
+		line-height: 1;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.reviews-role {
+		margin: 0;
+		font-size: 0.92rem;
+		color: var(--color-text-muted);
+		line-height: 1;
+	}
+
+	.reviews-stars {
+		display: inline-flex;
+		gap: 2px;
+		font-size: 0.78rem;
+		line-height: 1;
+	}
+
+	.reviews-star {
+		color: color-mix(in srgb, var(--color-text) 14%, transparent);
+	}
+
+	.reviews-star.is-on {
+		color: var(--color-accent);
+		text-shadow: 0 0 8px color-mix(in srgb, var(--color-accent) 45%, transparent);
+	}
+
+	.reviews-quote {
+		margin: 0;
+		padding: 0.2rem 0;
+		flex: 1;
+		font-size: clamp(1rem, 2vw, 1.15rem);
+		line-height: 1.35;
+		color: var(--color-text);
+	}
+
+	.reviews-quote p {
+		margin: 0;
+	}
+
+	.reviews-quote p::before,
+	.reviews-quote p::after {
+		font-family: Georgia, "Times New Roman", serif;
+		color: var(--color-accent);
+		opacity: 0.7;
+	}
+
+	.reviews-quote p::before {
+		content: "«";
+		margin-right: 0.15em;
+	}
+
+	.reviews-quote p::after {
+		content: "»";
+		margin-left: 0.15em;
+	}
+
+	.reviews-card__foot {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding-top: 0.75rem;
+		border-top: 1px dashed var(--divider-subtle);
+		font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+		font-size: 0.78rem;
+		letter-spacing: 0.08em;
+		color: var(--color-text-muted);
+	}
+
+	.reviews-project {
+		color: var(--color-accent);
+		opacity: 0.85;
+	}
+
+	.reviews-dot {
+		opacity: 0.5;
+	}
+
+	.reviews-date {
+		font-variant-numeric: tabular-nums;
+	}
+
+	.reviews-nav {
+		width: 44px;
+		height: 44px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
+		border: none;
+		background: transparent;
+		color: var(--color-text);
+		font-size: 2rem;
+		line-height: 1;
+		cursor: pointer;
+		transition:
+			color 180ms ease,
+			text-shadow 180ms ease,
+			transform 180ms ease;
+	}
+
+	.reviews-nav:hover,
+	.reviews-nav:focus-visible {
+		color: var(--color-accent);
+		text-shadow: 0 0 14px color-mix(in srgb, var(--color-accent) 55%, transparent);
+		outline: none;
+	}
+
+	.reviews-nav:active {
+		transform: scale(0.9);
+	}
+
+	.reviews-footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.reviews-dots {
+		display: inline-flex;
+		gap: 0.5rem;
+	}
+
+	.reviews-dot-btn {
+		width: 10px;
+		height: 10px;
+		padding: 0;
+		border: 1px solid var(--divider-strong);
+		background: transparent;
+		border-radius: 0;
+		cursor: pointer;
+		transition:
+			background-color 220ms ease,
+			border-color 220ms ease,
+			transform 220ms ease;
+	}
+
+	.reviews-dot-btn[aria-selected="true"] {
+		background: var(--color-accent);
+		border-color: var(--color-accent);
+		transform: scale(1.1);
+	}
+
+	.reviews-dot-btn:focus-visible {
+		outline: 1px solid color-mix(in srgb, var(--color-accent) 60%, transparent);
+		outline-offset: 3px;
+	}
+
+	.reviews-counter {
+		margin: 0;
+		font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+		font-size: 0.82rem;
+		color: var(--color-text-muted);
+		font-variant-numeric: tabular-nums;
+		letter-spacing: 0.08em;
+	}
+
+	.reviews-counter__sep {
+		margin: 0 0.35rem;
+		opacity: 0.5;
+	}
+
+	@media (max-width: 767px) {
+		.reviews-stage {
+			grid-template-columns: 1fr;
+			min-height: 440px;
+		}
+
+		.reviews-nav {
+			display: none;
+		}
+
+		.reviews-deck {
+			width: min(100%, 320px);
+		}
+
+		.reviews-card[data-depth="1"] {
+			transform: translate3d(10px, 8px, -60px) rotate(2.5deg) scale(0.96);
+		}
+
+		.reviews-card[data-depth="2"] {
+			transform: translate3d(18px, 14px, -120px) rotate(4deg) scale(0.93);
+		}
+
+		.reviews-card[data-depth="3"] {
+			transform: translate3d(-14px, 14px, -180px) rotate(-3deg) scale(0.9);
+		}
+
+		.reviews-card[data-depth="4"] {
+			transform: translate3d(-22px, 6px, -240px) rotate(-5deg) scale(0.86);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.reviews-card {
+			transition: opacity 200ms ease;
+			filter: none !important;
+		}
+	}
+</style>
+
+<script>
+	const stage = document.querySelector<HTMLElement>('[data-reviews-stage]');
+	if (stage) {
+		const deck = stage.querySelector<HTMLElement>('[data-reviews-deck]');
+		const cards = Array.from(
+			stage.querySelectorAll<HTMLElement>('[data-reviews-card]'),
+		);
+		const prevBtn = stage.querySelector<HTMLButtonElement>('[data-reviews-prev]');
+		const nextBtn = stage.querySelector<HTMLButtonElement>('[data-reviews-next]');
+		const section = stage.closest<HTMLElement>('.reviews-section');
+		const dots = section
+			? Array.from(section.querySelectorAll<HTMLButtonElement>('[data-reviews-dot]'))
+			: [];
+		const counter = section?.querySelector<HTMLElement>('[data-reviews-current]');
+
+		const total = cards.length;
+		let activeIndex = 0;
+
+		const update = () => {
+			cards.forEach((card, i) => {
+				const depth = (i - activeIndex + total) % total;
+				card.dataset.depth = String(depth);
+				const isFront = depth === 0;
+				card.setAttribute('aria-hidden', isFront ? 'false' : 'true');
+				card.setAttribute('tabindex', isFront ? '0' : '-1');
+			});
+			dots.forEach((dot, i) => {
+				dot.setAttribute(
+					'aria-selected',
+					i === activeIndex ? 'true' : 'false',
+				);
+			});
+			if (counter) {
+				counter.textContent = String(activeIndex + 1).padStart(2, '0');
+			}
+		};
+
+		const go = (next: number) => {
+			activeIndex = (next + total) % total;
+			update();
+		};
+
+		const next = () => go(activeIndex + 1);
+		const prev = () => go(activeIndex - 1);
+
+		prevBtn?.addEventListener('click', prev);
+		nextBtn?.addEventListener('click', next);
+
+		dots.forEach((dot) => {
+			dot.addEventListener('click', () => {
+				const i = Number(dot.dataset.index ?? '0');
+				if (!Number.isNaN(i)) go(i);
+			});
+		});
+
+		cards.forEach((card, i) => {
+			card.addEventListener('click', () => {
+				if (i !== activeIndex) go(i);
+			});
+		});
+
+		const onKey = (event: KeyboardEvent) => {
+			if (!deck) return;
+			const rect = deck.getBoundingClientRect();
+			const inView =
+				rect.bottom > 0 && rect.top < window.innerHeight;
+			if (!inView) return;
+			if (event.key === 'ArrowLeft') {
+				event.preventDefault();
+				prev();
+			} else if (event.key === 'ArrowRight') {
+				event.preventDefault();
+				next();
+			}
+		};
+		window.addEventListener('keydown', onKey);
+
+		let touchStartX = 0;
+		let touchStartY = 0;
+		const threshold = 48;
+		stage.addEventListener(
+			'touchstart',
+			(event) => {
+				const t = event.touches[0];
+				if (!t) return;
+				touchStartX = t.clientX;
+				touchStartY = t.clientY;
+			},
+			{ passive: true },
+		);
+		stage.addEventListener(
+			'touchend',
+			(event) => {
+				const t = event.changedTouches[0];
+				if (!t) return;
+				const dx = t.clientX - touchStartX;
+				const dy = t.clientY - touchStartY;
+				if (Math.abs(dx) > threshold && Math.abs(dx) > Math.abs(dy)) {
+					if (dx < 0) next();
+					else prev();
+				}
+			},
+			{ passive: true },
+		);
+
+		update();
+	}
+</script>

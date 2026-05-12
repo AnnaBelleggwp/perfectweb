@@ -1,0 +1,239 @@
+---
+---
+
+<section id="hero" class="section-anchor hero-section">
+	<div class="hero-dots" data-hero-dots aria-hidden="true"></div>
+	<div class="hero-body">
+		<div class="hero-content">
+			<div class="hero-copy">
+				<p class="eyebrow hero-eyebrow"></p>
+				<h1 class="hero-title hero-title--empty"></h1>
+				<p class="body-copy hero-desc"></p>
+			</div>
+			<div class="hero-actions">
+				<a
+					class="hero-link"
+					href="#contact"
+					data-hover-fill
+					data-label="обсудить проект"
+				>
+					обсудить проект
+				</a>
+				<span class="hero-scroll-hint" aria-hidden="true">
+					<svg width="16" height="24" viewBox="0 0 16 24" fill="none">
+						<rect x="0.75" y="0.75" width="14.5" height="22.5" rx="7.25" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+						<rect class="hero-scroll-dot" x="7" y="5" width="2" height="5" rx="1" fill="currentColor" opacity="0.7"/>
+					</svg>
+				</span>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+.hero-section {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	padding-inline: clamp(1.2rem, 4vw, 3rem);
+	padding-top: clamp(0.7rem, 2.4svh, 3rem);
+	padding-bottom: 10px;
+	position: relative;
+	overflow: hidden;
+	isolation: isolate;
+}
+
+.hero-dots {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	z-index: 0;
+}
+
+.hero-dots :global(.dot-grid__canvas) {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+
+.hero-body {
+	flex: 1;
+	display: flex;
+	min-height: 0;
+	position: relative;
+	z-index: 1;
+}
+
+.hero-content {
+	width: 100%;
+	display: grid;
+	grid-template-rows: minmax(0, 1fr) auto;
+	flex: 1;
+	min-height: 0;
+}
+
+.hero-copy {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	overflow: hidden;
+	gap: clamp(1rem, 2.5vw, 1.75rem);
+}
+
+.hero-eyebrow {
+	min-height: min(1.5em, 4svh);
+}
+
+.hero-title--empty {
+	min-height: min(calc(0.88 * clamp(2.3rem, 7vw, 5.75rem) * 3), 34svh);
+}
+
+.hero-desc {
+	min-height: min(calc(1.15 * clamp(1.15rem, 2.3vw, 1.55rem) * 2), 14svh);
+}
+
+.hero-actions {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	padding-top: 10px;
+}
+
+.hero-link {
+	--hero-fill-size: 0px;
+	--hero-fill-target: 220px;
+	--hero-fill-x: 50%;
+	--hero-fill-y: 50%;
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	font-size: clamp(2.2rem, 4.4vw, 2.8rem);
+	font-weight: 300;
+	color: var(--color-text);
+	white-space: nowrap;
+	transition: color 180ms ease;
+}
+
+.hero-link:hover,
+.hero-link:focus-visible {
+	outline: none;
+}
+
+.hero-link::after {
+	content: attr(data-label);
+	position: absolute;
+	inset: 0;
+	color: var(--color-accent);
+	white-space: nowrap;
+	pointer-events: none;
+	mask-image: radial-gradient(
+		circle var(--hero-fill-size) at var(--hero-fill-x) var(--hero-fill-y),
+		#000 96%,
+		transparent 100%
+	);
+	-webkit-mask-image: radial-gradient(
+		circle var(--hero-fill-size) at var(--hero-fill-x) var(--hero-fill-y),
+		#000 96%,
+		transparent 100%
+	);
+	transition: --hero-fill-size 680ms cubic-bezier(0.22, 0.8, 0.24, 1);
+}
+
+.hero-link.is-hovered::after {
+	--hero-fill-size: var(--hero-fill-target);
+}
+
+.hero-scroll-hint {
+	color: var(--color-accent);
+	display: flex;
+	flex-shrink: 0;
+}
+
+@keyframes scroll-dot {
+	0%   { transform: translateY(0);   opacity: 0.7; }
+	60%  { transform: translateY(7px); opacity: 0.2; }
+	100% { transform: translateY(0);   opacity: 0.7; }
+}
+
+.hero-scroll-dot {
+	animation: scroll-dot 2s ease-in-out infinite;
+}
+
+@property --hero-fill-size {
+	syntax: '<length>';
+	inherits: false;
+	initial-value: 0px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.hero-scroll-dot,
+	.hero-link { animation: none; }
+
+	.hero-link::after {
+		transition: none;
+	}
+}
+
+@media (max-width: 767px) {
+	.hero-actions {
+		padding-bottom: clamp(0.6rem, 2.6vh, 1rem);
+	}
+
+	.hero-scroll-hint {
+		margin-left: auto;
+	}
+}
+</style>
+
+<script>
+	import { initDotGrid } from '../../scripts/dot-grid';
+
+	const dotsWrap = document.querySelector<HTMLElement>('[data-hero-dots]');
+	if (dotsWrap) {
+		initDotGrid(dotsWrap, {
+			dotSize: 4,
+			gap: 22,
+			trimCornerDots: true,
+			proximity: 140,
+			shockRadius: 220,
+			shockStrength: 4,
+		});
+	}
+
+	const links = document.querySelectorAll('[data-hover-fill]');
+
+	links.forEach((link) => {
+		link.addEventListener('pointerenter', (event) => {
+			const pointerEvent = event;
+			const rect = link.getBoundingClientRect();
+			const localX = Math.max(0, Math.min(rect.width, pointerEvent.clientX - rect.left));
+			const localY = Math.max(0, Math.min(rect.height, pointerEvent.clientY - rect.top));
+			const x = (localX / rect.width) * 100;
+			const y = (localY / rect.height) * 100;
+			const corners = [
+				{ x: 0, y: 0 },
+				{ x: rect.width, y: 0 },
+				{ x: 0, y: rect.height },
+				{ x: rect.width, y: rect.height },
+			];
+			const maxRadius = Math.max(
+				...corners.map((corner) =>
+					Math.hypot(corner.x - localX, corner.y - localY),
+				),
+			);
+
+			link.style.setProperty('--hero-fill-x', `${Math.max(0, Math.min(100, x))}%`);
+			link.style.setProperty('--hero-fill-y', `${Math.max(0, Math.min(100, y))}%`);
+			link.style.setProperty('--hero-fill-target', `${Math.ceil(maxRadius + 8)}px`);
+			link.classList.add('is-hovered');
+		});
+
+		link.addEventListener('pointerleave', () => {
+			link.classList.remove('is-hovered');
+		});
+	});
+</script>

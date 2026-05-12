@@ -1,0 +1,567 @@
+---
+const stages = [
+	{
+		id: 'brief',
+		num: '01',
+		title: 'брифинг',
+		tabFile: '01-brief.md',
+		text: 'собираем цели, аудиторию, смыслы. смотрим референсы и конкурентов. на выходе — понятная картина что и зачем делаем.',
+		artifacts: ['бриф', 'структура', 'смета'],
+		duration: '1–2 дня',
+	},
+	{
+		id: 'design',
+		num: '02',
+		title: 'дизайн',
+		tabFile: '02-design.md',
+		text: 'проектирую структуру и ui. от вайрфреймов до финального макета с состояниями и адаптивом. итерируем до согласования.',
+		artifacts: ['вайрфреймы', 'ui-kit', 'прототип', 'адаптив'],
+		duration: '7–14 дней',
+	},
+	{
+		id: 'build',
+		num: '03',
+		title: 'разработка',
+		tabFile: '03-build.md',
+		text: 'верстаю макет, собираю интерфейс на современном стеке. анимации, интеграции, cms — всё что нужно чтобы запустить.',
+		artifacts: ['верстка', 'анимации', 'cms', 'интеграции'],
+		duration: '7–21 день',
+	},
+	{
+		id: 'launch',
+		num: '04',
+		title: 'запуск',
+		tabFile: '04-launch.md',
+		text: 'тестируем на устройствах, проверяем производительность и seo. деплой, подключение аналитики, мониторинг первых дней.',
+		artifacts: ['qa', 'seo', 'deploy', 'analytics'],
+		duration: '1–3 дня',
+	},
+];
+---
+
+<section id="process" class="section-anchor process-section">
+	<div class="process-header">
+		<span class="process-kicker section-mark">процесс</span>
+	</div>
+
+	<div class="terminal" data-terminal>
+		<div class="terminal-bar">
+			<div class="terminal-lights" aria-hidden="true">
+				<span class="terminal-light terminal-light--active"></span>
+				<span class="terminal-light"></span>
+				<span class="terminal-light"></span>
+				<span class="terminal-light"></span>
+			</div>
+			<span class="terminal-title">perfectweb — process.sh</span>
+			<span class="terminal-spacer" aria-hidden="true"></span>
+		</div>
+
+		<div class="terminal-tabs" role="tablist">
+			{stages.map((s, i) => (
+				<button
+					type="button"
+					role="tab"
+					class:list={['terminal-tab', { 'is-active': i === 0 }]}
+					data-tab-target={s.id}
+					aria-selected={i === 0 ? 'true' : 'false'}
+					aria-controls={`stage-${s.id}`}
+					tabindex={i === 0 ? 0 : -1}
+				>
+					<span class="terminal-tab__num">{s.num}</span>
+					<span class="terminal-tab__label">{s.title}</span>
+				</button>
+			))}
+		</div>
+
+		<div class="terminal-body">
+			{stages.map((s, i) => (
+				<div
+					id={`stage-${s.id}`}
+					role="tabpanel"
+					class:list={['terminal-stage', { 'is-active': i === 0 }]}
+					data-stage={s.id}
+				>
+					<p class="terminal-line terminal-line--cmd">
+						<span class="terminal-prompt">~/process</span>
+						<span class="terminal-sigil">$</span>
+						<span class="terminal-cmd">cat {s.tabFile}</span>
+					</p>
+					<p class="terminal-line terminal-line--text">
+						<span class="terminal-typed" data-typed>{s.text}</span><span class="terminal-cursor" aria-hidden="true"></span>
+					</p>
+					<ul class="terminal-list">
+						{s.artifacts.map(a => (
+							<li class="terminal-list__item">
+								<span class="terminal-arrow">→</span>{a}
+							</li>
+						))}
+					</ul>
+					<p class="terminal-line terminal-line--meta">
+						<span class="terminal-meta-ico">⏱</span>{s.duration}
+					</p>
+				</div>
+			))}
+		</div>
+
+		<div class="terminal-status">
+			<div class="terminal-progress" aria-hidden="true">
+				<div class="terminal-progress__fill" data-progress-fill></div>
+			</div>
+			<span class="terminal-status__right">
+				stage <span data-stage-index>1</span>/{stages.length}
+			</span>
+		</div>
+	</div>
+</section>
+
+<style>
+.process-section {
+	display: flex;
+	flex-direction: column;
+	gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.process-header {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+}
+
+
+	.terminal {
+		--mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+		--term-bg: var(--terminal-bg);
+		--term-bg-2: var(--terminal-bg-2);
+		--term-border: var(--terminal-border);
+		--term-divider: var(--terminal-divider);
+		--term-text: var(--terminal-text);
+		--term-muted: var(--terminal-muted);
+		--term-prompt: var(--terminal-prompt);
+		--term-accent: var(--color-accent);
+
+	position: relative;
+	border: 1px solid var(--term-border);
+	border-radius: 16px;
+		background: linear-gradient(180deg, var(--term-bg) 0%, var(--term-bg-2) 100%);
+		overflow: hidden;
+		box-shadow:
+			inset 0 1px 0 var(--terminal-inset-highlight),
+			var(--terminal-shadow);
+	font-family: var(--mono);
+	text-transform: none;
+	letter-spacing: 0;
+}
+
+.terminal::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+		pointer-events: none;
+		background:
+			radial-gradient(120% 80% at 50% -20%, var(--cta-bg), transparent 60%);
+	}
+
+.terminal-bar {
+	position: relative;
+	display: grid;
+	grid-template-columns: auto 1fr auto;
+	align-items: center;
+	padding: 0.7rem 1rem;
+		background: var(--terminal-chrome-bg);
+	border-bottom: 1px solid var(--term-divider);
+	font-size: 0.8rem;
+	color: var(--term-muted);
+}
+
+.terminal-lights {
+	display: flex;
+	gap: 0.45rem;
+}
+
+.terminal-light {
+	width: 11px;
+	height: 11px;
+	border-radius: 999px;
+		background: var(--terminal-control-bg);
+}
+
+.terminal-light--active {
+		background: var(--term-accent);
+		box-shadow: 0 0 10px var(--accent-glow-strong);
+}
+
+.terminal-title {
+	text-align: center;
+	font-size: 0.78rem;
+	letter-spacing: 0.04em;
+}
+
+.terminal-spacer {
+	width: 44px;
+}
+
+.terminal-tabs {
+	position: relative;
+	display: flex;
+	overflow-x: auto;
+	scrollbar-width: none;
+		background: var(--terminal-tab-bg);
+	border-bottom: 1px solid var(--term-divider);
+}
+
+.terminal-tabs::-webkit-scrollbar {
+	display: none;
+}
+
+.terminal-tab {
+	flex: 1 0 auto;
+	padding: 0.7rem 1.1rem;
+	border: 0;
+	background: transparent;
+	color: var(--term-muted);
+	font-family: var(--mono);
+	font-size: 0.9rem;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.55ch;
+	border-right: 1px solid var(--term-divider);
+	white-space: nowrap;
+	transition: background-color 160ms ease, color 160ms ease;
+	text-transform: none;
+	letter-spacing: 0;
+	position: relative;
+}
+
+.terminal-tab:last-child {
+	border-right: 0;
+}
+
+	.terminal-tab:hover {
+		color: var(--term-text);
+		background: var(--terminal-hover-bg);
+	}
+
+	.terminal-tab.is-active {
+		color: var(--term-accent);
+		background: var(--terminal-active-bg);
+	}
+
+.terminal-tab.is-active::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 2px;
+	background: var(--term-accent);
+}
+
+	.terminal-tab:focus-visible {
+		outline: 1px solid var(--focus-ring);
+	outline-offset: -4px;
+}
+
+.terminal-tab__num {
+	color: color-mix(in srgb, var(--term-accent) 62%, var(--term-muted));
+	font-size: 0.8rem;
+}
+
+.terminal-tab.is-active .terminal-tab__num {
+	color: var(--term-accent);
+}
+
+.terminal-body {
+	position: relative;
+	padding: clamp(1.25rem, 3vw, 2.25rem);
+	min-height: clamp(280px, 38vh, 360px);
+}
+
+.terminal-stage {
+	display: none;
+	flex-direction: column;
+	gap: 0.9rem;
+}
+
+.terminal-stage.is-active {
+	display: flex;
+}
+
+.terminal-line {
+	margin: 0;
+	font-size: clamp(0.92rem, 1.5vw, 1.02rem);
+	line-height: 1.55;
+	color: var(--term-text);
+	text-transform: none;
+	letter-spacing: 0;
+}
+
+.terminal-prompt {
+	color: var(--term-prompt);
+	margin-right: 0.5ch;
+}
+
+.terminal-sigil {
+	color: var(--term-accent);
+	margin-right: 0.5ch;
+}
+
+.terminal-cmd {
+	color: var(--term-text);
+}
+
+.terminal-line--text {
+	color: var(--term-text);
+	max-width: 68ch;
+}
+
+.terminal-cursor {
+	display: inline-block;
+	width: 0.55ch;
+	height: 1.05em;
+	vertical-align: text-bottom;
+	background: var(--term-accent);
+	margin-left: 2px;
+	animation: terminal-blink 1s steps(1, end) infinite;
+}
+
+.terminal-stage.is-typing .terminal-cursor {
+	animation: none;
+	opacity: 1;
+}
+
+@keyframes terminal-blink {
+	0%, 50% { opacity: 1; }
+	50.01%, 100% { opacity: 0; }
+}
+
+.terminal-list {
+	list-style: none;
+	margin: 0.15rem 0 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+}
+
+.terminal-list__item {
+	font-size: clamp(0.9rem, 1.5vw, 1rem);
+	color: var(--term-text);
+	text-transform: none;
+	letter-spacing: 0;
+	display: flex;
+	gap: 0.5ch;
+}
+
+.terminal-arrow {
+	color: var(--term-accent);
+}
+
+.terminal-line--meta {
+	color: var(--term-muted);
+	font-size: clamp(0.86rem, 1.4vw, 0.96rem);
+	display: flex;
+	gap: 0.5ch;
+	align-items: center;
+}
+
+.terminal-meta-ico {
+	color: var(--term-accent);
+}
+
+.terminal-status {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 0.55rem 1rem;
+		background: var(--terminal-status-bg);
+	border-top: 1px solid var(--term-divider);
+	font-size: 0.78rem;
+	color: var(--term-muted);
+	text-transform: none;
+	letter-spacing: 0;
+}
+
+.terminal-progress {
+	flex: 1;
+	height: 6px;
+	border-radius: 999px;
+		background: var(--terminal-progress-bg);
+	overflow: hidden;
+	max-width: 60%;
+}
+
+.terminal-progress__fill {
+	height: 100%;
+	width: 25%;
+		background: linear-gradient(90deg, color-mix(in srgb, var(--term-accent) 58%, transparent), var(--term-accent));
+	transition: width 460ms cubic-bezier(0.22, 0.8, 0.24, 1);
+}
+
+@media (max-width: 640px) {
+	.terminal-bar {
+		padding: 0.55rem 0.8rem;
+	}
+
+	.terminal-title {
+		font-size: 0.68rem;
+	}
+
+	.terminal-spacer {
+		width: 20px;
+	}
+
+	.terminal-tab {
+		padding: 0.58rem 0.8rem;
+		font-size: 0.82rem;
+	}
+
+	.terminal-tab__label {
+		display: none;
+	}
+
+	.terminal-body {
+		padding: 1rem;
+		min-height: 300px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.terminal-cursor {
+		animation: none;
+	}
+
+	.terminal-progress__fill {
+		transition: none;
+	}
+}
+</style>
+
+<script>
+	import { getGsap, ScrollTrigger } from '../../scripts/gsap';
+
+	getGsap();
+
+	const terminal = document.querySelector<HTMLElement>('[data-terminal]');
+	if (terminal) {
+		const tabs = Array.from(terminal.querySelectorAll<HTMLButtonElement>('[data-tab-target]'));
+		const stages = Array.from(terminal.querySelectorAll<HTMLElement>('[data-stage]'));
+		const progressFill = terminal.querySelector<HTMLElement>('[data-progress-fill]');
+		const stageIndexEl = terminal.querySelector<HTMLElement>('[data-stage-index]');
+		const total = stages.length;
+		const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+		type TypedEntry = { full: string; timer: number | null };
+		const typedEntries = new Map<HTMLElement, TypedEntry>();
+		stages.forEach((stage) => {
+			const typed = stage.querySelector<HTMLElement>('[data-typed]');
+			if (typed) {
+				typedEntries.set(typed, { full: typed.textContent ?? '', timer: null });
+			}
+		});
+
+		stages.forEach((stage) => stage.classList.remove('is-typing'));
+
+		const setStageActive = (index: number, { animate = true } = {}) => {
+			const clamped = Math.max(0, Math.min(total - 1, index));
+
+			tabs.forEach((tab, i) => {
+				const active = i === clamped;
+				tab.classList.toggle('is-active', active);
+				tab.setAttribute('aria-selected', active ? 'true' : 'false');
+				tab.setAttribute('tabindex', active ? '0' : '-1');
+			});
+
+			stages.forEach((stage, i) => {
+				const active = i === clamped;
+				stage.classList.toggle('is-active', active);
+				if (!active) stage.classList.remove('is-typing');
+			});
+
+			const activeStage = stages[clamped];
+			const typed = activeStage.querySelector<HTMLElement>('[data-typed]');
+			const entry = typed ? typedEntries.get(typed) : null;
+
+			if (typed && entry) {
+				if (entry.timer !== null) {
+					window.clearTimeout(entry.timer);
+					entry.timer = null;
+				}
+
+				if (!animate || prefersReduced) {
+					typed.textContent = entry.full;
+					activeStage.classList.remove('is-typing');
+				} else {
+					typed.textContent = '';
+					activeStage.classList.add('is-typing');
+					const speed = 14;
+					let i = 0;
+					const tick = () => {
+						i += 1;
+						typed.textContent = entry.full.slice(0, i);
+						if (i < entry.full.length) {
+							entry.timer = window.setTimeout(tick, speed);
+						} else {
+							entry.timer = null;
+							activeStage.classList.remove('is-typing');
+						}
+					};
+					entry.timer = window.setTimeout(tick, 260);
+				}
+			}
+
+			if (progressFill) {
+				progressFill.style.width = `${((clamped + 1) / total) * 100}%`;
+			}
+			if (stageIndexEl) {
+				stageIndexEl.textContent = String(clamped + 1);
+			}
+		};
+
+		setStageActive(0, { animate: false });
+
+		const playEntrance = () => setStageActive(0, { animate: true });
+
+		const rect = terminal.getBoundingClientRect();
+		const alreadyInView = rect.top < window.innerHeight * 0.85 && rect.bottom > 0;
+
+		if (alreadyInView) {
+			window.requestAnimationFrame(playEntrance);
+		} else {
+			ScrollTrigger.create({
+				trigger: terminal,
+				start: 'top 82%',
+				once: true,
+				onEnter: playEntrance,
+			});
+		}
+
+		tabs.forEach((tab, i) => {
+			tab.addEventListener('click', () => setStageActive(i, { animate: true }));
+
+			tab.addEventListener('keydown', (event) => {
+				let nextIndex = -1;
+				switch (event.key) {
+					case 'ArrowRight':
+						nextIndex = (i + 1) % tabs.length;
+						break;
+					case 'ArrowLeft':
+						nextIndex = (i - 1 + tabs.length) % tabs.length;
+						break;
+					case 'Home':
+						nextIndex = 0;
+						break;
+					case 'End':
+						nextIndex = tabs.length - 1;
+						break;
+					default:
+						return;
+				}
+				event.preventDefault();
+				tabs[nextIndex].focus();
+				setStageActive(nextIndex, { animate: true });
+			});
+		});
+	}
+</script>

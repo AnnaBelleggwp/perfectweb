@@ -1,0 +1,543 @@
+---
+import { DEPLOY_TIME_ISO } from '../../lib/footer/deploy-info';
+
+const email = 'hello@perfectweb.dev';
+const phone = '+7 (908) 123-45-67';
+const phoneDigits = '+79001234567';
+const currentYear = new Date().getFullYear();
+---
+
+<footer id="footer" class="footer-term" data-footer-term>
+	<div class="footer-term__prompt">
+		<span class="footer-term__prompt-path">~/kerizov.design</span>
+		<span class="footer-term__prompt-sigil">$</span>
+		<span class="footer-term__prompt-cmd" data-footer-type>exit</span>
+		<span class="footer-term__caret" aria-hidden="true"></span>
+	</div>
+
+	<div class="footer-term__banner" aria-hidden="true">
+		<div class="footer-term__ribbon" data-footer-ribbon>
+			<span class="footer-term__chunk">kerizov.design <span class="footer-term__dot">·</span></span>
+			<span class="footer-term__chunk">kerizov.design <span class="footer-term__dot">·</span></span>
+			<span class="footer-term__chunk">kerizov.design <span class="footer-term__dot">·</span></span>
+			<span class="footer-term__chunk">kerizov.design <span class="footer-term__dot">·</span></span>
+			<span class="footer-term__chunk">kerizov.design <span class="footer-term__dot">·</span></span>
+			<span class="footer-term__chunk">kerizov.design <span class="footer-term__dot">·</span></span>
+		</div>
+	</div>
+
+	<p class="footer-term__closing">&gt; connection closing<span class="footer-term__dots" aria-hidden="true">...</span></p>
+
+	<div class="footer-term__grid">
+		<article class="footer-term__panel">
+			<header class="footer-term__panel-head">
+				<span class="footer-term__panel-path">/etc/me.conf</span>
+				<span class="footer-term__panel-mode">—rw—r——r——</span>
+			</header>
+			<dl class="footer-term__kv">
+				<div class="footer-term__kv-row">
+					<dt>name</dt>
+					<dd>kerizov</dd>
+				</div>
+				<div class="footer-term__kv-row">
+					<dt>role</dt>
+					<dd>веб-разработка · ui/ux</dd>
+				</div>
+				<div class="footer-term__kv-row">
+					<dt>locale</dt>
+					<dd>ru · en</dd>
+				</div>
+				<div class="footer-term__kv-row">
+					<dt>base</dt>
+					<dd>moscow, ru</dd>
+				</div>
+			</dl>
+		</article>
+
+		<article class="footer-term__panel">
+			<header class="footer-term__panel-head">
+				<span class="footer-term__panel-path">/var/links/</span>
+				<span class="footer-term__panel-mode">drwxr—xr—x</span>
+			</header>
+			<ul class="footer-term__links">
+				<li class="footer-term__link-row">
+					<span class="footer-term__link-key">mail</span>
+					<a class="footer-term__link" href={`mailto:${email}`}>{email}</a>
+					<button type="button" class="footer-term__copy" data-footer-copy={email} aria-label={`скопировать ${email}`}>[copy]</button>
+				</li>
+				<li class="footer-term__link-row">
+					<span class="footer-term__link-key">tel</span>
+					<a class="footer-term__link" href={`tel:${phoneDigits}`}>{phone}</a>
+					<button type="button" class="footer-term__copy" data-footer-copy={phone} aria-label={`скопировать ${phone}`}>[copy]</button>
+				</li>
+				<li class="footer-term__link-row">
+					<span class="footer-term__link-key">tg</span>
+					<a class="footer-term__link" href="https://t.me/kerizov" target="_blank" rel="noopener">@kerizov</a>
+				</li>
+				<li class="footer-term__link-row">
+					<span class="footer-term__link-key">gh</span>
+					<a class="footer-term__link" href="https://github.com/kerizov" target="_blank" rel="noopener">github.com/kerizov</a>
+				</li>
+			</ul>
+		</article>
+
+		<article class="footer-term__panel">
+			<header class="footer-term__panel-head">
+				<span class="footer-term__panel-path">/proc/status</span>
+				<span class="footer-term__panel-mode">—r——r——r——</span>
+			</header>
+			<dl class="footer-term__kv">
+				<div class="footer-term__kv-row">
+					<dt>state</dt>
+					<dd>
+						<span class="footer-term__pulse" aria-hidden="true"></span>
+						<span>online · accepting requests</span>
+					</dd>
+				</div>
+				<div class="footer-term__kv-row">
+					<dt>msk</dt>
+					<dd data-footer-clock>--:--:--</dd>
+				</div>
+				<div class="footer-term__kv-row">
+					<dt>deploy</dt>
+					<dd>
+						<span data-footer-ago data-footer-ago-iso={DEPLOY_TIME_ISO}>recently</span>
+					</dd>
+				</div>
+				<div class="footer-term__kv-row">
+					<dt>uptime</dt>
+					<dd>{currentYear - 2022}y · 15+ projects</dd>
+				</div>
+			</dl>
+		</article>
+	</div>
+
+	<div class="footer-term__footline">
+		<span>© {currentYear} kerizov.design</span>
+		<span class="footer-term__footline-mid">astro · gsap · node · crafted with care</span>
+		<span>session ended · bye</span>
+	</div>
+</footer>
+
+<style>
+		.footer-term {
+			--mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+			--t-bg: var(--terminal-bg);
+			--t-bg-2: var(--terminal-bg-2);
+			--t-border: var(--terminal-border);
+			--t-divider: var(--terminal-divider);
+			--t-text: var(--terminal-text);
+			--t-muted: var(--terminal-muted);
+			--t-prompt: var(--terminal-prompt);
+			--t-accent: var(--color-accent);
+
+		position: relative;
+			margin-top: clamp(3rem, 6vw, 5rem);
+			padding: clamp(2rem, 4vw, 3rem) 0 clamp(1.5rem, 3vw, 2.25rem);
+			border-top: 1px solid var(--t-border);
+			background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--t-bg) 62%, transparent) 35%, var(--t-bg-2) 100%);
+		font-family: var(--mono);
+		color: var(--t-text);
+		text-transform: none;
+		letter-spacing: 0;
+		overflow: hidden;
+	}
+
+	.footer-term__prompt {
+		display: flex;
+		align-items: center;
+		gap: 0.5ch;
+		padding: 0 clamp(1.2rem, 4vw, 3rem);
+		font-size: clamp(0.92rem, 1.5vw, 1.02rem);
+	}
+
+	.footer-term__prompt-path {
+		color: var(--t-prompt);
+	}
+
+	.footer-term__prompt-sigil {
+		color: var(--t-accent);
+	}
+
+	.footer-term__prompt-cmd {
+		color: var(--t-text);
+		white-space: pre;
+	}
+
+	.footer-term__caret {
+		display: inline-block;
+		width: 0.5ch;
+		height: 1em;
+		background: var(--t-accent);
+		margin-left: 0.1ch;
+		translate: 0 0.12em;
+		animation: footer-caret 1s steps(2) infinite;
+	}
+
+	@keyframes footer-caret {
+		0%, 49% { opacity: 1; }
+		50%, 100% { opacity: 0; }
+	}
+
+	.footer-term__banner {
+		position: relative;
+		margin: clamp(1.5rem, 3vw, 2.25rem) 0 clamp(0.5rem, 1.5vw, 1rem);
+		overflow: hidden;
+		mask-image: linear-gradient(
+			90deg,
+			transparent 0%,
+			#000 6%,
+			#000 94%,
+			transparent 100%
+		);
+		-webkit-mask-image: linear-gradient(
+			90deg,
+			transparent 0%,
+			#000 6%,
+			#000 94%,
+			transparent 100%
+		);
+	}
+
+	.footer-term__ribbon {
+		display: inline-flex;
+		white-space: nowrap;
+		will-change: transform;
+		animation: footer-ribbon 32s linear infinite;
+	}
+
+	.footer-term__ribbon:hover {
+		animation-play-state: paused;
+	}
+
+	.footer-term__chunk {
+		font-family: 'Alumni Sans', 'Inter', system-ui, sans-serif;
+		font-weight: 700;
+		font-size: clamp(4.5rem, 15vw, 14rem);
+		line-height: 0.85;
+		letter-spacing: -0.02em;
+		color: var(--color-text);
+		padding-inline: 0.12em 0.24em;
+		text-transform: lowercase;
+	}
+
+	.footer-term__dot {
+		color: var(--t-accent);
+		padding-inline: 0.06em;
+	}
+
+	@keyframes footer-ribbon {
+		from { transform: translate3d(0, 0, 0); }
+		to { transform: translate3d(-50%, 0, 0); }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.footer-term__ribbon {
+			animation: none;
+		}
+	}
+
+	.footer-term__closing {
+		margin: 0;
+		padding: 0 clamp(1.2rem, 4vw, 3rem);
+		color: var(--t-muted);
+		font-size: clamp(0.88rem, 1.4vw, 1rem);
+	}
+
+	.footer-term__dots {
+		display: inline-block;
+		width: 1.3ch;
+		overflow: hidden;
+		vertical-align: bottom;
+		animation: footer-dots 1.6s steps(4) infinite;
+	}
+
+	@keyframes footer-dots {
+		0%   { width: 0; }
+		100% { width: 1.3ch; }
+	}
+
+	.footer-term__grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: clamp(1rem, 2vw, 1.5rem);
+		padding: clamp(1.5rem, 3vw, 2rem) clamp(1.2rem, 4vw, 3rem) 0;
+	}
+
+	.footer-term__panel {
+			border: 1px solid var(--t-border);
+			border-radius: 12px;
+			background: var(--terminal-panel-bg);
+		padding: 0.9rem 1rem 1rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.65rem;
+	}
+
+	.footer-term__panel-head {
+		display: flex;
+		justify-content: space-between;
+		gap: 1ch;
+		padding-bottom: 0.55rem;
+		border-bottom: 1px dashed var(--t-divider);
+		font-size: 0.78rem;
+		color: var(--t-muted);
+	}
+
+	.footer-term__panel-path {
+		color: var(--t-accent);
+		opacity: 0.75;
+	}
+
+	.footer-term__panel-mode {
+		color: var(--t-muted);
+		opacity: 0.6;
+		font-size: 0.72rem;
+		letter-spacing: -0.03em;
+	}
+
+	.footer-term__kv {
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+	}
+
+	.footer-term__kv-row {
+		display: grid;
+		grid-template-columns: 5.5ch 1fr;
+		gap: 1ch;
+		align-items: baseline;
+		font-size: clamp(0.85rem, 1.35vw, 0.95rem);
+	}
+
+	.footer-term__kv-row dt {
+		color: var(--t-muted);
+	}
+
+	.footer-term__kv-row dd {
+		margin: 0;
+		color: var(--t-text);
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5ch;
+	}
+
+	.footer-term__pulse {
+		display: inline-block;
+		width: 7px;
+		height: 7px;
+		border-radius: 999px;
+		background: var(--t-prompt);
+		box-shadow: 0 0 0 0 rgba(158, 211, 154, 0.55);
+		animation: footer-pulse 1.8s ease-out infinite;
+	}
+
+	@keyframes footer-pulse {
+		0% {
+			box-shadow: 0 0 0 0 rgba(158, 211, 154, 0.55);
+			transform: scale(1);
+		}
+		70% {
+			box-shadow: 0 0 0 8px rgba(158, 211, 154, 0);
+			transform: scale(1);
+		}
+		100% {
+			box-shadow: 0 0 0 0 rgba(158, 211, 154, 0);
+			transform: scale(1);
+		}
+	}
+
+	.footer-term__links {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+	}
+
+	.footer-term__link-row {
+		display: grid;
+		grid-template-columns: 4ch 1fr auto;
+		align-items: baseline;
+		gap: 1ch;
+		font-size: clamp(0.85rem, 1.35vw, 0.95rem);
+	}
+
+	.footer-term__link-key {
+		color: var(--t-muted);
+	}
+
+	.footer-term__link {
+		color: var(--t-accent);
+		text-decoration: none;
+		border-bottom: 1px dashed transparent;
+		transition: border-color 160ms ease;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+		.footer-term__link:hover,
+		.footer-term__link:focus-visible {
+			border-bottom-color: var(--accent-glow-soft);
+		outline: none;
+	}
+
+	.footer-term__copy {
+		padding: 0 0.3rem;
+		border: 0;
+		background: transparent;
+		color: var(--t-muted);
+		font: inherit;
+		font-size: 0.85em;
+		cursor: pointer;
+		transition: color 160ms ease;
+	}
+
+	.footer-term__copy:hover,
+	.footer-term__copy:focus-visible {
+		color: var(--t-accent);
+		outline: none;
+	}
+
+	.footer-term__copy[data-state="done"] {
+		color: var(--t-prompt);
+	}
+
+	.footer-term__footline {
+		display: grid;
+		grid-template-columns: auto 1fr auto;
+		align-items: center;
+		gap: 1rem;
+		margin-top: clamp(1.5rem, 3vw, 2rem);
+		padding: 0.9rem clamp(1.2rem, 4vw, 3rem) 0;
+		border-top: 1px solid var(--t-divider);
+		font-size: 0.78rem;
+		color: var(--t-muted);
+	}
+
+	.footer-term__footline-mid {
+		text-align: center;
+	}
+
+	@media (max-width: 960px) {
+		.footer-term__grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.footer-term__footline {
+			grid-template-columns: 1fr;
+			justify-items: start;
+			gap: 0.3rem;
+		}
+
+		.footer-term__footline-mid {
+			text-align: left;
+		}
+
+		.footer-term__kv-row,
+		.footer-term__link-row {
+			grid-template-columns: 5ch 1fr;
+		}
+
+		.footer-term__link-row .footer-term__copy {
+			grid-column: 2;
+			justify-self: start;
+			padding-left: 0;
+		}
+	}
+</style>
+
+<script>
+	const root = document.querySelector<HTMLElement>('[data-footer-term]');
+	if (root) {
+		// Copy buttons
+		root.querySelectorAll<HTMLButtonElement>('[data-footer-copy]').forEach((btn) => {
+			btn.addEventListener('click', async () => {
+				const value = btn.dataset.footerCopy ?? '';
+				try {
+					await navigator.clipboard.writeText(value);
+					const original = btn.textContent ?? '';
+					btn.textContent = '[copied]';
+					btn.dataset.state = 'done';
+					window.setTimeout(() => {
+						btn.textContent = original;
+						delete btn.dataset.state;
+					}, 1400);
+				} catch {
+					btn.textContent = '[select & copy]';
+				}
+			});
+		});
+
+		// Moscow clock
+		const clockEl = root.querySelector<HTMLElement>('[data-footer-clock]');
+		if (clockEl) {
+			const fmt = new Intl.DateTimeFormat('ru-RU', {
+				timeZone: 'Europe/Moscow',
+				hour: '2-digit',
+				minute: '2-digit',
+				second: '2-digit',
+				hour12: false,
+			});
+			const tick = () => {
+				clockEl.textContent = fmt.format(new Date());
+			};
+			tick();
+			window.setInterval(tick, 1000);
+		}
+
+		// "deploy Xd ago" relative time
+		const agoEl = root.querySelector<HTMLElement>('[data-footer-ago]');
+		if (agoEl) {
+			const iso = agoEl.dataset.footerAgoIso ?? '';
+			const deployed = iso ? new Date(iso) : null;
+			const renderAgo = () => {
+				if (!deployed || Number.isNaN(deployed.getTime())) {
+					agoEl.textContent = 'recently';
+					return;
+				}
+				const diffMs = Date.now() - deployed.getTime();
+				const sec = Math.max(0, Math.floor(diffMs / 1000));
+				const min = Math.floor(sec / 60);
+				const hr = Math.floor(min / 60);
+				const day = Math.floor(hr / 24);
+				if (sec < 60) agoEl.textContent = 'just now';
+				else if (min < 60) agoEl.textContent = `${min}m ago`;
+				else if (hr < 24) agoEl.textContent = `${hr}h ago`;
+				else agoEl.textContent = `${day}d ago`;
+			};
+			renderAgo();
+			window.setInterval(renderAgo, 30_000);
+		}
+
+		// Typewriter "exit" command
+		const typeEl = root.querySelector<HTMLElement>('[data-footer-type]');
+		if (typeEl && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			const text = typeEl.textContent ?? '';
+			typeEl.textContent = '';
+			let i = 0;
+			const io = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) => {
+						if (!entry.isIntersecting) return;
+						io.disconnect();
+						const step = () => {
+							i += 1;
+							typeEl.textContent = text.slice(0, i);
+							if (i < text.length) window.setTimeout(step, 90);
+						};
+						window.setTimeout(step, 180);
+					});
+				},
+				{ threshold: 0.3 },
+			);
+			io.observe(typeEl);
+		}
+	}
+</script>

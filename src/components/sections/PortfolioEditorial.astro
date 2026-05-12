@@ -1,0 +1,1013 @@
+---
+import { DEFAULT_SITE_CONTENT, type PortfolioItem, type PortfolioMedia } from '../../data/site-content';
+
+interface Props {
+	portfolio?: PortfolioItem[];
+}
+
+const { portfolio = DEFAULT_SITE_CONTENT.portfolio } = Astro.props;
+const items = (portfolio.length ? portfolio : DEFAULT_SITE_CONTENT.portfolio).filter((p) => p.published);
+
+const isPlaceholder = (item: PortfolioItem) => /ваш(?:е)?\s+будущ/i.test(item.title);
+
+const categories = ['все проекты', ...new Set(items.map((p) => p.category))];
+
+const buildSrcSet = (media: PortfolioMedia | null) => {
+	if (!media) return '';
+	const sources = media.variants
+		.filter((v) => v.url && v.width > 0)
+		.map((v) => `${v.url} ${v.width}w`);
+	sources.push(`${media.originalUrl} ${media.width}w`);
+	return sources.join(', ');
+};
+
+
+---
+
+<section id="portfolio" class="section-anchor pf-section">
+	<div class="pf-shell site-shell">
+
+		<!-- ── Header ──────────────────────────────────────── -->
+		<div class="pf-head">
+			<div class="pf-head__mark">
+				<span class="section-mark pf-reveal">мои работы</span>
+			</div>
+			<h2 class="pf-title pf-reveal">портфолио</h2>
+			<p class="pf-subtitle pf-reveal">
+				отобранные проекты, в которых идея,<br />
+				технологии и визуал работают как единое целое.
+			</p>
+		</div>
+
+		<!-- ── Divider ─────────────────────────────────────── -->
+		<div class="pf-divider pf-reveal" aria-hidden="true"></div>
+
+		<!-- ── Filters ─────────────────────────────────────── -->
+		<nav class="pf-filters pf-reveal" aria-label="фильтр проектов">
+			{categories.map((cat, i) => (
+				<button
+					type="button"
+					class:list={['pf-chip', { 'is-active': i === 0 }]}
+					data-filter={i === 0 ? 'all' : cat}
+				>
+					<span class="pf-chip__dot" aria-hidden="true"></span>
+					{cat}
+				</button>
+			))}
+		</nav>
+
+		<!-- ── Project grid ────────────────────────────────── -->
+		<div class="pf-grid" data-pf-grid>
+
+			{items.map((item, idx) => {
+				const num = String(idx + 1).padStart(2, '0');
+				const isFeatured = idx === 0;
+				const isPlc = isPlaceholder(item);
+
+				return isFeatured ? (
+					<!-- Featured card (large left) -->
+					<article
+						class="pf-card pf-card--featured"
+						data-pf-card
+						data-category={item.category}
+						data-hue={item.hue}
+					>
+						<div class="pf-card__head">
+							<div class="pf-card__head-left">
+								<span class="pf-card__num">{num}</span>
+								<span class="pf-card__badge">избранный</span>
+							</div>
+							<span class="pf-card__year">{item.year}</span>
+						</div>
+
+						<div class="pf-card__body">
+							<div class="pf-card__copy">
+								<h3 class="pf-card__title">{item.title}</h3>
+								<p class="pf-card__cat">{item.category}{item.tags.length > 0 && ` / ${item.tags.slice(0, 2).join(' / ').toLowerCase()}`}</p>
+								<p class="pf-card__desc">{item.description}</p>
+								<a href={item.caseUrl} class="pf-card__cta" data-hover-fill data-label="смотреть проект">
+									смотреть проект
+									<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+										<path d="M1 13L13 1M13 1H5M13 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+									</svg>
+								</a>
+							</div>
+							<div class="pf-card__visual">
+								{item.preview ? (
+									<img
+										class="pf-card__img"
+										src={item.preview.originalUrl}
+										srcset={buildSrcSet(item.preview)}
+										sizes="(max-width: 767px) 90vw, 32vw"
+										width={item.preview.width}
+										height={item.preview.height}
+										alt={item.preview.alt || item.title}
+										loading="lazy"
+										decoding="async"
+									/>
+								) : (
+									<div class="pf-card__img-placeholder">
+										<span>превью</span>
+									</div>
+								)}
+							</div>
+						</div>
+
+						<div class="pf-card__metrics">
+							<div class="pf-metric">
+								<span class="pf-metric__val">{item.duration}</span>
+								<span class="pf-metric__label">срок</span>
+							</div>
+							<div class="pf-metric">
+								<span class="pf-metric__val">{item.tags.length}</span>
+								<span class="pf-metric__label">технологий</span>
+							</div>
+							<div class="pf-metric">
+								<span class="pf-metric__val">{item.year}</span>
+								<span class="pf-metric__label">год</span>
+							</div>
+						</div>
+					</article>
+				) : (
+					<!-- Side cards (compact right) -->
+					<article
+						class:list={['pf-card pf-card--side', { 'pf-card--placeholder': isPlc }]}
+						data-pf-card
+						data-category={item.category}
+						data-hue={item.hue}
+					>
+						<div class="pf-card__head">
+							<span class="pf-card__num">{num}</span>
+							<span class="pf-card__year">{item.year}</span>
+						</div>
+
+						<div class="pf-side__body">
+							<div class="pf-side__copy">
+								<h3 class="pf-side__title">{item.title}</h3>
+								<p class="pf-side__cat">{item.category}</p>
+								{!isPlc && <p class="pf-side__desc">{item.description}</p>}
+								{isPlc && <p class="pf-side__desc pf-side__desc--placeholder">этот слот ждёт ваш проект</p>}
+								<a href={isPlc ? '#contact' : item.caseUrl} class="pf-side__cta">
+									{isPlc ? 'обсудить' : 'смотреть проект'}
+									<svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+										<path d="M1 9L9 1M9 1H3.5M9 1V6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+									</svg>
+								</a>
+							</div>
+							<div class="pf-side__visual">
+								{item.preview && !isPlc ? (
+									<img
+										class="pf-side__img"
+										src={item.preview.originalUrl}
+										srcset={buildSrcSet(item.preview)}
+										sizes="(max-width: 767px) 45vw, 18vw"
+										width={item.preview.width}
+										height={item.preview.height}
+										alt={item.preview.alt || item.title}
+										loading="lazy"
+										decoding="async"
+									/>
+								) : (
+									<div class="pf-side__img-slot">
+										<span class="pf-side__slot-badge">
+											{isPlc ? '?' : '—'}
+										</span>
+									</div>
+								)}
+							</div>
+						</div>
+					</article>
+				);
+			})}
+		</div>
+
+		<!-- ── Bottom bar ──────────────────────────────────── -->
+		<div class="pf-bottom pf-reveal">
+			<div class="pf-bottom__left">
+				<span class="pf-bottom__dot" aria-hidden="true"></span>
+				<span class="pf-bottom__prompt">хотите похожий проект?</span>
+			</div>
+			<a href="#contact" class="pf-bottom__cta" data-hover-fill data-label="обсудить проект">
+				обсудить проект
+				<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+					<path d="M1 13L13 1M13 1H5M13 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+				</svg>
+			</a>
+			<div class="pf-bottom__pager" data-pf-pager>
+				<span class="pf-pager__current" data-pf-page-cur>01</span>
+				<span class="pf-pager__sep">—</span>
+				<span class="pf-pager__total" data-pf-page-total>01</span>
+				<button type="button" class="pf-pager__btn" data-pf-prev aria-label="назад">
+					<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+				</button>
+				<button type="button" class="pf-pager__btn" data-pf-next aria-label="вперёд">
+					<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+				</button>
+			</div>
+		</div>
+
+	</div>
+</section>
+
+<style>
+/* ══════════════════════════════════════════════════════
+   Portfolio Editorial Grid
+   ══════════════════════════════════════════════════════ */
+
+.pf-section {
+	padding: clamp(2rem, 5vw, 4rem) 0;
+	overflow: hidden;
+}
+
+/* ── Header ─────────────────────────────────────────── */
+.pf-head {
+	display: flex;
+	flex-direction: column;
+	gap: clamp(0.4rem, 1vw, 0.75rem);
+}
+
+.pf-head__mark {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.pf-title {
+	margin: 0;
+	font-size: clamp(4rem, 9vw, 7.5rem);
+	font-weight: 300;
+	line-height: 0.85;
+	color: var(--color-text);
+	letter-spacing: -0.02em;
+	overflow-wrap: break-word;
+	word-break: break-word;
+}
+
+.pf-subtitle {
+	margin: 0;
+	font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+	line-height: 1.3;
+	color: var(--color-text-muted);
+	font-weight: 300;
+	max-width: 38ch;
+}
+
+/* ── Divider ────────────────────────────────────────── */
+.pf-divider {
+	height: 1px;
+	background: var(--divider-subtle);
+	margin: clamp(1rem, 2.5vw, 2rem) 0;
+}
+
+/* ── Filters ────────────────────────────────────────── */
+.pf-filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-bottom: clamp(1.25rem, 3vw, 2rem);
+}
+
+.pf-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0.35rem 0.85rem;
+	border-radius: 5px;
+	border: var(--chip-border);
+	background: var(--chip-bg);
+	color: var(--color-text-muted);
+	font-family: inherit;
+	font-size: clamp(0.85rem, 1.3vw, 1rem);
+	cursor: pointer;
+	transition: color 200ms ease, border-color 200ms ease, background-color 200ms ease;
+	text-transform: inherit;
+	letter-spacing: inherit;
+}
+
+.pf-chip:hover {
+	color: var(--color-text);
+	border-color: rgba(255, 215, 0, 0.45);
+}
+
+.pf-chip.is-active {
+	color: var(--color-accent);
+	border-color: var(--color-accent);
+	background: rgba(255, 215, 0, 0.10);
+}
+
+.pf-chip__dot {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--color-accent);
+	box-shadow: 0 0 8px var(--accent-glow-soft);
+	display: none;
+}
+
+.pf-chip.is-active .pf-chip__dot {
+	display: block;
+}
+
+/* ── Grid ───────────────────────────────────────────── */
+.pf-grid {
+	display: grid;
+	grid-template-columns: 57fr 43fr;
+	grid-template-rows: 1fr 1fr;
+	gap: var(--section-gap);
+	min-height: 0;
+	min-width: 0;
+}
+
+/* ── Featured card ──────────────────────────────────── */
+.pf-card--featured {
+	grid-row: 1 / -1;
+	display: flex;
+	flex-direction: column;
+	background: var(--card-bg);
+	border: var(--card-border);
+	border-radius: var(--radius-card);
+	box-shadow: var(--card-shadow);
+	padding: clamp(1rem, 2.2vw, 1.75rem);
+	gap: clamp(0.75rem, 1.5vw, 1.25rem);
+	transition: box-shadow 320ms ease, border-color 320ms ease;
+	min-width: 0;
+}
+
+.pf-card--featured:hover {
+	box-shadow: var(--card-shadow), 0 0 40px rgba(255, 215, 0, 0.06);
+	border-color: rgba(255, 215, 0, 0.18);
+}
+
+.pf-card__head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.pf-card__head-left {
+	display: flex;
+	align-items: center;
+	gap: 0.65rem;
+}
+
+.pf-card__num {
+	font-size: clamp(0.85rem, 1.2vw, 1rem);
+	color: var(--color-accent);
+	opacity: 0.7;
+}
+
+.pf-card__badge {
+	padding: 0.15rem 0.55rem;
+	border-radius: 5px;
+	border: 1px solid color-mix(in srgb, var(--color-accent) 38%, transparent);
+	background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+	font-size: clamp(0.68rem, 1vw, 0.78rem);
+	letter-spacing: 0.12em;
+	color: var(--color-accent);
+	text-transform: uppercase;
+}
+
+.pf-card__year {
+	font-size: clamp(0.85rem, 1.2vw, 1rem);
+	color: var(--color-text-muted);
+	opacity: 0.6;
+}
+
+.pf-card__body {
+	flex: 1;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: clamp(0.75rem, 1.5vw, 1.25rem);
+	min-height: 0;
+	min-width: 0;
+}
+
+.pf-card__copy {
+	display: flex;
+	flex-direction: column;
+	gap: clamp(0.5rem, 1vw, 0.8rem);
+	justify-content: center;
+	min-width: 0;
+}
+
+.pf-card__title {
+	margin: 0;
+	font-size: clamp(2rem, 4vw, 3.2rem);
+	font-weight: 600;
+	line-height: 0.9;
+	color: var(--color-text);
+	overflow-wrap: break-word;
+	word-break: break-word;
+}
+
+.pf-card__cat {
+	margin: 0;
+	font-size: clamp(0.88rem, 1.4vw, 1.05rem);
+	color: var(--color-accent);
+	font-weight: 400;
+	overflow-wrap: break-word;
+	word-break: break-word;
+}
+
+.pf-card__desc {
+	margin: 0;
+	font-size: clamp(0.92rem, 1.4vw, 1.08rem);
+	line-height: 1.35;
+	color: var(--color-text-muted);
+	font-weight: 300;
+}
+
+.pf-card__cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	margin-top: auto;
+	padding-top: clamp(0.4rem, 1vw, 0.65rem);
+	font-size: clamp(0.92rem, 1.4vw, 1.05rem);
+	color: var(--color-text);
+	transition: color 180ms ease;
+}
+
+.pf-card__cta:hover {
+	color: var(--color-accent);
+}
+
+.pf-card__cta svg {
+	transition: transform 240ms ease;
+}
+
+.pf-card__cta:hover svg {
+	transform: translate(2px, -2px);
+}
+
+.pf-card__visual {
+	position: relative;
+	border-radius: calc(var(--radius-card) * 0.55);
+	overflow: hidden;
+	background: var(--divider-subtle);
+}
+
+.pf-card__img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+	transition: transform 480ms cubic-bezier(0.22, 0.8, 0.24, 1);
+}
+
+.pf-card--featured:hover .pf-card__img {
+	transform: scale(1.03);
+}
+
+.pf-card__img-placeholder {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--color-text-muted);
+	font-size: 0.9rem;
+}
+
+/* ── Metrics row ────────────────────────────────────── */
+.pf-card__metrics {
+	display: flex;
+	gap: clamp(1rem, 2.5vw, 2rem);
+	padding-top: clamp(0.5rem, 1vw, 0.75rem);
+	border-top: 1px solid var(--divider-accent);
+}
+
+.pf-metric {
+	display: flex;
+	flex-direction: column;
+	gap: 0.1rem;
+}
+
+.pf-metric__val {
+	font-size: clamp(1.15rem, 2vw, 1.6rem);
+	font-weight: 400;
+	color: var(--color-text);
+	line-height: 1;
+}
+
+.pf-metric__label {
+	font-size: clamp(0.72rem, 1.1vw, 0.85rem);
+	color: var(--color-text-muted);
+	line-height: 1;
+}
+
+/* ── Side cards ─────────────────────────────────────── */
+.pf-card--side {
+	display: flex;
+	flex-direction: column;
+	background: var(--card-bg);
+	border: var(--card-border);
+	border-radius: var(--radius-card);
+	box-shadow: var(--card-shadow);
+	padding: clamp(0.85rem, 1.8vw, 1.35rem);
+	gap: clamp(0.5rem, 1vw, 0.75rem);
+	transition: box-shadow 320ms ease, border-color 320ms ease;
+	min-width: 0;
+}
+
+.pf-card--side:hover {
+	box-shadow: var(--card-shadow), 0 0 30px rgba(255, 215, 0, 0.05);
+	border-color: rgba(255, 215, 0, 0.14);
+}
+
+.pf-side__body {
+	flex: 1;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: clamp(0.5rem, 1.2vw, 1rem);
+	min-height: 0;
+	min-width: 0;
+}
+
+.pf-side__copy {
+	display: flex;
+	flex-direction: column;
+	gap: clamp(0.25rem, 0.6vw, 0.45rem);
+	min-width: 0;
+}
+
+.pf-side__title {
+	margin: 0;
+	font-size: clamp(1.2rem, 2.4vw, 1.75rem);
+	font-weight: 600;
+	line-height: 0.92;
+	color: var(--color-text);
+	overflow-wrap: break-word;
+	word-break: break-word;
+}
+
+.pf-side__cat {
+	margin: 0;
+	font-size: clamp(0.78rem, 1.15vw, 0.9rem);
+	color: var(--color-accent);
+	font-weight: 400;
+}
+
+.pf-side__desc {
+	margin: 0;
+	font-size: clamp(0.82rem, 1.2vw, 0.92rem);
+	line-height: 1.3;
+	color: var(--color-text-muted);
+	font-weight: 300;
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.pf-side__desc--placeholder {
+	font-style: italic;
+	color: color-mix(in srgb, var(--color-accent) 60%, var(--color-text-muted));
+}
+
+.pf-side__cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	margin-top: auto;
+	font-size: clamp(0.82rem, 1.2vw, 0.92rem);
+	color: var(--color-text-muted);
+	transition: color 180ms ease;
+}
+
+.pf-side__cta:hover {
+	color: var(--color-accent);
+}
+
+.pf-side__cta svg {
+	transition: transform 240ms ease;
+}
+
+.pf-side__cta:hover svg {
+	transform: translate(1px, -1px);
+}
+
+.pf-side__visual {
+	position: relative;
+	border-radius: calc(var(--radius-card) * 0.45);
+	overflow: hidden;
+	background: var(--divider-subtle);
+}
+
+.pf-side__img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+	transition: transform 480ms cubic-bezier(0.22, 0.8, 0.24, 1);
+}
+
+.pf-card--side:hover .pf-side__img {
+	transform: scale(1.04);
+}
+
+.pf-side__img-slot {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.pf-side__slot-badge {
+	color: var(--color-text-muted);
+	font-size: clamp(1.2rem, 2vw, 1.6rem);
+	font-weight: 300;
+	opacity: 0.45;
+}
+
+/* ── Placeholder card variant ───────────────────────── */
+.pf-card--placeholder {
+	border-style: dashed;
+}
+
+/* ── Bottom bar ─────────────────────────────────────── */
+.pf-bottom {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-top: clamp(1.25rem, 3vw, 2rem);
+	padding-top: clamp(0.75rem, 1.5vw, 1rem);
+	border-top: 1px solid var(--divider-subtle);
+	flex-wrap: wrap;
+}
+
+.pf-bottom__left {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.pf-bottom__dot {
+	width: 8px;
+	height: 8px;
+	background: var(--color-accent);
+	box-shadow: 0 0 10px var(--accent-glow-soft);
+}
+
+.pf-bottom__prompt {
+	font-size: clamp(0.88rem, 1.4vw, 1.05rem);
+	color: var(--color-text-muted);
+}
+
+.pf-bottom__cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	font-size: clamp(1.3rem, 2.6vw, 1.9rem);
+	font-weight: 300;
+	color: var(--color-text);
+	transition: color 180ms ease;
+}
+
+.pf-bottom__cta:hover {
+	color: var(--color-accent);
+}
+
+.pf-bottom__cta svg {
+	transition: transform 240ms ease;
+}
+
+.pf-bottom__cta:hover svg {
+	transform: translate(2px, -2px);
+}
+
+.pf-bottom__pager {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-family: 'JetBrains Mono', ui-monospace, monospace;
+	font-size: 0.82rem;
+	color: var(--color-text-muted);
+	letter-spacing: 0.06em;
+	text-transform: none;
+}
+
+.pf-pager__sep {
+	opacity: 0.4;
+	margin: 0 0.15rem;
+}
+
+.pf-pager__btn {
+	width: 32px;
+	height: 32px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	border: 1px solid var(--divider-subtle);
+	border-radius: 6px;
+	background: transparent;
+	color: var(--color-text-muted);
+	cursor: pointer;
+	transition: color 180ms ease, border-color 180ms ease;
+}
+
+.pf-pager__btn:hover {
+	color: var(--color-accent);
+	border-color: rgba(255, 215, 0, 0.35);
+}
+
+/* ── Hidden by filter ───────────────────────────────── */
+.pf-card--hidden {
+	display: none;
+}
+
+/* ── Tablet ─────────────────────────────────────────── */
+
+/* ── Mobile ─────────────────────────────────────────── */
+@media (max-width: 767px) {
+	.pf-title {
+		font-size: clamp(3rem, 12vw, 4.5rem);
+	}
+
+	.pf-subtitle br {
+		display: none;
+	}
+
+	.pf-filters {
+		flex-wrap: wrap;
+	}
+
+	.pf-chip {
+		padding: 0.4rem 0.9rem;
+	}
+
+	.pf-grid {
+		grid-template-columns: 1fr;
+		grid-template-rows: auto;
+		gap: clamp(0.75rem, 2vw, 1rem);
+	}
+
+	.pf-card--featured {
+		grid-row: auto;
+		padding: clamp(0.85rem, 3vw, 1.25rem);
+	}
+
+	.pf-card__body {
+		grid-template-columns: 1fr;
+		gap: clamp(0.65rem, 2vw, 1rem);
+	}
+
+	.pf-card__visual {
+		aspect-ratio: 16 / 10;
+		order: -1;
+	}
+
+	.pf-card__title {
+		font-size: clamp(1.8rem, 7vw, 2.5rem);
+	}
+
+	.pf-card__metrics {
+		flex-wrap: wrap;
+		gap: clamp(0.75rem, 3vw, 1.25rem);
+	}
+
+	.pf-card--side {
+		padding: clamp(0.75rem, 2.5vw, 1rem);
+	}
+
+	.pf-side__body {
+		grid-template-columns: 1fr 40%;
+		gap: clamp(0.5rem, 2vw, 0.75rem);
+	}
+
+	.pf-side__visual {
+		aspect-ratio: 1;
+	}
+
+	.pf-side__title {
+		font-size: clamp(1.15rem, 4.5vw, 1.5rem);
+	}
+
+	.pf-side__desc {
+		-webkit-line-clamp: 2;
+	}
+
+	.pf-bottom {
+		flex-direction: column;
+		align-items: stretch;
+		gap: clamp(0.75rem, 2vw, 1rem);
+	}
+
+	.pf-bottom__left {
+		justify-content: flex-start;
+	}
+
+	.pf-bottom__cta {
+		font-size: clamp(1.2rem, 5vw, 1.6rem);
+		justify-content: center;
+		padding: 0.6rem 0;
+		border: 1px solid var(--divider-subtle);
+		border-radius: var(--radius-card);
+		white-space: nowrap;
+	}
+
+	.pf-bottom__pager {
+		justify-content: center;
+	}
+
+	.pf-pager__btn {
+		width: 36px;
+		height: 36px;
+	}
+}
+
+/* ── Small mobile ───────────────────────────────────── */
+@media (max-width: 400px) {
+	.pf-title {
+		font-size: clamp(2.6rem, 11vw, 3.5rem);
+	}
+
+	.pf-side__body {
+		grid-template-columns: 1fr;
+	}
+
+	.pf-side__visual {
+		aspect-ratio: 16 / 10;
+	}
+}
+
+/* ── Reduced motion ─────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+	.pf-card--featured,
+	.pf-card--side {
+		transition: none;
+	}
+
+	.pf-card__img,
+	.pf-side__img {
+		transition: none;
+	}
+}
+</style>
+
+<script>
+import { getGsap, ScrollTrigger } from '../../scripts/gsap';
+
+const gsap = getGsap();
+const section = document.querySelector<HTMLElement>('#portfolio');
+
+if (section) {
+	// ── Reveal animation ──────────────────────────────────
+	const reveals = gsap.utils.toArray<HTMLElement>('.pf-reveal', section);
+	const cards = gsap.utils.toArray<HTMLElement>('[data-pf-card]', section);
+
+	gsap.set(reveals, { opacity: 0, y: 28 });
+	gsap.set(cards, { opacity: 0, y: 36 });
+
+	ScrollTrigger.create({
+		trigger: section,
+		start: 'top 80%',
+		once: true,
+		onEnter: () => {
+			gsap.to(reveals, {
+				opacity: 1,
+				y: 0,
+				duration: 0.7,
+				stagger: 0.09,
+				ease: 'power3.out',
+			});
+
+			gsap.to(cards, {
+				opacity: 1,
+				y: 0,
+				duration: 0.8,
+				stagger: 0.14,
+				delay: 0.3,
+				ease: 'power3.out',
+			});
+		},
+	});
+
+	// ── 3D tilt on cards ──────────────────────────────────
+	cards.forEach((card) => {
+		gsap.set(card, { transformPerspective: 900 });
+
+		card.addEventListener('mousemove', (e) => {
+			const rect = card.getBoundingClientRect();
+			const x = (e.clientX - rect.left - rect.width / 2) / rect.width;
+			const y = (e.clientY - rect.top - rect.height / 2) / rect.height;
+			gsap.to(card, {
+				rotateY: x * 4,
+				rotateX: -y * 4,
+				duration: 0.35,
+				ease: 'power2.out',
+			});
+		});
+
+		card.addEventListener('mouseleave', () => {
+			gsap.to(card, {
+				rotateX: 0,
+				rotateY: 0,
+				duration: 0.65,
+				ease: 'power3.out',
+			});
+		});
+	});
+
+	// ── Filter chips ──────────────────────────────────────
+	const chips = section.querySelectorAll<HTMLButtonElement>('.pf-chip');
+	const grid = section.querySelector<HTMLElement>('[data-pf-grid]');
+
+	chips.forEach((chip) => {
+		chip.addEventListener('click', () => {
+			chips.forEach((c) => c.classList.remove('is-active'));
+			chip.classList.add('is-active');
+
+			const filter = chip.dataset.filter;
+
+			cards.forEach((card) => {
+				const cat = card.dataset.category;
+				const show = filter === 'all' || cat === filter;
+				card.classList.toggle('pf-card--hidden', !show);
+			});
+
+			updatePager();
+		});
+	});
+
+	// ── Pagination (pages of 3) ───────────────────────────
+	const PER_PAGE = 3;
+	let currentPage = 0;
+
+	const getVisibleCards = () => cards.filter((c) => !c.classList.contains('pf-card--hidden'));
+
+	const pageCur = section.querySelector<HTMLElement>('[data-pf-page-cur]');
+	const pageTotal = section.querySelector<HTMLElement>('[data-pf-page-total]');
+	const prevBtn = section.querySelector<HTMLElement>('[data-pf-prev]');
+	const nextBtn = section.querySelector<HTMLElement>('[data-pf-next]');
+
+	const updatePager = () => {
+		const visible = getVisibleCards();
+		const total = Math.max(1, Math.ceil(visible.length / PER_PAGE));
+		currentPage = Math.min(currentPage, total - 1);
+
+		if (pageCur) pageCur.textContent = String(currentPage + 1).padStart(2, '0');
+		if (pageTotal) pageTotal.textContent = String(total).padStart(2, '0');
+
+		visible.forEach((card, i) => {
+			const inPage = i >= currentPage * PER_PAGE && i < (currentPage + 1) * PER_PAGE;
+			card.style.display = inPage ? '' : 'none';
+		});
+
+		// re-layout grid: first visible card = featured
+		const pageCards = visible.slice(currentPage * PER_PAGE, (currentPage + 1) * PER_PAGE);
+		pageCards.forEach((card, i) => {
+			if (i === 0) {
+				card.classList.add('pf-card--featured');
+				card.classList.remove('pf-card--side');
+				card.style.gridRow = '1 / -1';
+			} else {
+				card.classList.remove('pf-card--featured');
+				card.classList.add('pf-card--side');
+				card.style.gridRow = '';
+			}
+		});
+	};
+
+	prevBtn?.addEventListener('click', () => {
+		const visible = getVisibleCards();
+		const total = Math.max(1, Math.ceil(visible.length / PER_PAGE));
+		currentPage = (currentPage - 1 + total) % total;
+		updatePager();
+	});
+
+	nextBtn?.addEventListener('click', () => {
+		const visible = getVisibleCards();
+		const total = Math.max(1, Math.ceil(visible.length / PER_PAGE));
+		currentPage = (currentPage + 1) % total;
+		updatePager();
+	});
+
+	updatePager();
+
+	// ── CTA fill effect ───────────────────────────────────
+	section.querySelectorAll<HTMLElement>('[data-hover-fill]').forEach((link) => {
+		link.addEventListener('pointerenter', (e) => {
+			const rect = link.getBoundingClientRect();
+			const lx = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+			const ly = Math.max(0, Math.min(rect.height, e.clientY - rect.top));
+			const maxR = Math.max(
+				...[
+					[0, 0],
+					[rect.width, 0],
+					[0, rect.height],
+					[rect.width, rect.height],
+				].map(([cx, cy]) => Math.hypot((cx as number) - lx, (cy as number) - ly)),
+			);
+			link.style.setProperty('--hero-fill-x', `${(lx / rect.width) * 100}%`);
+			link.style.setProperty('--hero-fill-y', `${(ly / rect.height) * 100}%`);
+			link.style.setProperty('--hero-fill-target', `${Math.ceil(maxR + 8)}px`);
+			link.classList.add('is-hovered');
+		});
+		link.addEventListener('pointerleave', () => link.classList.remove('is-hovered'));
+	});
+}
+</script>

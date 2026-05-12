@@ -1,0 +1,496 @@
+---
+const items = [
+	{
+		file: 'faq/process.md',
+		line: '01',
+		q: 'как устроен процесс работы над проектом?',
+		a: 'процесс делится на четыре этапа: брифинг, дизайн, разработка, запуск. на каждом этапе есть свои артефакты и контрольные точки. подробности в блоке "процесс".',
+		tags: 'процесс этапы брифинг разработка запуск',
+	},
+	{
+		file: 'faq/pricing.md',
+		line: '01',
+		q: 'сколько стоит сайт?',
+		a: 'цена считается по объёму задач и сложности. смету фиксирую после брифа. ориентиры: лендинг от 150к, корпоративный сайт от 300к, кастомная платформа — индивидуально.',
+		tags: 'цена стоимость бюджет смета деньги',
+	},
+	{
+		file: 'faq/timeline.md',
+		line: '01',
+		q: 'какие сроки на типовой проект?',
+		a: 'лендинг — 2–3 недели, корпоративный сайт — 4–8 недель, кастомная платформа — от двух месяцев. точный срок согласовываем в договоре с привязкой к этапам.',
+		tags: 'сроки время недели дедлайн',
+	},
+	{
+		file: 'faq/revisions.md',
+		line: '01',
+		q: 'сколько правок входит в стоимость?',
+		a: 'на этапе дизайна — две итерации правок на каждый макет. после сдачи в разработку крупные изменения идут отдельной оценкой. мелкие правки — в рамках гарантии.',
+		tags: 'правки итерации согласования изменения',
+	},
+	{
+		file: 'faq/stack.md',
+		line: '01',
+		q: 'на каком стеке вы работаете?',
+		a: 'дизайн — figma. фронтенд — astro, typescript, tailwind, gsap. бэкенд — node.js, php. базы — postgres, mysql. деплой — netlify, vercel, vps.',
+		tags: 'стек технологии astro typescript react tailwind',
+	},
+	{
+		file: 'faq/support.md',
+		line: '01',
+		q: 'что входит в поддержку после запуска?',
+		a: 'три месяца гарантии: фикс багов и мелкие правки бесплатно. дальше — отдельный договор на обновления, аналитику и seo-работы.',
+		tags: 'поддержка гарантия обновления seo аналитика',
+	},
+];
+---
+
+<section id="faq" class="section-anchor faq-section">
+	<div class="faq-header">
+		<span class="faq-kicker section-mark">faq</span>
+	</div>
+
+	<article class="grep" data-grep>
+		<div class="grep-bar">
+			<span class="grep-bar__prompt">$</span>
+			<span class="grep-bar__cmd">grep -ri</span>
+			<span class="grep-bar__quote">"</span>
+			<input
+				class="grep-bar__input"
+				data-grep-input
+				type="text"
+				placeholder="введите запрос или нажмите /"
+				autocomplete="off"
+				spellcheck="false"
+				aria-label="поиск по faq"
+			/>
+			<button
+				type="button"
+				class="grep-bar__clear"
+				data-grep-clear
+				aria-label="очистить запрос"
+				hidden
+			>×</button>
+			<span class="grep-bar__quote">"</span>
+			<span class="grep-bar__path">faq/</span>
+			<span class="grep-bar__caret" aria-hidden="true"></span>
+		</div>
+
+		<div class="grep-results" data-grep-results aria-live="polite">
+			{items.map((it, i) => (
+				<details
+					class="grep-match"
+					data-grep-match
+					data-q={it.q.toLowerCase()}
+					data-a={it.a.toLowerCase()}
+					data-tags={it.tags.toLowerCase()}
+					open={i === 0 ? true : undefined}
+				>
+					<summary class="grep-line">
+						<span class="grep-line__path">{it.file}</span>
+						<span class="grep-line__sep">:</span>
+						<span class="grep-line__lno">{it.line}</span>
+						<span class="grep-line__sep">:</span>
+						<span class="grep-line__text" data-grep-text>{it.q}</span>
+					</summary>
+					<div class="grep-body">
+						<p class="grep-answer" data-grep-answer>{it.a}</p>
+					</div>
+				</details>
+			))}
+
+			<p class="grep-empty" data-grep-empty hidden>
+				no matches found — попробуйте: <code>процесс</code>, <code>сроки</code>, <code>стек</code>.
+			</p>
+		</div>
+
+		<footer class="grep-status">
+			<span class="grep-status__group">
+				<span data-grep-count>{items.length}</span> matches in
+				<span data-grep-files>{items.length}</span> files
+			</span>
+			<span class="grep-status__group grep-status__group--right">
+				<span class="grep-status__ms" data-grep-ms>0ms</span>
+			</span>
+		</footer>
+	</article>
+</section>
+
+<style>
+	.faq-section {
+		display: flex;
+		flex-direction: column;
+		gap: clamp(1rem, 2vw, 1.5rem);
+	}
+
+		.grep {
+			--mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+			--grep-bg: var(--terminal-bg);
+			--grep-bg-2: var(--terminal-bg-2);
+			--grep-border: var(--terminal-border);
+			--grep-divider: var(--terminal-divider);
+			--grep-text: var(--terminal-text);
+			--grep-muted: var(--terminal-muted);
+			--grep-prompt: var(--terminal-prompt);
+			--grep-accent: var(--color-accent);
+
+		position: relative;
+		border: 1px solid var(--grep-border);
+		border-radius: 16px;
+			background: linear-gradient(180deg, var(--grep-bg) 0%, var(--grep-bg-2) 100%);
+			overflow: hidden;
+			box-shadow:
+				inset 0 1px 0 var(--terminal-inset-highlight),
+				var(--terminal-shadow);
+		font-family: var(--mono);
+		color: var(--grep-text);
+		text-transform: none;
+		letter-spacing: 0;
+	}
+
+	.grep-bar {
+		display: flex;
+		align-items: center;
+		gap: 0.55ch;
+		padding: 0.85rem 1rem;
+		border-bottom: 1px solid var(--grep-divider);
+			background: var(--terminal-chrome-bg);
+		font-size: clamp(0.9rem, 1.4vw, 1rem);
+	}
+
+	.grep-bar__prompt {
+		color: var(--grep-prompt);
+	}
+
+	.grep-bar__cmd {
+		color: var(--grep-text);
+	}
+
+	.grep-bar__quote,
+	.grep-bar__path {
+		color: var(--grep-muted);
+	}
+
+	.grep-bar__input {
+		flex: 1;
+		min-width: 0;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		color: var(--grep-accent);
+		font: inherit;
+		outline: none;
+		caret-color: var(--grep-accent);
+	}
+
+		.grep-bar__input::placeholder {
+			color: color-mix(in srgb, var(--grep-muted) 72%, transparent);
+	}
+
+	.grep-bar__clear {
+		flex: 0 0 auto;
+		width: 20px;
+		height: 20px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
+		margin-left: 0.2rem;
+			border: 1px solid var(--grep-divider);
+			border-radius: 999px;
+			background: var(--terminal-answer-bg);
+		color: var(--grep-muted);
+		font: inherit;
+		font-size: 0.85rem;
+		line-height: 1;
+		cursor: pointer;
+		transition:
+			background-color 160ms ease,
+			border-color 160ms ease,
+			color 160ms ease;
+	}
+
+	.grep-bar__clear:hover,
+	.grep-bar__clear:focus-visible {
+			background: var(--terminal-active-bg);
+			border-color: var(--focus-ring);
+		color: var(--grep-accent);
+		outline: none;
+	}
+
+	.grep-bar__caret {
+		width: 0.55ch;
+		height: 1.05em;
+		background: var(--grep-accent);
+		opacity: 0.8;
+		animation: grep-blink 1s steps(1, end) infinite;
+	}
+
+	.grep-bar:focus-within .grep-bar__caret {
+		display: none;
+	}
+
+	@keyframes grep-blink {
+		0%, 50% { opacity: 0.8; }
+		50.01%, 100% { opacity: 0; }
+	}
+
+	.grep-results {
+		padding: clamp(0.75rem, 1.6vw, 1.15rem) 1rem 0.5rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+	}
+
+	.grep-match {
+		border-left: 2px solid transparent;
+		padding-left: 0.6rem;
+		transition: border-color 180ms ease, background-color 180ms ease;
+	}
+
+		.grep-match:hover {
+			border-left-color: color-mix(in srgb, var(--grep-accent) 38%, transparent);
+		}
+
+	.grep-match[open] {
+			border-left-color: var(--grep-accent);
+			background: var(--terminal-active-bg);
+	}
+
+	.grep-line {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.1rem;
+		padding: 0.35rem 0;
+		font-size: clamp(0.88rem, 1.4vw, 0.98rem);
+		cursor: pointer;
+		list-style: none;
+	}
+
+	.grep-line::-webkit-details-marker,
+	.grep-line::marker {
+		display: none;
+		content: '';
+	}
+
+		.grep-line:focus-visible {
+			outline: 1px solid var(--focus-ring);
+		outline-offset: 2px;
+	}
+
+	.grep-line__path {
+		color: var(--grep-prompt);
+	}
+
+	.grep-line__sep {
+		color: var(--grep-muted);
+	}
+
+	.grep-line__lno {
+		color: var(--grep-accent);
+	}
+
+	.grep-line__text {
+		margin-left: 0.55ch;
+		color: var(--grep-text);
+		flex: 1 1 auto;
+		min-width: 0;
+	}
+
+		.grep-line__text :global(mark) {
+			background: var(--terminal-highlight-bg);
+		color: var(--grep-accent);
+		padding: 0 1px;
+		border-radius: 2px;
+	}
+
+	.grep-body {
+		padding: 0.2rem 0 0.6rem 0;
+	}
+
+	.grep-answer {
+		margin: 0.2rem 0 0.3rem 2.25ch;
+		padding: 0.55rem 0.7rem;
+			border-left: 1px dashed color-mix(in srgb, var(--grep-accent) 38%, transparent);
+			background: var(--terminal-answer-bg);
+		font-size: clamp(0.9rem, 1.45vw, 1rem);
+		line-height: 1.55;
+		color: var(--grep-text);
+		max-width: 72ch;
+	}
+
+		.grep-answer :global(mark) {
+			background: var(--terminal-highlight-bg);
+		color: var(--grep-accent);
+		padding: 0 1px;
+		border-radius: 2px;
+	}
+
+	.grep-empty {
+		margin: 0.4rem 0;
+		padding: 0.55rem 0.7rem;
+		color: var(--grep-muted);
+		font-size: 0.92rem;
+	}
+
+	.grep-empty code {
+		padding: 1px 5px;
+		margin: 0 1px;
+			border: 1px solid var(--grep-divider);
+			border-radius: 3px;
+			background: var(--terminal-answer-bg);
+		color: var(--grep-accent);
+		font-family: inherit;
+		font-size: 0.88em;
+	}
+
+	.grep-status {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 0.55rem 1rem;
+			background: var(--terminal-status-bg);
+		border-top: 1px solid var(--grep-divider);
+		font-size: 0.78rem;
+		color: var(--grep-muted);
+	}
+
+	.grep-status__ms {
+		color: var(--grep-accent);
+		opacity: 0.85;
+	}
+
+	@media (max-width: 640px) {
+		.grep-bar,
+		.grep-status {
+			padding-inline: 0.75rem;
+		}
+
+		.grep-results {
+			padding-inline: 0.75rem;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.grep-bar__caret {
+			animation: none;
+		}
+
+		.grep-match {
+			transition: none;
+		}
+	}
+</style>
+
+<script>
+	const root = document.querySelector<HTMLElement>('[data-grep]');
+	if (root) {
+		const input = root.querySelector<HTMLInputElement>('[data-grep-input]');
+		const clearBtn = root.querySelector<HTMLButtonElement>('[data-grep-clear]');
+		const matches = Array.from(root.querySelectorAll<HTMLElement>('[data-grep-match]'));
+		const empty = root.querySelector<HTMLElement>('[data-grep-empty]');
+		const countEl = root.querySelector<HTMLElement>('[data-grep-count]');
+		const filesEl = root.querySelector<HTMLElement>('[data-grep-files]');
+		const msEl = root.querySelector<HTMLElement>('[data-grep-ms]');
+
+		type Original = { q: string; a: string };
+		const originals = new Map<HTMLElement, Original>();
+		matches.forEach((m) => {
+			const qEl = m.querySelector<HTMLElement>('[data-grep-text]');
+			const aEl = m.querySelector<HTMLElement>('[data-grep-answer]');
+			originals.set(m, {
+				q: qEl?.textContent ?? '',
+				a: aEl?.textContent ?? '',
+			});
+		});
+
+		const escapeHtml = (s: string) =>
+			s.replace(/[&<>"']/g, (ch) =>
+				({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]!,
+			);
+
+		const highlight = (source: string, query: string) => {
+			if (!query) return escapeHtml(source);
+			const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+			const re = new RegExp(`(${escaped})`, 'gi');
+			return escapeHtml(source).replace(re, '<mark>$1</mark>');
+		};
+
+		const update = () => {
+			const t0 = performance.now();
+			const raw = (input?.value ?? '').trim().toLowerCase();
+			let visible = 0;
+			const visibleList: HTMLDetailsElement[] = [];
+
+			matches.forEach((m) => {
+				const hay = `${m.dataset.q ?? ''} ${m.dataset.a ?? ''} ${m.dataset.tags ?? ''}`;
+				const hit = !raw || hay.includes(raw);
+				m.hidden = !hit;
+				if (hit) {
+					visible += 1;
+					visibleList.push(m as HTMLDetailsElement);
+				}
+
+				const orig = originals.get(m);
+				if (!orig) return;
+				const qEl = m.querySelector<HTMLElement>('[data-grep-text]');
+				const aEl = m.querySelector<HTMLElement>('[data-grep-answer]');
+				if (qEl) qEl.innerHTML = highlight(orig.q, raw);
+				if (aEl) aEl.innerHTML = highlight(orig.a, raw);
+			});
+
+			if (raw && visibleList.length && !visibleList.some((m) => m.open)) {
+				visibleList[0].open = true;
+			}
+
+			if (empty) empty.hidden = visible !== 0;
+			if (countEl) countEl.textContent = String(visible);
+			if (filesEl) filesEl.textContent = String(visible);
+			if (clearBtn) clearBtn.hidden = raw.length === 0;
+
+			const dt = Math.max(1, Math.round(performance.now() - t0));
+			if (msEl) msEl.textContent = `${dt}ms`;
+		};
+
+		input?.addEventListener('input', update);
+
+		clearBtn?.addEventListener('click', () => {
+			if (!input) return;
+			input.value = '';
+			input.focus();
+			update();
+		});
+
+		const isEditable = (el: Element | null) => {
+			if (!el) return false;
+			const tag = el.tagName;
+			return (
+				tag === 'INPUT' ||
+				tag === 'TEXTAREA' ||
+				tag === 'SELECT' ||
+				(el as HTMLElement).isContentEditable
+			);
+		};
+
+		document.addEventListener('keydown', (event) => {
+			if (event.key !== '/' || event.metaKey || event.ctrlKey || event.altKey) return;
+			if (isEditable(document.activeElement)) return;
+			event.preventDefault();
+			input?.focus();
+		});
+
+		input?.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape') {
+				if (input.value) {
+					input.value = '';
+					update();
+				} else {
+					input.blur();
+				}
+			}
+		});
+
+		update();
+	}
+</script>

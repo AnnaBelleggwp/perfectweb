@@ -1,0 +1,264 @@
+{
+  "assets": {
+    "87f54a1a3ca64ac79a4210e8d66afd6c": {
+      "id": "87f54a1a3ca64ac79a4210e8d66afd6c",
+      "createdAt": "2026-04-20T10:56:13.777Z",
+      "originalName": "mervice.png",
+      "inputMimeType": "image/png",
+      "blurDataUrl": "data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAAAwAwCdASoYABgAPwFytFGrJqUiqAqpYCAJaQAAOob2L8gAAP7vn1Zd8/AAGMgAAAA=",
+      "files": [
+        {
+          "fileName": "original-2000w.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 31110,
+          "role": "original"
+        },
+        {
+          "fileName": "w2000.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 3582,
+          "role": "variant"
+        },
+        {
+          "fileName": "w2000.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 6778,
+          "role": "variant"
+        },
+        {
+          "fileName": "w2000.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 10028,
+          "role": "variant"
+        },
+        {
+          "fileName": "w2000.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 14964,
+          "role": "variant"
+        },
+        {
+          "fileName": "w2000.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 18226,
+          "role": "variant"
+        },
+        {
+          "fileName": "w2000.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 23926,
+          "role": "variant"
+        }
+      ]
+    },
+    "f5ec0079359142fea81485a58a82b5be": {
+      "id": "f5ec0079359142fea81485a58a82b5be",
+      "createdAt": "2026-04-20T10:59:53.187Z",
+      "originalName": "широкая.png",
+      "inputMimeType": "image/png",
+      "blurDataUrl": "data:image/webp;base64,UklGRkQAAABXRUJQVlA4IDgAAABQAwCdASoYAAwAPwFqrE8rJiQiMAgBYCAJaQAAW4FY4DExNAD+5b2YuMdIy/Z/ZxdOH6DAPaAAAA==",
+      "files": [
+        {
+          "fileName": "original-2560w.webp",
+          "width": 2560,
+          "height": 1280,
+          "format": "webp",
+          "byteSize": 20078,
+          "role": "original"
+        },
+        {
+          "fileName": "w2560.webp",
+          "width": 2560,
+          "height": 1280,
+          "format": "webp",
+          "byteSize": 3342,
+          "role": "variant"
+        },
+        {
+          "fileName": "w2560.webp",
+          "width": 2560,
+          "height": 1280,
+          "format": "webp",
+          "byteSize": 5156,
+          "role": "variant"
+        },
+        {
+          "fileName": "w2560.webp",
+          "width": 2560,
+          "height": 1280,
+          "format": "webp",
+          "byteSize": 6948,
+          "role": "variant"
+        },
+        {
+          "fileName": "w2560.webp",
+          "width": 2560,
+          "height": 1280,
+          "format": "webp",
+          "byteSize": 8976,
+          "role": "variant"
+        },
+        {
+          "fileName": "w2560.webp",
+          "width": 2560,
+          "height": 1280,
+          "format": "webp",
+          "byteSize": 10722,
+          "role": "variant"
+        },
+        {
+          "fileName": "w2560.webp",
+          "width": 2560,
+          "height": 1280,
+          "format": "webp",
+          "byteSize": 12858,
+          "role": "variant"
+        }
+      ]
+    },
+    "7a6cf3499bae4cb28aa49e4625e6f52f": {
+      "id": "7a6cf3499bae4cb28aa49e4625e6f52f",
+      "createdAt": "2026-04-20T11:00:45.953Z",
+      "originalName": "квадратмал.png",
+      "inputMimeType": "image/png",
+      "blurDataUrl": "data:image/webp;base64,UklGRkYAAABXRUJQVlA4IDoAAABQAwCdASoYABgAPwF4tFOrJyUiqAgBYCAJaQAALniDFh5C8AD+5fdm42IjoMwWBZZIXx/XzYLDAAAA",
+      "files": [
+        {
+          "fileName": "original-2000w.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 21336,
+          "role": "original"
+        },
+        {
+          "fileName": "w2000.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 4230,
+          "role": "variant"
+        },
+        {
+          "fileName": "w2000.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 6904,
+          "role": "variant"
+        },
+        {
+          "fileName": "w2000.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 9232,
+          "role": "variant"
+        },
+        {
+          "fileName": "w2000.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 12528,
+          "role": "variant"
+        },
+        {
+          "fileName": "w2000.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 14646,
+          "role": "variant"
+        },
+        {
+          "fileName": "w2000.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 18468,
+          "role": "variant"
+        }
+      ]
+    },
+    "020be61ecb6244db83193c0bd0211f5d": {
+      "id": "020be61ecb6244db83193c0bd0211f5d",
+      "createdAt": "2026-04-20T11:00:51.489Z",
+      "originalName": "квадратмал.png",
+      "inputMimeType": "image/png",
+      "blurDataUrl": "data:image/webp;base64,UklGRkYAAABXRUJQVlA4IDoAAABQAwCdASoYABgAPwF4tFOrJyUiqAgBYCAJaQAALniDFh5C8AD+5fdm42IjoMwWBZZIXx/XzYLDAAAA",
+      "files": [
+        {
+          "fileName": "original-2000w.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 21336,
+          "role": "original"
+        },
+        {
+          "fileName": "w2000.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 4230,
+          "role": "variant"
+        },
+        {
+          "fileName": "w2000.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 6904,
+          "role": "variant"
+        },
+        {
+          "fileName": "w2000.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 9232,
+          "role": "variant"
+        },
+        {
+          "fileName": "w2000.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 12528,
+          "role": "variant"
+        },
+        {
+          "fileName": "w2000.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 14646,
+          "role": "variant"
+        },
+        {
+          "fileName": "w2000.webp",
+          "width": 2000,
+          "height": 2000,
+          "format": "webp",
+          "byteSize": 18468,
+          "role": "variant"
+        }
+      ]
+    }
+  }
+}

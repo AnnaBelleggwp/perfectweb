@@ -1,0 +1,63 @@
+---
+import '../styles/global.css';
+import ThemeToggle from '../components/navigation/ThemeToggle.astro';
+import alumniSansCyrillic300 from '@fontsource/alumni-sans/files/alumni-sans-cyrillic-300-normal.woff2?url';
+import alumniSansLatin300 from '@fontsource/alumni-sans/files/alumni-sans-latin-300-normal.woff2?url';
+import alumniSansCyrillic400 from '@fontsource/alumni-sans/files/alumni-sans-cyrillic-400-normal.woff2?url';
+import alumniSansLatin400 from '@fontsource/alumni-sans/files/alumni-sans-latin-400-normal.woff2?url';
+import alumniSansCyrillic600 from '@fontsource/alumni-sans/files/alumni-sans-cyrillic-600-normal.woff2?url';
+import alumniSansLatin600 from '@fontsource/alumni-sans/files/alumni-sans-latin-600-normal.woff2?url';
+
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const {
+	title = 'perfectweb',
+	description = 'персональный лендинг для презентации услуг веб-дизайна и разработки сайтов.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="ru">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content={description} />
+		<meta name="generator" content={Astro.generator} />
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<link rel="preload" href={alumniSansCyrillic300} as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href={alumniSansLatin300} as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href={alumniSansCyrillic400} as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href={alumniSansLatin400} as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href={alumniSansCyrillic600} as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href={alumniSansLatin600} as="font" type="font/woff2" crossorigin />
+		<title>{title}</title>
+		<script is:inline>
+			(() => {
+				try {
+					const stored = localStorage.getItem('theme');
+					const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+					const theme = stored === 'light' || stored === 'dark'
+						? stored
+						: (prefersLight ? 'light' : 'dark');
+					document.documentElement.setAttribute('data-theme', theme);
+				} catch (_) {
+					document.documentElement.setAttribute('data-theme', 'dark');
+				}
+			})();
+		</script>
+	</head>
+	<body>
+		<slot />
+		<ThemeToggle />
+	</body>
+</html>

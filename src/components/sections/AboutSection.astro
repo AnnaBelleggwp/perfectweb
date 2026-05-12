@@ -1,0 +1,271 @@
+---
+import { DEFAULT_SITE_CONTENT, parseAccentMarkup, type AboutContent } from '../../data/site-content';
+
+interface Props {
+	about?: AboutContent;
+}
+
+const { about = DEFAULT_SITE_CONTENT.about } = Astro.props;
+const aboutSegments = parseAccentMarkup(about.bodyMarkup);
+---
+
+<section id="about" class="section-anchor about-section">
+	<div class="about-grid">
+
+		<article class="about-card about-card--main" data-tilt>
+			<p class="eyebrow section-mark about-reveal">обо мне</p>
+			<h2 class="section-title about-reveal">{about.title}</h2>
+			<p class="body-copy about-reveal">
+				{aboutSegments.map((segment) =>
+					segment.accent ? <span class="about-highlight">{segment.text}</span> : segment.text,
+				)}
+			</p>
+			<div class="about-stats about-reveal">
+				{about.stats.map((stat) => (
+					<div class="about-stat" data-count={String(stat.value)}>
+						<div class="about-stat__top">
+							<span class="about-stat__num">{stat.value}</span>
+							{stat.suffix && <span class="about-stat__suffix">{stat.suffix}</span>}
+						</div>
+						<p class="about-stat__label">{stat.label}</p>
+					</div>
+				))}
+			</div>
+		</article>
+
+		<div class="about-side">
+			<article class="about-card about-card--accent about-reveal" data-tilt>
+				<p class="eyebrow">подход</p>
+				<p class="about-quote">{about.approach}</p>
+			</article>
+
+			<article class="about-card about-card--stack about-reveal" data-tilt>
+				<p class="eyebrow">стек</p>
+				<div class="about-tags">
+					{about.stack.map((tool) => <span class="about-tag">{tool}</span>)}
+				</div>
+			</article>
+		</div>
+
+	</div>
+</section>
+
+<style>
+.about-grid {
+	display: grid;
+	grid-template-columns: 55fr 45fr;
+	gap: var(--section-gap);
+	align-items: stretch;
+}
+
+.about-side {
+	display: flex;
+	flex-direction: column;
+	gap: var(--section-gap);
+	height: 100%;
+}
+
+.about-side > .about-card {
+	flex: 1;
+}
+
+.about-card {
+	background: var(--card-bg);
+	border: var(--card-border);
+	border-radius: var(--radius-card);
+	box-shadow: var(--card-shadow);
+	padding: var(--section-padding);
+	display: flex;
+	flex-direction: column;
+	gap: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+.about-card--main .section-title {
+	font-weight: 300;
+	text-transform: none;
+}
+
+.about-card--main .body-copy {
+	font-weight: 300;
+	text-transform: none;
+}
+
+.about-highlight {
+	--hl-fill: 0%;
+	background-image: linear-gradient(
+		90deg,
+		var(--color-accent) var(--hl-fill),
+		var(--color-text-muted) var(--hl-fill)
+	);
+	background-clip: text;
+	-webkit-background-clip: text;
+	color: transparent;
+	font-weight: 400;
+}
+
+.about-stats {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-top: clamp(0.75rem, 1.5vw, 1.25rem);
+	border-top: 1px solid var(--divider-accent);
+	margin-top: auto;
+}
+
+.about-stat {
+	display: flex;
+	align-items: baseline;
+	gap: 0.45rem;
+	line-height: 1;
+	white-space: nowrap;
+}
+
+.about-stat__top {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 0.05em;
+}
+
+.about-stat__num {
+	font-size: clamp(2.7rem, 5.5vw, 4.4rem);
+	font-weight: 400;
+	color: var(--color-accent);
+}
+
+.about-stat__suffix {
+	font-size: clamp(1.55rem, 2.8vw, 2.2rem);
+	font-weight: 400;
+	color: var(--color-accent);
+}
+
+.about-stat__label {
+	margin: 0;
+	font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+	color: var(--color-text-muted);
+}
+
+.about-quote {
+	margin: 0;
+	font-size: clamp(1.1rem, 1.9vw, 1.4rem);
+	line-height: 1.25;
+	color: var(--color-text);
+}
+
+.about-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.45rem;
+}
+
+.about-tag {
+	padding: 0.28rem 0.7rem;
+	font-size: clamp(0.9rem, 1.4vw, 1rem);
+	border: var(--chip-border);
+	border-radius: 999px;
+	color: var(--color-accent);
+	background: var(--chip-bg);
+}
+
+:global(:root[data-theme="light"]) .about-tag {
+	background: rgba(109, 102, 93, 0.18);
+	color: #000;
+	border-color: #000;
+}
+
+@media (max-width: 767px) {
+	.about-grid {
+		grid-template-columns: 1fr;
+	}
+}
+</style>
+
+<script>
+import { getGsap, ScrollTrigger } from '../../scripts/gsap';
+
+const gsap = getGsap();
+const section = document.querySelector<HTMLElement>('#about');
+if (section) {
+	const revealItems = gsap.utils.toArray<HTMLElement>('.about-reveal', section);
+	const highlightItems = gsap.utils.toArray<HTMLElement>('.about-highlight', section);
+
+	// Set initial hidden state
+	gsap.set(revealItems, { opacity: 0, y: 32 });
+	gsap.set(highlightItems, { '--hl-fill': '0%' });
+
+	// Staggered fade+slide reveal on scroll
+	ScrollTrigger.create({
+		trigger: section,
+		start: 'top 78%',
+		once: true,
+		onEnter: () => {
+			gsap.to(revealItems, {
+				opacity: 1,
+				y: 0,
+				duration: 0.72,
+				stagger: 0.13,
+				ease: 'power3.out',
+			});
+
+			gsap.to(highlightItems, {
+				'--hl-fill': '100%',
+				duration: 1.7,
+				delay: 0.28,
+				stagger: 0.28,
+				ease: 'power2.out',
+			});
+		},
+	});
+
+	// Counter — starts after reveal stagger reaches the stats row
+	section.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
+		const target = parseInt(el.dataset.count ?? '0', 10);
+		const numEl = el.querySelector<HTMLElement>('.about-stat__num');
+		if (!numEl) return;
+
+		const obj = { val: 0 };
+		ScrollTrigger.create({
+			trigger: section,
+			start: 'top 78%',
+			once: true,
+			onEnter: () => {
+				gsap.to(obj, {
+					val: target,
+					delay: 0.55,
+					duration: 1.4,
+					ease: 'power2.out',
+					onUpdate: () => {
+						numEl.textContent = Math.round(obj.val).toString();
+					},
+				});
+			},
+		});
+	});
+
+	// 3D tilt on hover
+	section.querySelectorAll<HTMLElement>('[data-tilt]').forEach((card) => {
+		gsap.set(card, { transformPerspective: 900 });
+
+		card.addEventListener('mousemove', (e) => {
+			const rect = card.getBoundingClientRect();
+			const x = (e.clientX - rect.left - rect.width  / 2) / rect.width;
+			const y = (e.clientY - rect.top  - rect.height / 2) / rect.height;
+			gsap.to(card, {
+				rotateY:  x * 8,
+				rotateX: -y * 8,
+				duration: 0.35,
+				ease: 'power2.out',
+			});
+		});
+
+		card.addEventListener('mouseleave', () => {
+			gsap.to(card, {
+				rotateX: 0,
+				rotateY: 0,
+				duration: 0.65,
+				ease: 'power3.out',
+			});
+		});
+	});
+}
+</script>

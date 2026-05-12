@@ -1,0 +1,684 @@
+---
+const email = 'hello@perfectweb.dev';
+const phone = '+7 (900) 123-45-67';
+const phoneDigits = '+79001234567';
+---
+
+<section id="contact" class="section-anchor contact-section">
+	<div class="contact-header">
+		<span class="contact-kicker section-mark">контакты</span>
+	</div>
+
+	<article class="cterm" data-cterm>
+		<header class="cterm-top">
+			<div class="cterm-lights" aria-hidden="true">
+				<span class="cterm-light cterm-light--active"></span>
+				<span class="cterm-light"></span>
+				<span class="cterm-light"></span>
+				<span class="cterm-light"></span>
+			</div>
+			<span class="cterm-title">perfectweb — contact.sh</span>
+			<span class="cterm-spacer" aria-hidden="true"></span>
+		</header>
+
+		<div class="cterm-body">
+			<p class="cterm-line cterm-line--cmd">
+				<span class="cterm-prompt">~/contacts</span>
+				<span class="cterm-sigil">$</span>
+				<span class="cterm-cmd">./contact.sh</span>
+			</p>
+
+			<p class="cterm-line cterm-line--text">
+				&gt; оставьте почту и пару строк о задаче — отвечу в течение рабочего дня.
+			</p>
+
+			<form
+				class="cterm-form"
+				data-cterm-form
+				method="post"
+				action="/api/contact.json"
+				novalidate
+			>
+				<label class="cterm-field">
+					<span class="cterm-field__tag">&gt; email:</span>
+					<input
+						class="cterm-input"
+						type="email"
+						name="email"
+						required
+						maxlength="160"
+						placeholder="your@mail.com"
+						autocomplete="email"
+						data-cterm-input
+						data-cterm-field="email"
+					/>
+				</label>
+				<label class="cterm-field cterm-field--text">
+					<span class="cterm-field__tag">&gt; question:</span>
+					<textarea
+						class="cterm-input cterm-input--area"
+						name="question"
+						required
+						rows="3"
+						maxlength="2000"
+						placeholder="кратко о задаче, сроках и пожеланиях"
+						data-cterm-input
+						data-cterm-field="question"
+					></textarea>
+				</label>
+
+				<label class="cterm-honey" aria-hidden="true">
+					website
+					<input type="text" name="website" tabindex="-1" autocomplete="off" />
+				</label>
+
+				<div class="cterm-actions">
+					<button type="submit" class="cterm-send" data-cterm-send>
+						<span class="cterm-send__label" data-cterm-send-label>[ send <span class="cterm-send__arrow">→</span> ]</span>
+					</button>
+					<p class="cterm-line cterm-line--hint">
+						<kbd>⌘/Ctrl</kbd>+<kbd>Enter</kbd> — отправить
+					</p>
+				</div>
+
+				<p
+					class="cterm-line cterm-result"
+					data-cterm-result
+					role="status"
+					aria-live="polite"
+					hidden
+				></p>
+			</form>
+
+			<div class="cterm-divider" aria-hidden="true">────────────────────</div>
+
+			<p class="cterm-line cterm-line--text">&gt; или напрямую:</p>
+			<ul class="cterm-direct">
+				<li class="cterm-direct__row">
+					<span class="cterm-direct__key">email</span>
+					<a class="cterm-direct__value" href={`mailto:${email}`}>{email}</a>
+					<button
+						type="button"
+						class="cterm-copy"
+						data-cterm-copy={email}
+						aria-label={`скопировать ${email}`}
+					>[copy]</button>
+				</li>
+				<li class="cterm-direct__row">
+					<span class="cterm-direct__key">phone</span>
+					<a class="cterm-direct__value" href={`tel:${phoneDigits}`}>{phone}</a>
+					<button
+						type="button"
+						class="cterm-copy"
+						data-cterm-copy={phone}
+						aria-label={`скопировать ${phone}`}
+					>[copy]</button>
+				</li>
+			</ul>
+		</div>
+
+		<div class="cterm-status">
+			<span class="cterm-status__left" data-cterm-statusline>stdin · ready</span>
+			<span class="cterm-status__right">
+				<span data-cterm-filled>0</span>/<span>2</span> filled
+			</span>
+		</div>
+	</article>
+</section>
+
+<style>
+	.contact-section {
+		display: flex;
+		flex-direction: column;
+		gap: clamp(1rem, 2vw, 1.5rem);
+	}
+
+		.cterm {
+			--mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+			--t-bg: var(--terminal-bg);
+			--t-bg-2: var(--terminal-bg-2);
+			--t-border: var(--terminal-border);
+			--t-divider: var(--terminal-divider);
+			--t-text: var(--terminal-text);
+			--t-muted: var(--terminal-muted);
+			--t-prompt: var(--terminal-prompt);
+			--t-accent: var(--color-accent);
+			--t-error: var(--terminal-error);
+
+		position: relative;
+		border: 1px solid var(--t-border);
+		border-radius: 16px;
+			background: linear-gradient(180deg, var(--t-bg) 0%, var(--t-bg-2) 100%);
+			overflow: hidden;
+			box-shadow:
+				inset 0 1px 0 var(--terminal-inset-highlight),
+				var(--terminal-shadow);
+		font-family: var(--mono);
+		color: var(--t-text);
+		text-transform: none;
+		letter-spacing: 0;
+	}
+
+	.cterm[data-sending="true"] {
+		pointer-events: none;
+	}
+
+	.cterm-top {
+		display: grid;
+		grid-template-columns: auto 1fr auto;
+		align-items: center;
+		padding: 0.7rem 1rem;
+			background: var(--terminal-chrome-bg);
+		border-bottom: 1px solid var(--t-divider);
+		font-size: 0.8rem;
+		color: var(--t-muted);
+	}
+
+	.cterm-lights {
+		display: flex;
+		gap: 0.45rem;
+	}
+
+	.cterm-light {
+		width: 11px;
+		height: 11px;
+		border-radius: 999px;
+			background: var(--terminal-control-bg);
+	}
+
+	.cterm-light--active {
+			background: var(--t-accent);
+			box-shadow: 0 0 10px var(--accent-glow-strong);
+	}
+
+	.cterm-title {
+		text-align: center;
+		font-size: 0.78rem;
+		letter-spacing: 0.04em;
+	}
+
+	.cterm-spacer {
+		width: 44px;
+	}
+
+	.cterm-body {
+		padding: clamp(1.25rem, 3vw, 2.25rem);
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.cterm-line {
+		margin: 0;
+		font-size: clamp(0.92rem, 1.5vw, 1.02rem);
+		line-height: 1.55;
+		color: var(--t-text);
+	}
+
+	.cterm-prompt {
+		color: var(--t-prompt);
+		margin-right: 0.5ch;
+	}
+
+	.cterm-sigil {
+		color: var(--t-accent);
+		margin-right: 0.5ch;
+	}
+
+	.cterm-cmd {
+		color: var(--t-text);
+	}
+
+	.cterm-line--hint {
+		color: var(--t-muted);
+		font-size: 0.82rem;
+	}
+
+	.cterm-line--hint kbd {
+		font-family: inherit;
+		font-size: 0.75rem;
+		padding: 0.05rem 0.4rem;
+		border: 1px solid var(--t-divider);
+		border-radius: 4px;
+			background: var(--terminal-answer-bg);
+		color: var(--t-text);
+	}
+
+	.cterm-form {
+		display: flex;
+		flex-direction: column;
+		gap: 0.55rem;
+		margin: 0.35rem 0 0.25rem;
+	}
+
+	.cterm-field {
+		display: flex;
+		align-items: baseline;
+		gap: 0.6ch;
+		font-size: clamp(0.92rem, 1.5vw, 1.02rem);
+	}
+
+	.cterm-field--text {
+		align-items: flex-start;
+	}
+
+	.cterm-field__tag {
+		color: var(--t-prompt);
+		flex: 0 0 auto;
+		min-width: 8ch;
+	}
+
+	.cterm-field[data-invalid="true"] .cterm-field__tag {
+		color: var(--t-error);
+	}
+
+	.cterm-input {
+		flex: 1;
+		min-width: 0;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		color: var(--t-accent);
+		caret-color: var(--t-accent);
+		font: inherit;
+		outline: none;
+		resize: none;
+	}
+
+		.cterm-input::placeholder {
+			color: color-mix(in srgb, var(--t-muted) 70%, transparent);
+	}
+
+	.cterm-input:focus {
+		outline: 0;
+	}
+
+	.cterm-input--area {
+		line-height: 1.55;
+	}
+
+	.cterm-honey {
+		position: absolute;
+		left: -9999px;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+	}
+
+	.cterm-actions {
+		display: flex;
+		align-items: baseline;
+		flex-wrap: wrap;
+		gap: 1rem;
+		margin-top: 0.25rem;
+	}
+
+	.cterm-send {
+		padding: 0;
+		margin: 0;
+		border: 0;
+		background: transparent;
+		font: inherit;
+		color: var(--t-accent);
+		cursor: pointer;
+		transition: color 160ms ease, text-shadow 160ms ease, opacity 160ms ease;
+	}
+
+		.cterm-send:hover,
+		.cterm-send:focus-visible {
+			color: var(--color-text);
+			text-shadow: 0 0 14px var(--accent-glow-strong);
+		outline: none;
+	}
+
+	.cterm-send:disabled {
+		cursor: progress;
+		color: var(--t-muted);
+		opacity: 0.8;
+		text-shadow: none;
+	}
+
+	.cterm-send__arrow {
+		display: inline-block;
+		transition: transform 200ms ease;
+	}
+
+	.cterm-send:hover:not(:disabled) .cterm-send__arrow {
+		transform: translateX(3px);
+	}
+
+	.cterm-result {
+		margin-top: 0.35rem;
+		color: var(--t-prompt);
+	}
+
+	.cterm-result[data-state="error"] {
+		color: var(--t-error);
+	}
+
+	.cterm-result[data-state="sending"] {
+		color: var(--t-muted);
+	}
+
+		.cterm-divider {
+			color: var(--t-divider);
+		font-size: 0.88rem;
+		user-select: none;
+		margin: 0.35rem 0 0.15rem;
+	}
+
+	.cterm-direct {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.cterm-direct__row {
+		display: flex;
+		align-items: baseline;
+		gap: 0.6ch;
+		flex-wrap: wrap;
+		font-size: clamp(0.92rem, 1.5vw, 1.02rem);
+	}
+
+	.cterm-direct__key {
+		color: var(--t-muted);
+		min-width: 8ch;
+	}
+
+	.cterm-direct__value {
+		color: var(--t-accent);
+		text-decoration: none;
+		border-bottom: 1px dashed transparent;
+		transition: border-color 160ms ease;
+	}
+
+		.cterm-direct__value:hover,
+		.cterm-direct__value:focus-visible {
+			border-bottom-color: var(--accent-glow-soft);
+		outline: none;
+	}
+
+	.cterm-copy {
+		padding: 0 0.3rem;
+		margin-left: 0.5ch;
+		border: 0;
+		background: transparent;
+		color: var(--t-muted);
+		font: inherit;
+		cursor: pointer;
+		transition: color 160ms ease;
+	}
+
+	.cterm-copy:hover,
+	.cterm-copy:focus-visible {
+		color: var(--t-accent);
+		outline: none;
+	}
+
+	.cterm-copy[data-state="done"] {
+		color: var(--t-prompt);
+	}
+
+	.cterm-status {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 0.55rem 1rem;
+			background: var(--terminal-status-bg);
+		border-top: 1px solid var(--t-divider);
+		font-size: 0.78rem;
+		color: var(--t-muted);
+	}
+
+	.cterm-status__left[data-state="sending"] {
+		color: var(--t-muted);
+	}
+
+	.cterm-status__left[data-state="ok"] {
+		color: var(--t-prompt);
+	}
+
+	.cterm-status__left[data-state="error"] {
+		color: var(--t-error);
+	}
+
+	.cterm-status__right {
+		color: var(--t-accent);
+		opacity: 0.85;
+	}
+
+	@media (max-width: 640px) {
+		.cterm-top {
+			padding: 0.55rem 0.8rem;
+		}
+
+		.cterm-title {
+			font-size: 0.68rem;
+		}
+
+		.cterm-spacer {
+			width: 20px;
+		}
+
+		.cterm-body {
+			padding: 1rem;
+		}
+
+		.cterm-field {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 0.2rem;
+		}
+
+		.cterm-field__tag {
+			min-width: 0;
+		}
+	}
+</style>
+
+<script>
+	type FieldKey = 'email' | 'question';
+
+	const root = document.querySelector<HTMLElement>('[data-cterm]');
+	if (root) {
+		const form = root.querySelector<HTMLFormElement>('[data-cterm-form]');
+		const inputs = Array.from(
+			root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[data-cterm-input]'),
+		);
+		const fieldEls = new Map<FieldKey, HTMLElement>();
+		inputs.forEach((el) => {
+			const key = el.dataset.ctermField as FieldKey | undefined;
+			if (!key) return;
+			const wrap = el.closest<HTMLElement>('.cterm-field');
+			if (wrap) fieldEls.set(key, wrap);
+		});
+
+		const filledEl = root.querySelector<HTMLElement>('[data-cterm-filled]');
+		const resultEl = root.querySelector<HTMLElement>('[data-cterm-result]');
+		const statusEl = root.querySelector<HTMLElement>('[data-cterm-statusline]');
+		const sendBtn = root.querySelector<HTMLButtonElement>('[data-cterm-send]');
+		const sendLabel = root.querySelector<HTMLElement>('[data-cterm-send-label]');
+		const sendLabelOriginal = sendLabel?.innerHTML ?? '[ send → ]';
+		const copies = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-cterm-copy]'));
+
+		const updateFilled = () => {
+			const filled = inputs.filter((el) => el.value.trim().length > 0).length;
+			if (filledEl) filledEl.textContent = String(filled);
+		};
+
+		const clearFieldError = (key: FieldKey) => {
+			const wrap = fieldEls.get(key);
+			if (wrap) wrap.dataset.invalid = 'false';
+		};
+
+		inputs.forEach((el) => {
+			el.addEventListener('input', () => {
+				updateFilled();
+				const key = el.dataset.ctermField as FieldKey | undefined;
+				if (key) clearFieldError(key);
+			});
+		});
+		updateFilled();
+
+		const setStatusLine = (text: string, state: 'idle' | 'sending' | 'ok' | 'error' = 'idle') => {
+			if (!statusEl) return;
+			statusEl.textContent = text;
+			statusEl.dataset.state = state;
+		};
+
+		let resultTimer: number | null = null;
+		const showResult = (text: string, state: 'ok' | 'error' | 'sending' = 'ok') => {
+			if (!resultEl) return;
+			if (resultTimer !== null) {
+				window.clearTimeout(resultTimer);
+				resultTimer = null;
+			}
+			resultEl.hidden = false;
+			resultEl.textContent = text;
+			resultEl.dataset.state = state;
+		};
+
+		const typeResult = (final: string, state: 'ok' | 'error' = 'ok') => {
+			if (!resultEl) return;
+			if (resultTimer !== null) {
+				window.clearTimeout(resultTimer);
+				resultTimer = null;
+			}
+			resultEl.hidden = false;
+			resultEl.dataset.state = state;
+			resultEl.textContent = '';
+			let i = 0;
+			const tick = () => {
+				i += 1;
+				resultEl.textContent = final.slice(0, i);
+				if (i < final.length) {
+					resultTimer = window.setTimeout(tick, 18);
+				} else {
+					resultTimer = null;
+				}
+			};
+			tick();
+		};
+
+		const markInvalid = (key: FieldKey) => {
+			const wrap = fieldEls.get(key);
+			if (wrap) wrap.dataset.invalid = 'true';
+			const input = inputs.find((el) => el.dataset.ctermField === key);
+			input?.focus();
+		};
+
+		const setSending = (sending: boolean) => {
+			if (!sendBtn || !sendLabel) return;
+			sendBtn.disabled = sending;
+			root.dataset.sending = sending ? 'true' : 'false';
+			if (sending) {
+				sendLabel.textContent = '[ sending… ]';
+			} else {
+				sendLabel.innerHTML = sendLabelOriginal;
+			}
+		};
+
+		const submit = async () => {
+			if (!form) return;
+			fieldEls.forEach((wrap) => {
+				wrap.dataset.invalid = 'false';
+			});
+
+			const data = new FormData(form);
+			const email = String(data.get('email') ?? '').trim();
+			const question = String(data.get('question') ?? '').trim();
+			const website = String(data.get('website') ?? '').trim();
+
+			if (!/.+@.+\..+/.test(email)) {
+				showResult('✖ email: некорректный адрес.', 'error');
+				setStatusLine('stderr · invalid email', 'error');
+				markInvalid('email');
+				return;
+			}
+			if (question.length < 3) {
+				showResult('✖ question: напишите пару строк о задаче.', 'error');
+				setStatusLine('stderr · question too short', 'error');
+				markInvalid('question');
+				return;
+			}
+
+			setSending(true);
+			showResult('⠋ sending…', 'sending');
+			setStatusLine('stdout · sending…', 'sending');
+
+			try {
+				const res = await fetch('/api/contact.json', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ email, question, website }),
+				});
+				const payload = (await res.json().catch(() => ({}))) as {
+					ok?: boolean;
+					id?: string;
+					error?: string;
+					field?: FieldKey;
+					message?: string;
+				};
+
+				if (!res.ok || !payload.ok) {
+					if (payload.error === 'validation' && payload.field) {
+						showResult(`✖ ${payload.field}: ${payload.message ?? 'некорректные данные.'}`, 'error');
+						setStatusLine(`stderr · ${payload.field}`, 'error');
+						markInvalid(payload.field);
+					} else if (payload.error === 'rate_limited') {
+						showResult(`✖ ${payload.message ?? 'слишком много запросов, попробуйте позже.'}`, 'error');
+						setStatusLine('stderr · rate limit', 'error');
+					} else {
+						showResult('✖ server: не удалось отправить, попробуйте позже.', 'error');
+						setStatusLine('stderr · server', 'error');
+					}
+					return;
+				}
+
+				typeResult(`ok 200 · принято #${payload.id ?? '—'} · отвечу скоро.`, 'ok');
+				setStatusLine('stdout · sent', 'ok');
+				form.reset();
+				updateFilled();
+			} catch {
+				showResult('✖ network: нет соединения. попробуйте ещё раз.', 'error');
+				setStatusLine('stderr · network', 'error');
+			} finally {
+				setSending(false);
+			}
+		};
+
+		form?.addEventListener('submit', (event) => {
+			event.preventDefault();
+			submit();
+		});
+
+		form?.addEventListener('keydown', (event) => {
+			if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+				event.preventDefault();
+				submit();
+			}
+		});
+
+		copies.forEach((btn) => {
+			btn.addEventListener('click', async () => {
+				const value = btn.dataset.ctermCopy ?? '';
+				try {
+					await navigator.clipboard.writeText(value);
+					const original = btn.textContent ?? '';
+					btn.textContent = '[copied]';
+					btn.dataset.state = 'done';
+					window.setTimeout(() => {
+						btn.textContent = original;
+						delete btn.dataset.state;
+					}, 1400);
+				} catch {
+					btn.textContent = '[select & copy]';
+				}
+			});
+		});
+	}
+</script>

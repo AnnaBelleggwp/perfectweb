@@ -1,0 +1,477 @@
+---
+import { DEFAULT_SITE_CONTENT, type ServiceContent } from '../../data/site-content';
+
+interface Props {
+	services?: ServiceContent[];
+}
+
+const { services = DEFAULT_SITE_CONTENT.services } = Astro.props;
+---
+
+<section id="services" class="section-anchor snb-section">
+	<div class="snb-header">
+		<span class="snb-title section-mark">услуги</span>
+	</div>
+
+	<div class="snb-grid">
+
+		<div class="snb-list">
+			{services.map((service, index) => (
+				<div class="snb-row" data-row={service.id}>
+					<div class="snb-row-header">
+						<div class="snb-row-meta">
+							<span class="snb-num">{String(index + 1).padStart(2, '0')}</span>
+							<span class="snb-chevron" aria-hidden="true">
+								<svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+									<path d="M2 4.5L6.5 9L11 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+							</span>
+						</div>
+						<span class="snb-label">{service.label}</span>
+					</div>
+					<div class="snb-accordion-body" aria-hidden="true">
+						<p class="snb-accordion-desc">{service.desc}</p>
+						<div class="snb-accordion-tags">
+							{service.items.map((item) => <span class="snb-tag">{item}</span>)}
+						</div>
+					</div>
+					<div class="snb-underline" aria-hidden="true"></div>
+				</div>
+			))}
+		</div>
+
+		<div class="snb-panel-wrap">
+			<div class="snb-panel">
+				<div class="snb-panel-dots" data-services-dots aria-hidden="true"></div>
+				<div class="snb-panel-copy" aria-hidden="true">
+					{services.map((service, index) => (
+						<div class:list={['snb-panel-state', { 'is-active': index === 0 }]} data-panel-state={service.id}>
+							<div class="snb-panel-head">
+								<p class="snb-panel-title">{service.label}</p>
+								<p class="snb-panel-stack">{service.items.join(' · ')}</p>
+							</div>
+							<p class="snb-panel-text">{service.desc}</p>
+						</div>
+					))}
+					<span class="snb-scroll-hint" aria-hidden="true">
+						<svg width="16" height="24" viewBox="0 0 16 24" fill="none">
+							<rect x="0.75" y="0.75" width="14.5" height="22.5" rx="7.25" stroke="currentColor" stroke-width="1.5" opacity="0.4" />
+							<rect class="snb-scroll-dot" x="7" y="5" width="2" height="5" rx="1" fill="currentColor" opacity="0.7" />
+						</svg>
+					</span>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</section>
+
+<style>
+.snb-section {
+	display: flex;
+	flex-direction: column;
+	gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+
+/* ── Two-column grid ── */
+.snb-grid {
+	display: grid;
+	grid-template-columns: 55fr 45fr;
+	gap: var(--section-gap);
+	align-items: start;
+}
+
+/* ── Numbered list ── */
+.snb-list {
+	display: flex;
+	flex-direction: column;
+}
+
+.snb-row {
+	position: relative;
+	border-bottom: 1px solid var(--divider-subtle);
+}
+
+.snb-row-header {
+	padding: clamp(1.5rem, 3vw, 2.5rem) 0 clamp(1.5rem, 3vw, 2.5rem);
+	display: flex;
+	flex-direction: column;
+	gap: 0.12em;
+}
+
+.snb-row-meta {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.snb-num {
+	font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+	font-weight: 300;
+	color: var(--color-accent);
+	opacity: 0.5;
+	line-height: 1;
+	transition: opacity 350ms ease;
+}
+
+.snb-row.is-active .snb-num {
+	opacity: 1;
+}
+
+.snb-label {
+	font-size: clamp(2.8rem, 6vw, 5rem);
+	font-weight: 300;
+	line-height: 0.9;
+	color: var(--color-text-muted);
+	transition: color 350ms ease;
+}
+
+.snb-row.is-active .snb-label {
+	color: var(--color-text);
+}
+
+/* chevron — desktop hidden, mobile visible */
+.snb-chevron {
+	display: none;
+	color: var(--color-accent);
+	opacity: 0.6;
+	flex-shrink: 0;
+}
+
+/* gold underline expands on active */
+.snb-underline {
+	position: absolute;
+	bottom: -1px;
+	left: 0;
+	height: 1px;
+	width: 0%;
+	background: var(--color-accent);
+	transition: width 450ms ease;
+}
+
+.snb-row.is-active .snb-underline {
+	width: 100%;
+}
+
+/* accordion body — desktop hidden */
+.snb-accordion-body {
+	display: none;
+}
+
+/* ── Sticky panel ── */
+.snb-panel-wrap {
+	position: sticky;
+	top: 7rem;
+}
+
+.snb-panel {
+	position: relative;
+	min-height: 22rem;
+	background: transparent;
+	border: none;
+	border-radius: var(--radius-card);
+	box-shadow: none;
+	overflow: hidden;
+	isolation: isolate;
+}
+
+.snb-panel-dots {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+}
+
+.snb-panel-dots :global(.dot-grid__canvas) {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+
+.snb-panel-copy {
+	--snb-panel-pad: clamp(1rem, 2vw, 1.5rem);
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	pointer-events: none;
+	padding: var(--snb-panel-pad);
+}
+
+.snb-panel-state {
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	transform: translateY(10px);
+	transition:
+		opacity 280ms ease,
+		transform 280ms ease;
+}
+
+.snb-panel-state.is-active {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.snb-panel-head {
+	position: absolute;
+	top: var(--snb-panel-pad);
+	right: var(--snb-panel-pad);
+	left: calc(var(--snb-panel-pad) + 2.5rem);
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: clamp(0.25rem, 0.8vw, 0.45rem);
+	text-align: right;
+}
+
+.snb-panel-title {
+	margin: 0;
+	font-size: clamp(2.8rem, 6vw, 5rem);
+	font-weight: 300;
+	line-height: 0.9;
+	color: var(--color-text);
+}
+
+:global(:root[data-theme="light"]) .snb-panel-title {
+	color: var(--color-accent);
+}
+
+.snb-panel-stack {
+	margin: 0;
+	font-size: clamp(0.85rem, 1.3vw, 1rem);
+	font-weight: 400;
+	line-height: 1.2;
+	color: var(--color-accent);
+}
+
+:global(:root[data-theme="light"]) .snb-panel-stack {
+	color: #2b2b2b;
+}
+
+.snb-panel-text {
+	position: absolute;
+	left: var(--snb-panel-pad);
+	right: calc(var(--snb-panel-pad) + 2.2rem);
+	bottom: var(--snb-panel-pad);
+	margin: 0;
+	font-size: clamp(1.05rem, 1.75vw, 1.3rem);
+	font-weight: 300;
+	line-height: 1.32;
+	color: var(--color-text);
+	text-wrap: balance;
+}
+
+.snb-scroll-hint {
+	position: absolute;
+	right: var(--snb-panel-pad);
+	bottom: var(--snb-panel-pad);
+	display: flex;
+	color: var(--color-accent);
+	opacity: 0.9;
+}
+
+@keyframes snb-scroll-dot {
+	0% { transform: translateY(0); opacity: 0.7; }
+	60% { transform: translateY(7px); opacity: 0.2; }
+	100% { transform: translateY(0); opacity: 0.7; }
+}
+
+.snb-scroll-dot {
+	animation: snb-scroll-dot 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.snb-scroll-dot {
+		animation: none;
+	}
+}
+
+.snb-tag {
+	padding: 0.28rem 0.7rem;
+	font-size: clamp(0.9rem, 1.4vw, 1rem);
+	border: var(--chip-border);
+	border-radius: 999px;
+	color: var(--color-accent);
+	background: var(--chip-bg);
+}
+
+/* ── Mobile ── */
+@media (max-width: 767px) {
+	.snb-grid {
+		grid-template-columns: 1fr;
+	}
+
+	/* hide desktop sticky panel */
+	.snb-panel-wrap {
+		display: none;
+	}
+
+	/* show chevron */
+	.snb-chevron {
+		display: flex;
+	}
+
+	/* rows become tappable */
+	.snb-row {
+		cursor: pointer;
+	}
+
+	.snb-row-header {
+		padding-bottom: clamp(1.25rem, 3vw, 2rem);
+	}
+
+	/* accordion body shows, starts collapsed */
+	.snb-accordion-body {
+		display: flex;
+		flex-direction: column;
+		gap: 0.85rem;
+		overflow: hidden;
+		height: 0;
+		padding: 0 0 0;
+	}
+
+	.snb-accordion-body.is-open {
+		padding-bottom: clamp(1.25rem, 3vw, 2rem);
+	}
+
+	.snb-accordion-desc {
+		margin: 0;
+		font-size: clamp(1.05rem, 4vw, 1.25rem);
+		font-weight: 300;
+		line-height: 1.3;
+		color: var(--color-text-muted);
+	}
+
+	.snb-accordion-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.45rem;
+	}
+}
+</style>
+
+<script>
+import { getGsap, ScrollTrigger } from '../../scripts/gsap';
+import { initDotGrid } from '../../scripts/dot-grid';
+
+const gsap = getGsap();
+const section = document.querySelector<HTMLElement>('#services');
+if (section) {
+
+const rows   = section.querySelectorAll<HTMLElement>('.snb-row');
+
+// ── Desktop: ScrollTrigger + sticky panel ─────────────────────────────────────
+const initDesktop = () => {
+	const dotsWrap = section.querySelector<HTMLElement>('[data-services-dots]');
+	const panelStates = section.querySelectorAll<HTMLElement>('[data-panel-state]');
+	if (dotsWrap) {
+		initDotGrid(dotsWrap, {
+			dotSize: 4,
+			gap: 22,
+			trimCornerDots: true,
+			proximity: 140,
+			shockRadius: 220,
+			shockStrength: 4,
+		});
+	}
+
+	const setActiveRow = (id: string) => {
+		rows.forEach(r => r.classList.remove('is-active'));
+		section.querySelector<HTMLElement>(`[data-row="${id}"]`)?.classList.add('is-active');
+		panelStates.forEach(s => s.classList.remove('is-active'));
+		section.querySelector<HTMLElement>(`[data-panel-state="${id}"]`)?.classList.add('is-active');
+	};
+
+	const firstId = rows[0]?.dataset.row;
+	if (firstId) setActiveRow(firstId);
+
+	// Single container trigger — finds the row closest to viewport centre each frame.
+	// More reliable than per-row triggers when scrolling fast or reversing direction.
+	const listEl = section.querySelector<HTMLElement>('.snb-list');
+	let lastId = '';
+
+	ScrollTrigger.create({
+		trigger: listEl,
+		start: 'top bottom',
+		end:   'bottom top',
+		onUpdate: () => {
+			const mid = window.innerHeight * 0.5;
+			let best: HTMLElement | null = null;
+			let bestDist = Infinity;
+
+			rows.forEach(row => {
+				const r = row.getBoundingClientRect();
+				if (r.bottom < 0 || r.top > window.innerHeight) return;
+				const dist = Math.abs((r.top + r.bottom) / 2 - mid);
+				if (dist < bestDist) { bestDist = dist; best = row; }
+			});
+
+			if (best) {
+				const id = (best as HTMLElement).dataset.row ?? '';
+				if (id !== lastId) { lastId = id; setActiveRow(id); }
+			}
+		},
+	});
+};
+
+// ── Mobile: accordion ─────────────────────────────────────────────────────────
+const initMobile = () => {
+	let openRow: HTMLElement | null = null;
+
+	const closeAccordion = (row: HTMLElement) => {
+		const body    = row.querySelector<HTMLElement>('.snb-accordion-body');
+		const chevron = row.querySelector<HTMLElement>('.snb-chevron');
+		if (!body) return;
+
+		gsap.to(body,    { height: 0, duration: 0.32, ease: 'power2.in' });
+		gsap.to(chevron, { rotation: 0, duration: 0.28, ease: 'power2.in' });
+		body.classList.remove('is-open');
+		body.setAttribute('aria-hidden', 'true');
+		row.classList.remove('is-active');
+		openRow = null;
+	};
+
+	const openAccordion = (row: HTMLElement) => {
+		const body    = row.querySelector<HTMLElement>('.snb-accordion-body');
+		const chevron = row.querySelector<HTMLElement>('.snb-chevron');
+		if (!body) return;
+
+		// measure natural height
+		body.style.height = 'auto';
+		body.classList.add('is-open');
+		const h = body.scrollHeight;
+		body.style.height = '0px';
+
+		gsap.to(body,    { height: h, duration: 0.42, ease: 'power2.out',
+			onComplete: () => { body.style.height = 'auto'; },
+		});
+		gsap.to(chevron, { rotation: 180, duration: 0.35, ease: 'power2.out' });
+		body.setAttribute('aria-hidden', 'false');
+		row.classList.add('is-active');
+		openRow = row;
+	};
+
+	rows.forEach(row => {
+		row.addEventListener('click', () => {
+			if (openRow && openRow !== row) closeAccordion(openRow);
+			if (row.classList.contains('is-active')) {
+				closeAccordion(row);
+			} else {
+				openAccordion(row);
+			}
+		});
+	});
+};
+
+// ── Init based on viewport ────────────────────────────────────────────────────
+const mq = window.matchMedia('(max-width: 767px)');
+if (mq.matches) {
+	initMobile();
+} else {
+	initDesktop();
+}
+
+} // end if (section)
+</script>

@@ -1,0 +1,25 @@
+---
+const items = [
+	{ href: '#hero', label: 'главная', mobileLabel: 'главная' },
+	{ href: '#about', label: 'обо мне', mobileLabel: 'обо мне' },
+	{ href: '#services', label: 'услуги', mobileLabel: 'услуги' },
+	{ href: '#portfolio', label: 'портфолио', mobileLabel: 'портфолио' },
+	{ href: '#process', label: 'процесс', mobileLabel: 'процесс' },
+	{ href: '#reviews', label: 'отзывы', mobileLabel: 'отзывы' },
+	{ href: '#faq', label: 'faq', mobileLabel: 'faq' },
+	{ href: '#contact', label: 'контакты', mobileLabel: 'контакт' },
+];
+---
+
+<nav class="site-nav" aria-label="основная навигация">
+	<ul class="site-nav__list">
+		{items.map((item) => (
+			<li>
+				<a class="site-nav__link" href={item.href} data-nav-link>
+					<span class="site-nav__label site-nav__label--desktop" data-nav-label>{item.label}</span>
+					<span class="site-nav__label site-nav__label--mobile" data-nav-label>{item.mobileLabel}</span>
+				</a>
+			</li>
+		))}
+	</ul>
+</nav>
