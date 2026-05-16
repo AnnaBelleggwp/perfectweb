@@ -467,7 +467,7 @@ svg {
 .site-nav__link {
 	display: inline-flex;
 	align-items: center;
-	font-size: clamp(1.25rem, 2.3vw, 1.75rem);
+	font-size: clamp(1.1rem, 1.95vw, 1.45rem);
 	line-height: 1;
 	padding: 0.45rem 0.2rem;
 	white-space: nowrap;
