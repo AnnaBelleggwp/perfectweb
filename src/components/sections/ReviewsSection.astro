@@ -29,17 +29,23 @@ const skeletons = Array.from({ length: SKELETON_COUNT });
 		<div class="reviews-deck" data-reviews-deck aria-live="polite">
 			{skeletons.map((_, index) => (
 				<article
-					class="reviews-card reviews-card--skeleton"
+					class="reviews-card reviews-card--template"
 					data-reviews-card
 					data-depth={index}
 					aria-hidden={index === 0 ? 'false' : 'true'}
 					tabindex={index === 0 ? 0 : -1}
 				>
 					<div class="reviews-card__top">
-						<div class="reviews-avatar reviews-skel reviews-skel--avatar" aria-hidden="true"></div>
+						<div class="reviews-avatar reviews-tpl-avatar" aria-hidden="true">
+							<span>?</span>
+						</div>
 						<div class="reviews-id">
-							<span class="reviews-skel reviews-skel--name" aria-hidden="true"></span>
-							<span class="reviews-skel reviews-skel--role" aria-hidden="true"></span>
+							<p class="reviews-name reviews-tpl-name">
+								<span class="reviews-tpl-sym">{`{`}</span> name <span class="reviews-tpl-sym">{`}`}</span>
+							</p>
+							<p class="reviews-role reviews-tpl-role">
+								<span class="reviews-tpl-sym">{`<`}</span>role<span class="reviews-tpl-sym">{` />`}</span>
+							</p>
 						</div>
 						<div class="reviews-stars" aria-hidden="true">
 							{Array.from({ length: 5 }).map(() => (
@@ -48,15 +54,17 @@ const skeletons = Array.from({ length: SKELETON_COUNT });
 						</div>
 					</div>
 
-					<blockquote class="reviews-quote">
-						<span class="reviews-skel reviews-skel--line" aria-hidden="true"></span>
-						<span class="reviews-skel reviews-skel--line" aria-hidden="true"></span>
-						<span class="reviews-skel reviews-skel--line reviews-skel--line-short" aria-hidden="true"></span>
+					<blockquote class="reviews-quote reviews-tpl-quote">
+						<p><span class="reviews-tpl-sym">//</span> review.quote</p>
+						<p><span class="reviews-tpl-sym">//</span> ─ ─ ─ <span class="reviews-tpl-caret" aria-hidden="true">_</span></p>
 					</blockquote>
 
-					<footer class="reviews-card__foot">
-						<span class="reviews-skel reviews-skel--meta" aria-hidden="true"></span>
-						<span class="reviews-skel reviews-skel--meta reviews-skel--meta-short" aria-hidden="true"></span>
+					<footer class="reviews-card__foot reviews-tpl-foot">
+						<span class="reviews-project">
+							<span class="reviews-tpl-sym">[</span> project <span class="reviews-tpl-sym">]</span>
+						</span>
+						<span class="reviews-dot" aria-hidden="true">•</span>
+						<span class="reviews-date">__.____</span>
 					</footer>
 				</article>
 			))}
@@ -382,103 +390,93 @@ const skeletons = Array.from({ length: SKELETON_COUNT });
 		font-variant-numeric: tabular-nums;
 	}
 
-	/* ── Skeleton state ── */
-	.reviews-skel {
-		--skel-base: rgba(255, 255, 255, 0.055);
-		--skel-shine: rgba(255, 255, 255, 0.12);
-		position: relative;
-		display: block;
-		background: var(--skel-base);
-		border-radius: 4px;
-		overflow: hidden;
+	/* ── Empty-state template ── */
+	.reviews-card--template {
+		font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+		letter-spacing: 0;
 	}
 
-	.reviews-skel::after {
-		content: "";
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(
-			90deg,
-			transparent 0%,
-			var(--skel-shine) 50%,
-			transparent 100%
-		);
-		transform: translateX(-100%);
-		animation: reviews-skel-shimmer 1.8s ease-in-out infinite;
-		animation-delay: var(--skel-delay, 0s);
+	.reviews-tpl-avatar {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: transparent !important;
+		border: 1px dashed color-mix(in srgb, var(--color-text-muted) 55%, transparent) !important;
+		color: var(--color-text-muted);
+		font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+		font-size: 1.7rem;
+		font-weight: 300;
+		opacity: 0.7;
 	}
 
-	:root[data-theme="light"] .reviews-skel {
-		--skel-base: rgba(0, 0, 0, 0.06);
-		--skel-shine: rgba(0, 0, 0, 0.1);
+	.reviews-card--template .reviews-name {
+		font-family: inherit;
+		font-weight: 500;
+		font-size: 1.05rem;
+		color: var(--color-text-muted);
+		text-transform: none;
+		opacity: 0.9;
 	}
 
-	.reviews-skel--avatar {
-		width: 56px;
-		height: 56px;
-		border-radius: 6px;
-		--skel-delay: 0s;
+	.reviews-card--template .reviews-role {
+		font-family: inherit;
+		font-size: 0.85rem;
+		color: var(--color-text-muted);
+		opacity: 0.6;
 	}
 
-	.reviews-skel--name {
-		width: 62%;
-		height: 1.2rem;
-		--skel-delay: 0.1s;
+	.reviews-tpl-sym {
+		color: var(--color-accent);
+		opacity: 0.7;
 	}
 
-	.reviews-skel--role {
-		width: 44%;
-		height: 0.78rem;
-		margin-top: 0.45rem;
-		--skel-delay: 0.18s;
-	}
-
-	.reviews-skel--line {
-		width: 100%;
-		height: 0.85rem;
-		margin-bottom: 0.55rem;
-		--skel-delay: 0.25s;
-	}
-
-	.reviews-skel--line:nth-child(2) {
-		--skel-delay: 0.32s;
-	}
-
-	.reviews-skel--line-short {
-		width: 62%;
-		margin-bottom: 0;
-		--skel-delay: 0.4s;
-	}
-
-	.reviews-skel--meta {
-		width: 5rem;
-		height: 0.7rem;
-		--skel-delay: 0.48s;
-	}
-
-	.reviews-skel--meta-short {
-		width: 3.2rem;
-		--skel-delay: 0.55s;
-	}
-
-	.reviews-card--skeleton .reviews-quote {
+	.reviews-card--template .reviews-quote {
 		display: flex;
 		flex-direction: column;
-		gap: 0;
+		gap: 0.4rem;
+		font-family: inherit;
+		font-size: 0.95rem;
+		line-height: 1.4;
+		color: var(--color-text-muted);
+		opacity: 0.78;
 	}
 
-	.reviews-card--skeleton .reviews-card__foot {
-		gap: 0.75rem;
+	.reviews-card--template .reviews-quote p {
+		margin: 0;
 	}
 
-	@keyframes reviews-skel-shimmer {
-		0% { transform: translateX(-100%); }
-		60% { transform: translateX(100%); }
-		100% { transform: translateX(100%); }
+	.reviews-card--template .reviews-quote p::before,
+	.reviews-card--template .reviews-quote p::after {
+		content: none;
+	}
+
+	.reviews-tpl-caret {
+		display: inline-block;
+		color: var(--color-accent);
+		margin-left: 0.1rem;
+		animation: reviews-tpl-blink 1.05s steps(1, end) infinite;
+	}
+
+	@keyframes reviews-tpl-blink {
+		0%, 49% { opacity: 1; }
+		50%, 100% { opacity: 0; }
+	}
+
+	.reviews-card--template .reviews-stars {
+		opacity: 0.45;
+	}
+
+	.reviews-card--template .reviews-card__foot {
+		font-family: inherit;
+		opacity: 0.7;
+	}
+
+	.reviews-card--template .reviews-project {
+		opacity: 1;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.reviews-skel::after {
+		.reviews-tpl-caret {
 			animation: none;
 		}
 	}
