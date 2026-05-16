@@ -20,7 +20,7 @@ export const projects: Project[] = [
 		category: 'корпоративный сайт',
 		client: 'клиент / индустрия',
 		description:
-			'краткое описание задачи и решения. финальный текст после согласования контента.',
+			'',
 		tags: ['React', 'Figma', 'Next.js'],
 		year: 2024,
 		duration: '6 недель',
@@ -34,7 +34,7 @@ export const projects: Project[] = [
 		category: 'интернет-магазин',
 		client: 'клиент / индустрия',
 		description:
-			'краткое описание задачи и решения. финальный текст после согласования контента.',
+			'',
 		tags: ['TypeScript', 'Tailwind', 'Stripe'],
 		year: 2024,
 		duration: '8 недель',
@@ -48,7 +48,7 @@ export const projects: Project[] = [
 		category: 'лендинг',
 		client: 'клиент / индустрия',
 		description:
-			'краткое описание задачи и решения. финальный текст после согласования контента.',
+			'',
 		tags: ['Astro', 'GSAP', 'Figma'],
 		year: 2023,
 		duration: '3 недели',

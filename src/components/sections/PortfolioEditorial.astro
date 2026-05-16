@@ -84,7 +84,7 @@ const buildSrcSet = (media: PortfolioMedia | null) => {
 							<div class="pf-card__copy">
 								<h3 class="pf-card__title">{item.title}</h3>
 								<p class="pf-card__cat">{item.category}{item.tags.length > 0 && ` / ${item.tags.slice(0, 2).join(' / ').toLowerCase()}`}</p>
-								<p class="pf-card__desc">{item.description}</p>
+								{item.description && <p class="pf-card__desc">{item.description}</p>}
 								<a href={item.caseUrl} class="pf-card__cta" data-hover-fill data-label="смотреть проект">
 									смотреть проект
 									<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -145,7 +145,7 @@ const buildSrcSet = (media: PortfolioMedia | null) => {
 							<div class="pf-side__copy">
 								<h3 class="pf-side__title">{item.title}</h3>
 								<p class="pf-side__cat">{item.category}</p>
-								{!isPlc && <p class="pf-side__desc">{item.description}</p>}
+								{!isPlc && item.description && <p class="pf-side__desc">{item.description}</p>}
 								{isPlc && <p class="pf-side__desc pf-side__desc--placeholder">этот слот ждёт ваш проект</p>}
 								<a href={isPlc ? '#contact' : item.caseUrl} class="pf-side__cta">
 									{isPlc ? 'обсудить' : 'смотреть проект'}
@@ -736,11 +736,16 @@ const buildSrcSet = (media: PortfolioMedia | null) => {
 		display: none;
 	}
 
+	.pf-grid {
+		align-items: stretch;
+	}
+
 	.pf-grid > .pf-card {
 		flex: 0 0 auto;
 		width: 85%;
 		max-width: 360px;
 		scroll-snap-align: start;
+		min-height: 460px;
 	}
 
 	.pf-card--featured {
