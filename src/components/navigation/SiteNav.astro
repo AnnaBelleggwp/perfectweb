@@ -11,7 +11,7 @@ const items = [
 ];
 ---
 
-<nav class="site-nav" aria-label="основная навигация" data-site-nav>
+<nav class="site-nav is-pre-about" aria-label="основная навигация" data-site-nav>
 	<ul class="site-nav__list">
 		{items.map((item) => (
 			<li>
@@ -27,6 +27,7 @@ const items = [
 <script>
 	const nav = document.querySelector<HTMLElement>('[data-site-nav]');
 	const footer = document.querySelector('#footer');
+	const about = document.querySelector('#about');
 
 	if (nav && footer) {
 		const io = new IntersectionObserver(
@@ -38,6 +39,19 @@ const items = [
 			{ threshold: 0 },
 		);
 		io.observe(footer);
+	}
+
+	if (nav && about) {
+		const io = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					const revealed = entry.isIntersecting || entry.boundingClientRect.top < 0;
+					nav.classList.toggle('is-pre-about', !revealed);
+				}
+			},
+			{ threshold: 0 },
+		);
+		io.observe(about);
 	}
 
 	if (nav) {

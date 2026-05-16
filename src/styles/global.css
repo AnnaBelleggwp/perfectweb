@@ -567,7 +567,8 @@ svg {
 	}
 
 	.site-nav.is-hidden,
-	.site-nav.is-scroll-hidden {
+	.site-nav.is-scroll-hidden,
+	.site-nav.is-pre-about {
 		opacity: 0;
 		transform: translateX(20px);
 		pointer-events: none;
