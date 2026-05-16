@@ -112,15 +112,37 @@
 <script>
 	const button = document.querySelector<HTMLElement>('[data-theme-toggle]');
 	const about = document.querySelector('#about');
+	const footer = document.querySelector('[data-footer-term]');
 	if (button && about) {
-		const io = new IntersectionObserver(
+		let aboutVisible = false;
+		let footerVisible = false;
+
+		const update = () => {
+			button.classList.toggle('is-revealed', aboutVisible && !footerVisible);
+		};
+
+		const aboutIo = new IntersectionObserver(
 			(entries) => {
 				for (const entry of entries) {
-					button.classList.toggle('is-revealed', entry.isIntersecting || entry.boundingClientRect.top < 0);
+					aboutVisible = entry.isIntersecting || entry.boundingClientRect.top < 0;
 				}
+				update();
 			},
 			{ rootMargin: '0px 0px -10% 0px', threshold: 0 },
 		);
-		io.observe(about);
+		aboutIo.observe(about);
+
+		if (footer) {
+			const footerIo = new IntersectionObserver(
+				(entries) => {
+					for (const entry of entries) {
+						footerVisible = entry.isIntersecting;
+					}
+					update();
+				},
+				{ threshold: 0 },
+			);
+			footerIo.observe(footer);
+		}
 	}
 </script>
