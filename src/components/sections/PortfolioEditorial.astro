@@ -1,5 +1,5 @@
 ---
-import { DEFAULT_SITE_CONTENT, type PortfolioItem, type PortfolioMedia } from '../../data/site-content';
+import { DEFAULT_SITE_CONTENT, type PortfolioItem } from '../../data/site-content';
 
 interface Props {
 	portfolio?: PortfolioItem[];
@@ -9,17 +9,10 @@ const { portfolio = DEFAULT_SITE_CONTENT.portfolio } = Astro.props;
 const items = (portfolio.length ? portfolio : DEFAULT_SITE_CONTENT.portfolio).filter((p) => p.published);
 
 const isPlaceholder = (item: PortfolioItem) => /ваш(?:е)?\s+будущ/i.test(item.title);
+const isTemplateCard = (item: PortfolioItem) =>
+	isPlaceholder(item) || /^название\s/i.test(item.title);
 
 const categories = ['все проекты', ...new Set(items.map((p) => p.category))];
-
-const buildSrcSet = (media: PortfolioMedia | null) => {
-	if (!media) return '';
-	const sources = media.variants
-		.filter((v) => v.url && v.width > 0)
-		.map((v) => `${v.url} ${v.width}w`);
-	sources.push(`${media.originalUrl} ${media.width}w`);
-	return sources.join(', ');
-};
 
 
 ---
@@ -56,129 +49,102 @@ const buildSrcSet = (media: PortfolioMedia | null) => {
 			))}
 		</nav>
 
-		<!-- ── Project grid ────────────────────────────────── -->
-		<div class="pf-grid" data-pf-grid>
+		<!-- ── Project carousel deck ───────────────────────── -->
+		<div class="pf-stage" data-pf-stage>
+			<button
+				type="button"
+				class="pf-nav pf-nav--prev"
+				data-pf-prev
+				aria-label="предыдущий проект"
+			>
+				<svg width="22" height="22" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+					<path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+				</svg>
+			</button>
 
-			{items.map((item, idx) => {
-				const num = String(idx + 1).padStart(2, '0');
-				const isFeatured = idx === 0;
-				const isPlc = isPlaceholder(item);
+			<div class="pf-deck" data-pf-deck>
+				{items.map((item, idx) => {
+					const num = String(idx + 1).padStart(2, '0');
+					const isTpl = isTemplateCard(item);
 
-				return isFeatured ? (
-					<!-- Featured card (large left) -->
-					<article
-						class="pf-card pf-card--featured"
-						data-pf-card
-						data-category={item.category}
-						data-hue={item.hue}
-					>
-						<div class="pf-card__head">
-							<div class="pf-card__head-left">
-								<span class="pf-card__num">{num}</span>
-								<span class="pf-card__badge">избранный</span>
+					return (
+						<article
+							class:list={['pf-card3d', isTpl ? 'is-template' : 'is-filled']}
+							data-pf-card
+							data-category={item.category}
+							data-index={idx}
+							aria-hidden={idx === 0 ? 'false' : 'true'}
+							tabindex={idx === 0 ? 0 : -1}
+						>
+							<div class="pf-card3d__top">
+								<div class="pf-card3d__num" aria-hidden="true">
+									<span>{isTpl ? '?' : num}</span>
+								</div>
+								<div class="pf-card3d__id">
+									{isTpl ? (
+										<>
+											<p class="pf-card3d__title">
+												<span class="pf-sym">{`{`}</span> name <span class="pf-sym">{`}`}</span>
+											</p>
+											<p class="pf-card3d__cat">
+												<span class="pf-sym">{`<`}</span>category<span class="pf-sym">{` />`}</span>
+											</p>
+										</>
+									) : (
+										<>
+											<p class="pf-card3d__title">{item.title}</p>
+											<p class="pf-card3d__cat">{item.category}</p>
+										</>
+									)}
+								</div>
+								<div class="pf-card3d__year">{isTpl ? '____' : item.year}</div>
 							</div>
-							<span class="pf-card__year">{item.year}</span>
-						</div>
 
-						<div class="pf-card__body">
-							<div class="pf-card__copy">
-								<h3 class="pf-card__title">{item.title}</h3>
-								<p class="pf-card__cat">{item.category}{item.tags.length > 0 && ` / ${item.tags.slice(0, 2).join(' / ').toLowerCase()}`}</p>
-								{item.description && <p class="pf-card__desc">{item.description}</p>}
-								<a href={item.caseUrl} class="pf-card__cta" data-hover-fill data-label="смотреть проект">
-									смотреть проект
-									<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-										<path d="M1 13L13 1M13 1H5M13 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-									</svg>
-								</a>
-							</div>
-							<div class="pf-card__visual">
-								{item.preview ? (
-									<img
-										class="pf-card__img"
-										src={item.preview.originalUrl}
-										srcset={buildSrcSet(item.preview)}
-										sizes="(max-width: 767px) 90vw, 32vw"
-										width={item.preview.width}
-										height={item.preview.height}
-										alt={item.preview.alt || item.title}
-										loading="lazy"
-										decoding="async"
-									/>
+							<blockquote class="pf-card3d__body">
+								{isTpl ? (
+									<>
+										<p><span class="pf-sym">//</span> project.description</p>
+										<p><span class="pf-sym">//</span> ─ ─ ─ <span class="pf-caret" aria-hidden="true">_</span></p>
+									</>
 								) : (
-									<div class="pf-card__img-placeholder">
-										<span>превью</span>
-									</div>
+									item.description ? (
+										<p>{item.description}</p>
+									) : (
+										<p class="pf-card3d__body--empty"><span class="pf-sym">//</span> описание скоро</p>
+									)
 								)}
-							</div>
-						</div>
+							</blockquote>
 
-						<div class="pf-card__metrics">
-							<div class="pf-metric">
-								<span class="pf-metric__val">{item.duration}</span>
-								<span class="pf-metric__label">срок</span>
-							</div>
-							<div class="pf-metric">
-								<span class="pf-metric__val">{item.tags.length}</span>
-								<span class="pf-metric__label">технологий</span>
-							</div>
-							<div class="pf-metric">
-								<span class="pf-metric__val">{item.year}</span>
-								<span class="pf-metric__label">год</span>
-							</div>
-						</div>
-					</article>
-				) : (
-					<!-- Side cards (compact right) -->
-					<article
-						class:list={['pf-card pf-card--side', { 'pf-card--placeholder': isPlc }]}
-						data-pf-card
-						data-category={item.category}
-						data-hue={item.hue}
-					>
-						<div class="pf-card__head">
-							<span class="pf-card__num">{num}</span>
-							<span class="pf-card__year">{item.year}</span>
-						</div>
-
-						<div class="pf-side__body">
-							<div class="pf-side__copy">
-								<h3 class="pf-side__title">{item.title}</h3>
-								<p class="pf-side__cat">{item.category}</p>
-								{!isPlc && item.description && <p class="pf-side__desc">{item.description}</p>}
-								{isPlc && <p class="pf-side__desc pf-side__desc--placeholder">этот слот ждёт ваш проект</p>}
-								<a href={isPlc ? '#contact' : item.caseUrl} class="pf-side__cta">
-									{isPlc ? 'обсудить' : 'смотреть проект'}
-									<svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-										<path d="M1 9L9 1M9 1H3.5M9 1V6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-									</svg>
-								</a>
-							</div>
-							<div class="pf-side__visual">
-								{item.preview && !isPlc ? (
-									<img
-										class="pf-side__img"
-										src={item.preview.originalUrl}
-										srcset={buildSrcSet(item.preview)}
-										sizes="(max-width: 767px) 45vw, 18vw"
-										width={item.preview.width}
-										height={item.preview.height}
-										alt={item.preview.alt || item.title}
-										loading="lazy"
-										decoding="async"
-									/>
+							<footer class="pf-card3d__foot">
+								<span class="pf-card3d__tags">
+									{isTpl ? (
+										<><span class="pf-sym">[</span> tags <span class="pf-sym">]</span></>
+									) : (
+										item.tags.slice(0, 3).join(' · ')
+									)}
+								</span>
+								<span class="pf-card3d__dot" aria-hidden="true">•</span>
+								{isTpl ? (
+									<a href="#contact" class="pf-card3d__cta">обсудить</a>
 								) : (
-									<div class="pf-side__img-slot">
-										<span class="pf-side__slot-badge">
-											{isPlc ? '?' : '—'}
-										</span>
-									</div>
+									<a href={item.caseUrl} class="pf-card3d__cta">смотреть →</a>
 								)}
-							</div>
-						</div>
-					</article>
-				);
-			})}
+							</footer>
+						</article>
+					);
+				})}
+			</div>
+
+			<button
+				type="button"
+				class="pf-nav pf-nav--next"
+				data-pf-next
+				aria-label="следующий проект"
+			>
+				<svg width="22" height="22" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+					<path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+				</svg>
+			</button>
 		</div>
 
 		<!-- ── Bottom bar ──────────────────────────────────── -->
@@ -189,17 +155,11 @@ const buildSrcSet = (media: PortfolioMedia | null) => {
 					<path d="M1 13L13 1M13 1H5M13 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 				</svg>
 			</a>
-			<div class="pf-bottom__pager" data-pf-pager>
-				<span class="pf-pager__current" data-pf-page-cur>01</span>
-				<span class="pf-pager__sep">—</span>
-				<span class="pf-pager__total" data-pf-page-total>01</span>
-				<button type="button" class="pf-pager__btn" data-pf-prev aria-label="назад">
-					<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-				</button>
-				<button type="button" class="pf-pager__btn" data-pf-next aria-label="вперёд">
-					<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-				</button>
-			</div>
+			<p class="pf-counter" data-pf-counter>
+				<span data-pf-cur>01</span>
+				<span class="pf-counter__sep">/</span>
+				<span data-pf-total>01</span>
+			</p>
 		</div>
 
 	</div>
@@ -304,322 +264,278 @@ const buildSrcSet = (media: PortfolioMedia | null) => {
 	display: block;
 }
 
-/* ── Grid ───────────────────────────────────────────── */
-.pf-grid {
+/* ── Stage / carousel ──────────────────────────────── */
+.pf-stage {
+	position: relative;
 	display: grid;
-	grid-template-columns: 57fr 43fr;
-	grid-template-rows: 1fr 1fr;
-	gap: var(--section-gap);
-	min-height: 0;
-	min-width: 0;
+	grid-template-columns: auto 1fr auto;
+	align-items: center;
+	gap: clamp(0.75rem, 2vw, 1.5rem);
+	margin-top: clamp(1rem, 3vw, 2rem);
 }
 
-/* ── Featured card ──────────────────────────────────── */
-.pf-card--featured {
-	grid-row: 1 / -1;
+.pf-deck {
+	position: relative;
+	width: 100%;
+	height: clamp(380px, 50vh, 520px);
+	perspective: 1400px;
+	transform-style: preserve-3d;
+}
+
+.pf-nav {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border-radius: 999px;
+	border: 1px solid var(--divider-subtle);
+	background: transparent;
+	color: var(--color-text-muted);
+	cursor: pointer;
+	transition: color 200ms ease, border-color 200ms ease;
+}
+
+.pf-nav:hover,
+.pf-nav:focus-visible {
+	outline: none;
+	color: var(--color-accent);
+	border-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+}
+
+/* ── Card 3d ──────────────────────────────────────── */
+.pf-card3d {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: min(100%, 360px);
+	height: 100%;
 	display: flex;
 	flex-direction: column;
+	gap: 1rem;
+	padding: clamp(1.1rem, 2.4vw, 1.6rem);
+	border-radius: 14px;
 	background: var(--card-bg);
 	border: var(--card-border);
-	border-radius: var(--radius-card);
 	box-shadow: var(--card-shadow);
-	padding: clamp(1rem, 2.2vw, 1.75rem);
-	gap: clamp(0.75rem, 1.5vw, 1.25rem);
-	transition: box-shadow 320ms ease, border-color 320ms ease;
-	min-width: 0;
+	transform-origin: center center;
+	transform-style: preserve-3d;
+	will-change: transform, opacity;
+	transition:
+		transform 540ms cubic-bezier(0.22, 1, 0.36, 1),
+		opacity 420ms ease,
+		filter 420ms ease;
 }
 
-.pf-card--featured:hover {
-	box-shadow: var(--card-shadow), 0 0 40px rgba(255, 215, 0, 0.06);
-	border-color: rgba(255, 215, 0, 0.18);
+.pf-card3d[data-pos="0"] {
+	transform: translate(-50%, -50%) translateZ(0) rotateY(0deg) scale(1);
+	opacity: 1;
+	z-index: 5;
+	filter: none;
+	cursor: default;
 }
 
-.pf-card__head {
-	display: flex;
-	justify-content: space-between;
+.pf-card3d[data-pos="-1"] {
+	transform: translate(-50%, -50%) translateX(-110%) rotateY(35deg) scale(0.82);
+	opacity: 0.55;
+	z-index: 3;
+	filter: blur(0.3px) saturate(0.85);
+	cursor: pointer;
+}
+
+.pf-card3d[data-pos="1"] {
+	transform: translate(-50%, -50%) translateX(110%) rotateY(-35deg) scale(0.82);
+	opacity: 0.55;
+	z-index: 3;
+	filter: blur(0.3px) saturate(0.85);
+	cursor: pointer;
+}
+
+.pf-card3d[data-pos="hidden"] {
+	transform: translate(-50%, -50%) translateZ(-260px) scale(0.7);
+	opacity: 0;
+	z-index: 1;
+	pointer-events: none;
+}
+
+/* ── Card 3d content ──────────────────────────────── */
+.pf-card3d__top {
+	display: grid;
+	grid-template-columns: 56px 1fr auto;
 	align-items: center;
+	gap: 0.85rem;
 }
 
-.pf-card__head-left {
+.pf-card3d__num {
 	display: flex;
 	align-items: center;
-	gap: 0.65rem;
+	justify-content: center;
+	width: 56px;
+	height: 56px;
+	border-radius: 6px;
+	border: 1px solid var(--divider-subtle);
+	background: var(--avatar-bg);
+	color: var(--color-text-muted);
+	font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+	font-size: 1.1rem;
 }
 
-.pf-card__num {
-	font-size: clamp(0.85rem, 1.2vw, 1rem);
-	color: var(--color-accent);
+.pf-card3d.is-template .pf-card3d__num {
+	background: transparent;
+	border-style: dashed;
+	border-color: color-mix(in srgb, var(--color-text-muted) 55%, transparent);
+	font-size: 1.7rem;
+	font-weight: 300;
 	opacity: 0.7;
 }
 
-.pf-card__badge {
-	padding: 0.15rem 0.55rem;
-	border-radius: 5px;
-	border: 1px solid color-mix(in srgb, var(--color-accent) 38%, transparent);
-	background: color-mix(in srgb, var(--color-accent) 8%, transparent);
-	font-size: clamp(0.68rem, 1vw, 0.78rem);
-	letter-spacing: 0.12em;
-	color: var(--color-accent);
-	text-transform: uppercase;
+.pf-card3d__id {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+	min-width: 0;
 }
 
-.pf-card__year {
-	font-size: clamp(0.85rem, 1.2vw, 1rem);
+.pf-card3d__title {
+	margin: 0;
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: var(--color-text);
+	line-height: 1;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.pf-card3d.is-template .pf-card3d__title {
+	font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+	font-weight: 500;
+	font-size: 1.05rem;
+	color: var(--color-text-muted);
+	text-transform: none;
+	opacity: 0.9;
+}
+
+.pf-card3d__cat {
+	margin: 0;
+	font-size: 0.92rem;
+	color: var(--color-accent);
+	line-height: 1;
+	opacity: 0.85;
+}
+
+.pf-card3d.is-template .pf-card3d__cat {
+	font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+	font-size: 0.85rem;
 	color: var(--color-text-muted);
 	opacity: 0.6;
 }
 
-.pf-card__body {
+.pf-card3d__year {
+	font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+	font-size: 0.85rem;
+	color: var(--color-text-muted);
+	letter-spacing: 0.08em;
+}
+
+.pf-card3d__body {
+	margin: 0;
+	padding: 0.2rem 0;
 	flex: 1;
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: clamp(0.75rem, 1.5vw, 1.25rem);
-	min-height: 0;
-	min-width: 0;
-}
-
-.pf-card__copy {
-	display: flex;
-	flex-direction: column;
-	gap: clamp(0.5rem, 1vw, 0.8rem);
-	justify-content: center;
-	min-width: 0;
-}
-
-.pf-card__title {
-	margin: 0;
-	font-size: clamp(2rem, 4vw, 3.2rem);
-	font-weight: 600;
-	line-height: 0.9;
-	color: var(--color-text);
-	overflow-wrap: break-word;
-	word-break: break-word;
-}
-
-.pf-card__cat {
-	margin: 0;
-	font-size: clamp(0.88rem, 1.4vw, 1.05rem);
-	color: var(--color-accent);
-	font-weight: 400;
-	overflow-wrap: break-word;
-	word-break: break-word;
-}
-
-.pf-card__desc {
-	margin: 0;
-	font-size: clamp(0.92rem, 1.4vw, 1.08rem);
+	font-size: clamp(1rem, 2vw, 1.15rem);
 	line-height: 1.35;
-	color: var(--color-text-muted);
-	font-weight: 300;
-}
-
-.pf-card__cta {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.45rem;
-	margin-top: auto;
-	padding-top: clamp(0.4rem, 1vw, 0.65rem);
-	font-size: clamp(0.92rem, 1.4vw, 1.05rem);
 	color: var(--color-text);
-	transition: color 180ms ease;
 }
 
-.pf-card__cta:hover {
+.pf-card3d__body p {
+	margin: 0;
+}
+
+.pf-card3d.is-filled .pf-card3d__body p::before {
+	font-family: Georgia, "Times New Roman", serif;
 	color: var(--color-accent);
+	opacity: 0.7;
+	content: "«";
+	margin-right: 0.15em;
 }
 
-.pf-card__cta svg {
-	transition: transform 240ms ease;
-}
-
-.pf-card__cta:hover svg {
-	transform: translate(2px, -2px);
-}
-
-.pf-card__visual {
-	position: relative;
-	border-radius: calc(var(--radius-card) * 0.55);
-	overflow: hidden;
-	background: var(--divider-subtle);
-}
-
-.pf-card__img {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	display: block;
-	transition: transform 480ms cubic-bezier(0.22, 0.8, 0.24, 1);
-}
-
-.pf-card--featured:hover .pf-card__img {
-	transform: scale(1.03);
-}
-
-.pf-card__img-placeholder {
-	width: 100%;
-	height: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	color: var(--color-text-muted);
-	font-size: 0.9rem;
-}
-
-/* ── Metrics row ────────────────────────────────────── */
-.pf-card__metrics {
-	display: flex;
-	gap: clamp(1rem, 2.5vw, 2rem);
-	padding-top: clamp(0.5rem, 1vw, 0.75rem);
-	border-top: 1px solid var(--divider-accent);
-}
-
-.pf-metric {
-	display: flex;
-	flex-direction: column;
-	gap: 0.1rem;
-}
-
-.pf-metric__val {
-	font-size: clamp(1.15rem, 2vw, 1.6rem);
-	font-weight: 400;
-	color: var(--color-text);
-	line-height: 1;
-}
-
-.pf-metric__label {
-	font-size: clamp(0.72rem, 1.1vw, 0.85rem);
-	color: var(--color-text-muted);
-	line-height: 1;
-}
-
-/* ── Side cards ─────────────────────────────────────── */
-.pf-card--side {
-	display: flex;
-	flex-direction: column;
-	background: var(--card-bg);
-	border: var(--card-border);
-	border-radius: var(--radius-card);
-	box-shadow: var(--card-shadow);
-	padding: clamp(0.85rem, 1.8vw, 1.35rem);
-	gap: clamp(0.5rem, 1vw, 0.75rem);
-	transition: box-shadow 320ms ease, border-color 320ms ease;
-	min-width: 0;
-}
-
-.pf-card--side:hover {
-	box-shadow: var(--card-shadow), 0 0 30px rgba(255, 215, 0, 0.05);
-	border-color: rgba(255, 215, 0, 0.14);
-}
-
-.pf-side__body {
-	flex: 1;
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: clamp(0.5rem, 1.2vw, 1rem);
-	min-height: 0;
-	min-width: 0;
-}
-
-.pf-side__copy {
-	display: flex;
-	flex-direction: column;
-	gap: clamp(0.25rem, 0.6vw, 0.45rem);
-	min-width: 0;
-}
-
-.pf-side__title {
-	margin: 0;
-	font-size: clamp(1.2rem, 2.4vw, 1.75rem);
-	font-weight: 600;
-	line-height: 0.92;
-	color: var(--color-text);
-	overflow-wrap: break-word;
-	word-break: break-word;
-}
-
-.pf-side__cat {
-	margin: 0;
-	font-size: clamp(0.78rem, 1.15vw, 0.9rem);
+.pf-card3d.is-filled .pf-card3d__body p::after {
+	font-family: Georgia, "Times New Roman", serif;
 	color: var(--color-accent);
-	font-weight: 400;
+	opacity: 0.7;
+	content: "»";
+	margin-left: 0.15em;
 }
 
-.pf-side__desc {
-	margin: 0;
-	font-size: clamp(0.82rem, 1.2vw, 0.92rem);
-	line-height: 1.3;
+.pf-card3d.is-template .pf-card3d__body {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+	font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+	font-size: 0.95rem;
+	line-height: 1.4;
 	color: var(--color-text-muted);
-	font-weight: 300;
-	display: -webkit-box;
-	-webkit-line-clamp: 3;
-	-webkit-box-orient: vertical;
-	overflow: hidden;
+	opacity: 0.78;
 }
 
-.pf-side__desc--placeholder {
-	font-style: italic;
-	color: color-mix(in srgb, var(--color-accent) 60%, var(--color-text-muted));
+.pf-card3d__body--empty {
+	font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+	font-size: 0.92rem;
+	color: var(--color-text-muted);
+	opacity: 0.55;
 }
 
-.pf-side__cta {
-	display: inline-flex;
+.pf-sym {
+	color: var(--color-accent);
+	opacity: 0.7;
+}
+
+.pf-caret {
+	display: inline-block;
+	color: var(--color-accent);
+	margin-left: 0.1rem;
+	animation: pf-caret-blink 1.05s steps(1, end) infinite;
+}
+
+@keyframes pf-caret-blink {
+	0%, 49% { opacity: 1; }
+	50%, 100% { opacity: 0; }
+}
+
+.pf-card3d__foot {
+	display: flex;
 	align-items: center;
-	gap: 0.35rem;
-	margin-top: auto;
-	font-size: clamp(0.82rem, 1.2vw, 0.92rem);
+	gap: 0.5rem;
+	padding-top: 0.75rem;
+	border-top: 1px dashed var(--divider-subtle);
+	font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+	font-size: 0.78rem;
+	letter-spacing: 0.08em;
+	color: var(--color-text-muted);
+}
+
+.pf-card3d__tags {
+	color: var(--color-accent);
+	opacity: 0.85;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.pf-card3d__dot {
+	opacity: 0.5;
+	flex-shrink: 0;
+}
+
+.pf-card3d__cta {
+	margin-left: auto;
 	color: var(--color-text-muted);
 	transition: color 180ms ease;
 }
 
-.pf-side__cta:hover {
+.pf-card3d__cta:hover {
 	color: var(--color-accent);
-}
-
-.pf-side__cta svg {
-	transition: transform 240ms ease;
-}
-
-.pf-side__cta:hover svg {
-	transform: translate(1px, -1px);
-}
-
-.pf-side__visual {
-	position: relative;
-	border-radius: calc(var(--radius-card) * 0.45);
-	overflow: hidden;
-	background: var(--divider-subtle);
-}
-
-.pf-side__img {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	display: block;
-	transition: transform 480ms cubic-bezier(0.22, 0.8, 0.24, 1);
-}
-
-.pf-card--side:hover .pf-side__img {
-	transform: scale(1.04);
-}
-
-.pf-side__img-slot {
-	width: 100%;
-	height: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.pf-side__slot-badge {
-	color: var(--color-text-muted);
-	font-size: clamp(1.2rem, 2vw, 1.6rem);
-	font-weight: 300;
-	opacity: 0.45;
-}
-
-/* ── Placeholder card variant ───────────────────────── */
-.pf-card--placeholder {
-	border-style: dashed;
 }
 
 /* ── Bottom bar ─────────────────────────────────────── */
@@ -656,44 +572,21 @@ const buildSrcSet = (media: PortfolioMedia | null) => {
 	transform: translate(2px, -2px);
 }
 
-.pf-bottom__pager {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
+.pf-counter {
+	margin: 0;
 	font-family: 'JetBrains Mono', ui-monospace, monospace;
-	font-size: 0.82rem;
+	font-size: 0.85rem;
+	letter-spacing: 0.08em;
 	color: var(--color-text-muted);
-	letter-spacing: 0.06em;
-	text-transform: none;
 }
 
-.pf-pager__sep {
+.pf-counter__sep {
+	margin: 0 0.25rem;
 	opacity: 0.4;
-	margin: 0 0.15rem;
-}
-
-.pf-pager__btn {
-	width: 32px;
-	height: 32px;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	padding: 0;
-	border: 1px solid var(--divider-subtle);
-	border-radius: 6px;
-	background: transparent;
-	color: var(--color-text-muted);
-	cursor: pointer;
-	transition: color 180ms ease, border-color 180ms ease;
-}
-
-.pf-pager__btn:hover {
-	color: var(--color-accent);
-	border-color: rgba(255, 215, 0, 0.35);
 }
 
 /* ── Hidden by filter ───────────────────────────────── */
-.pf-card--hidden {
+.pf-card3d--hidden {
 	display: none;
 }
 
@@ -717,80 +610,30 @@ const buildSrcSet = (media: PortfolioMedia | null) => {
 		padding: 0.4rem 0.9rem;
 	}
 
-	.pf-grid {
-		display: flex;
-		grid-template-columns: none;
-		grid-template-rows: none;
-		gap: clamp(0.75rem, 2.5vw, 1rem);
-		overflow-x: auto;
-		overflow-y: hidden;
-		scroll-snap-type: x mandatory;
-		-webkit-overflow-scrolling: touch;
-		scrollbar-width: none;
-		margin-inline: calc(var(--shell-x) * -1);
-		padding-inline: var(--shell-x);
-		scroll-padding-inline: var(--shell-x);
+	.pf-stage {
+		gap: 0.5rem;
 	}
 
-	.pf-grid::-webkit-scrollbar {
-		display: none;
+	.pf-deck {
+		height: clamp(420px, 60vh, 500px);
 	}
 
-	.pf-grid {
-		align-items: stretch;
+	.pf-nav {
+		width: 36px;
+		height: 36px;
 	}
 
-	.pf-grid > .pf-card {
-		flex: 0 0 auto;
-		width: 85%;
-		max-width: 360px;
-		scroll-snap-align: start;
-		min-height: 460px;
+	.pf-card3d {
+		width: min(100%, 320px);
+		padding: clamp(0.95rem, 3vw, 1.3rem);
 	}
 
-	.pf-card--featured {
-		grid-row: auto;
-		padding: clamp(0.85rem, 3vw, 1.25rem);
+	.pf-card3d[data-pos="-1"] {
+		transform: translate(-50%, -50%) translateX(-92%) rotateY(28deg) scale(0.82);
 	}
 
-	.pf-card__body {
-		grid-template-columns: 1fr;
-		gap: clamp(0.65rem, 2vw, 1rem);
-	}
-
-	.pf-card__visual {
-		aspect-ratio: 16 / 10;
-		order: -1;
-	}
-
-	.pf-card__title {
-		font-size: clamp(1.8rem, 7vw, 2.5rem);
-	}
-
-	.pf-card__metrics {
-		flex-wrap: wrap;
-		gap: clamp(0.75rem, 3vw, 1.25rem);
-	}
-
-	.pf-card--side {
-		padding: clamp(0.75rem, 2.5vw, 1rem);
-	}
-
-	.pf-side__body {
-		grid-template-columns: 1fr 40%;
-		gap: clamp(0.5rem, 2vw, 0.75rem);
-	}
-
-	.pf-side__visual {
-		aspect-ratio: 1;
-	}
-
-	.pf-side__title {
-		font-size: clamp(1.15rem, 4.5vw, 1.5rem);
-	}
-
-	.pf-side__desc {
-		-webkit-line-clamp: 2;
+	.pf-card3d[data-pos="1"] {
+		transform: translate(-50%, -50%) translateX(92%) rotateY(-28deg) scale(0.82);
 	}
 
 	.pf-bottom {
@@ -808,8 +651,8 @@ const buildSrcSet = (media: PortfolioMedia | null) => {
 		white-space: nowrap;
 	}
 
-	.pf-bottom__pager {
-		display: none;
+	.pf-counter {
+		text-align: center;
 	}
 }
 
@@ -819,25 +662,26 @@ const buildSrcSet = (media: PortfolioMedia | null) => {
 		font-size: clamp(1.6rem, 6.6vw, 2.1rem);
 	}
 
-	.pf-side__body {
-		grid-template-columns: 1fr;
+	.pf-card3d__top {
+		grid-template-columns: 48px 1fr auto;
+		gap: 0.65rem;
 	}
 
-	.pf-side__visual {
-		aspect-ratio: 16 / 10;
+	.pf-card3d__num {
+		width: 48px;
+		height: 48px;
 	}
 }
 
 /* ── Reduced motion ─────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-	.pf-card--featured,
-	.pf-card--side {
-		transition: none;
+	.pf-card3d {
+		transition: opacity 200ms ease;
+		filter: none !important;
 	}
 
-	.pf-card__img,
-	.pf-side__img {
-		transition: none;
+	.pf-caret {
+		animation: none;
 	}
 }
 </style>
@@ -880,107 +724,129 @@ if (section) {
 		},
 	});
 
-	// ── 3D tilt on cards ──────────────────────────────────
-	cards.forEach((card) => {
-		gsap.set(card, { transformPerspective: 900 });
+	// ── Carousel (cover-flow) ─────────────────────────────
+	const stage = section.querySelector<HTMLElement>('[data-pf-stage]');
+	const deck = section.querySelector<HTMLElement>('[data-pf-deck]');
+	const prevBtn = section.querySelector<HTMLButtonElement>('[data-pf-prev]');
+	const nextBtn = section.querySelector<HTMLButtonElement>('[data-pf-next]');
+	const curEl = section.querySelector<HTMLElement>('[data-pf-cur]');
+	const totalEl = section.querySelector<HTMLElement>('[data-pf-total]');
+	const chips = section.querySelectorAll<HTMLButtonElement>('.pf-chip');
 
-		card.addEventListener('mousemove', (e) => {
-			const rect = card.getBoundingClientRect();
-			const x = (e.clientX - rect.left - rect.width / 2) / rect.width;
-			const y = (e.clientY - rect.top - rect.height / 2) / rect.height;
-			gsap.to(card, {
-				rotateY: x * 4,
-				rotateX: -y * 4,
-				duration: 0.35,
-				ease: 'power2.out',
-			});
+	let visible: HTMLElement[] = cards.slice();
+	let activeIndex = 0;
+
+	const applyPositions = () => {
+		const total = visible.length;
+		if (total === 0) return;
+
+		// hide all cards first
+		cards.forEach((card) => {
+			card.dataset.pos = 'hidden';
+			card.setAttribute('aria-hidden', 'true');
+			card.setAttribute('tabindex', '-1');
 		});
 
-		card.addEventListener('mouseleave', () => {
-			gsap.to(card, {
-				rotateX: 0,
-				rotateY: 0,
-				duration: 0.65,
-				ease: 'power3.out',
-			});
+		// place visible cards
+		visible.forEach((card, i) => {
+			const offset = (i - activeIndex + total) % total;
+			let pos: '0' | '1' | '-1' | 'hidden';
+			if (offset === 0) pos = '0';
+			else if (offset === 1 || (total === 2 && offset === 0)) pos = '1';
+			else if (offset === total - 1) pos = '-1';
+			else pos = 'hidden';
+			card.dataset.pos = pos;
+			const isFront = pos === '0';
+			card.setAttribute('aria-hidden', isFront ? 'false' : 'true');
+			card.setAttribute('tabindex', isFront ? '0' : '-1');
+		});
+
+		if (curEl) curEl.textContent = String(activeIndex + 1).padStart(2, '0');
+		if (totalEl) totalEl.textContent = String(total).padStart(2, '0');
+	};
+
+	const go = (next: number) => {
+		const total = visible.length;
+		if (total === 0) return;
+		activeIndex = (next + total) % total;
+		applyPositions();
+	};
+
+	prevBtn?.addEventListener('click', () => go(activeIndex - 1));
+	nextBtn?.addEventListener('click', () => go(activeIndex + 1));
+
+	// Click on side card → move to center
+	cards.forEach((card) => {
+		card.addEventListener('click', (e) => {
+			const pos = card.dataset.pos;
+			if (pos === '1') {
+				e.preventDefault();
+				go(activeIndex + 1);
+			} else if (pos === '-1') {
+				e.preventDefault();
+				go(activeIndex - 1);
+			}
 		});
 	});
 
-	// ── Filter chips ──────────────────────────────────────
-	const chips = section.querySelectorAll<HTMLButtonElement>('.pf-chip');
-	const grid = section.querySelector<HTMLElement>('[data-pf-grid]');
+	// Keyboard arrows when stage is in view
+	window.addEventListener('keydown', (event) => {
+		if (!deck) return;
+		const rect = deck.getBoundingClientRect();
+		const inView = rect.bottom > 0 && rect.top < window.innerHeight;
+		if (!inView) return;
+		if (event.key === 'ArrowLeft') {
+			event.preventDefault();
+			go(activeIndex - 1);
+		} else if (event.key === 'ArrowRight') {
+			event.preventDefault();
+			go(activeIndex + 1);
+		}
+	});
 
+	// Touch swipe
+	if (stage) {
+		let touchStartX = 0;
+		let touchStartY = 0;
+		const threshold = 48;
+		stage.addEventListener('touchstart', (event) => {
+			const t = event.touches[0];
+			if (!t) return;
+			touchStartX = t.clientX;
+			touchStartY = t.clientY;
+		}, { passive: true });
+		stage.addEventListener('touchend', (event) => {
+			const t = event.changedTouches[0];
+			if (!t) return;
+			const dx = t.clientX - touchStartX;
+			const dy = t.clientY - touchStartY;
+			if (Math.abs(dx) > threshold && Math.abs(dx) > Math.abs(dy)) {
+				if (dx < 0) go(activeIndex + 1);
+				else go(activeIndex - 1);
+			}
+		}, { passive: true });
+	}
+
+	// ── Filter chips ──────────────────────────────────────
 	chips.forEach((chip) => {
 		chip.addEventListener('click', () => {
 			chips.forEach((c) => c.classList.remove('is-active'));
 			chip.classList.add('is-active');
 
 			const filter = chip.dataset.filter;
-
 			cards.forEach((card) => {
 				const cat = card.dataset.category;
-				const show = filter === 'all' || cat === filter;
-				card.classList.toggle('pf-card--hidden', !show);
+				const matches = filter === 'all' || cat === filter;
+				card.classList.toggle('pf-card3d--hidden', !matches);
 			});
 
-			updatePager();
+			visible = cards.filter((c) => !c.classList.contains('pf-card3d--hidden'));
+			activeIndex = 0;
+			applyPositions();
 		});
 	});
 
-	// ── Pagination (pages of 3) ───────────────────────────
-	const PER_PAGE = 3;
-	let currentPage = 0;
-
-	const getVisibleCards = () => cards.filter((c) => !c.classList.contains('pf-card--hidden'));
-
-	const pageCur = section.querySelector<HTMLElement>('[data-pf-page-cur]');
-	const pageTotal = section.querySelector<HTMLElement>('[data-pf-page-total]');
-	const prevBtn = section.querySelector<HTMLElement>('[data-pf-prev]');
-	const nextBtn = section.querySelector<HTMLElement>('[data-pf-next]');
-
-	const updatePager = () => {
-		const visible = getVisibleCards();
-		const total = Math.max(1, Math.ceil(visible.length / PER_PAGE));
-		currentPage = Math.min(currentPage, total - 1);
-
-		if (pageCur) pageCur.textContent = String(currentPage + 1).padStart(2, '0');
-		if (pageTotal) pageTotal.textContent = String(total).padStart(2, '0');
-
-		visible.forEach((card, i) => {
-			const inPage = i >= currentPage * PER_PAGE && i < (currentPage + 1) * PER_PAGE;
-			card.style.display = inPage ? '' : 'none';
-		});
-
-		// re-layout grid: first visible card = featured
-		const pageCards = visible.slice(currentPage * PER_PAGE, (currentPage + 1) * PER_PAGE);
-		pageCards.forEach((card, i) => {
-			if (i === 0) {
-				card.classList.add('pf-card--featured');
-				card.classList.remove('pf-card--side');
-				card.style.gridRow = '1 / -1';
-			} else {
-				card.classList.remove('pf-card--featured');
-				card.classList.add('pf-card--side');
-				card.style.gridRow = '';
-			}
-		});
-	};
-
-	prevBtn?.addEventListener('click', () => {
-		const visible = getVisibleCards();
-		const total = Math.max(1, Math.ceil(visible.length / PER_PAGE));
-		currentPage = (currentPage - 1 + total) % total;
-		updatePager();
-	});
-
-	nextBtn?.addEventListener('click', () => {
-		const visible = getVisibleCards();
-		const total = Math.max(1, Math.ceil(visible.length / PER_PAGE));
-		currentPage = (currentPage + 1) % total;
-		updatePager();
-	});
-
-	updatePager();
+	applyPositions();
 
 	// ── CTA fill effect ───────────────────────────────────
 	section.querySelectorAll<HTMLElement>('[data-hover-fill]').forEach((link) => {
