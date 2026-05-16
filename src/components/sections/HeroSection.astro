@@ -19,7 +19,10 @@
 				>
 					обсудить проект
 				</a>
-				<span class="hero-scroll-cue" aria-hidden="true">просто листай</span>
+				<span class="hero-scroll-cue" aria-hidden="true">
+				<span class="hero-scroll-cue__desktop">просто листай</span>
+				<span class="hero-scroll-cue__mobile">нажми на паутину что бы познать больше. а потом просто листай</span>
+			</span>
 			</div>
 		</div>
 	</div>
@@ -127,6 +130,17 @@
 	color: color-mix(in srgb, var(--color-text) 55%, transparent);
 	letter-spacing: 0.04em;
 	user-select: none;
+	text-align: center;
+	max-width: min(36ch, 86vw);
+	line-height: 1.3;
+}
+
+.hero-scroll-cue__mobile {
+	display: none;
+}
+
+.hero-scroll-cue__desktop {
+	display: inline;
 }
 
 .hero-link:hover,
@@ -175,6 +189,14 @@
 @media (max-width: 767px) {
 	.hero-actions {
 		padding-bottom: clamp(0.6rem, 2.6vh, 1rem);
+	}
+
+	.hero-scroll-cue__desktop {
+		display: none;
+	}
+
+	.hero-scroll-cue__mobile {
+		display: inline;
 	}
 }
 </style>
