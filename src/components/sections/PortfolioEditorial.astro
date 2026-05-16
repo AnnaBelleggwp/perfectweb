@@ -701,7 +701,6 @@ if (section) {
 	const cards = gsap.utils.toArray<HTMLElement>('[data-pf-card]', section);
 
 	gsap.set(reveals, { opacity: 0, y: 28 });
-	gsap.set(cards, { opacity: 0, y: 36 });
 
 	ScrollTrigger.create({
 		trigger: section,
@@ -713,15 +712,6 @@ if (section) {
 				y: 0,
 				duration: 0.7,
 				stagger: 0.09,
-				ease: 'power3.out',
-			});
-
-			gsap.to(cards, {
-				opacity: 1,
-				y: 0,
-				duration: 0.8,
-				stagger: 0.14,
-				delay: 0.3,
 				ease: 'power3.out',
 			});
 		},
