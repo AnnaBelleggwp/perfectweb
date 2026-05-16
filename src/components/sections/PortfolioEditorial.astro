@@ -718,9 +718,29 @@ const buildSrcSet = (media: PortfolioMedia | null) => {
 	}
 
 	.pf-grid {
-		grid-template-columns: 1fr;
-		grid-template-rows: auto;
-		gap: clamp(0.75rem, 2vw, 1rem);
+		display: flex;
+		grid-template-columns: none;
+		grid-template-rows: none;
+		gap: clamp(0.75rem, 2.5vw, 1rem);
+		overflow-x: auto;
+		overflow-y: hidden;
+		scroll-snap-type: x mandatory;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+		margin-inline: calc(var(--shell-x) * -1);
+		padding-inline: var(--shell-x);
+		scroll-padding-inline: var(--shell-x);
+	}
+
+	.pf-grid::-webkit-scrollbar {
+		display: none;
+	}
+
+	.pf-grid > .pf-card {
+		flex: 0 0 auto;
+		width: 85%;
+		max-width: 360px;
+		scroll-snap-align: start;
 	}
 
 	.pf-card--featured {
