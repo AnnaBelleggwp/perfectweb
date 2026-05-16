@@ -32,9 +32,9 @@ const buildSrcSet = (media: PortfolioMedia | null) => {
 			<div class="pf-head__mark">
 				<span class="section-mark pf-reveal">мои работы</span>
 			</div>
-			<h2 class="pf-title pf-reveal">портфолио</h2>
+			<h2 class="pf-title pf-reveal">отобранные проекты,</h2>
 			<p class="pf-subtitle pf-reveal">
-				отобранные проекты, в которых идея,<br />
+				в которых идея,<br />
 				технологии и визуал работают как единое целое.
 			</p>
 		</div>
@@ -183,10 +183,6 @@ const buildSrcSet = (media: PortfolioMedia | null) => {
 
 		<!-- ── Bottom bar ──────────────────────────────────── -->
 		<div class="pf-bottom pf-reveal">
-			<div class="pf-bottom__left">
-				<span class="pf-bottom__dot" aria-hidden="true"></span>
-				<span class="pf-bottom__prompt">хотите похожий проект?</span>
-			</div>
 			<a href="#contact" class="pf-bottom__cta" data-hover-fill data-label="обсудить проект">
 				обсудить проект
 				<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -638,24 +634,6 @@ const buildSrcSet = (media: PortfolioMedia | null) => {
 	flex-wrap: wrap;
 }
 
-.pf-bottom__left {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-}
-
-.pf-bottom__dot {
-	width: 8px;
-	height: 8px;
-	background: var(--color-accent);
-	box-shadow: 0 0 10px var(--accent-glow-soft);
-}
-
-.pf-bottom__prompt {
-	font-size: clamp(0.88rem, 1.4vw, 1.05rem);
-	color: var(--color-text-muted);
-}
-
 .pf-bottom__cta {
 	display: inline-flex;
 	align-items: center;
@@ -794,10 +772,6 @@ const buildSrcSet = (media: PortfolioMedia | null) => {
 		flex-direction: column;
 		align-items: stretch;
 		gap: clamp(0.75rem, 2vw, 1rem);
-	}
-
-	.pf-bottom__left {
-		justify-content: flex-start;
 	}
 
 	.pf-bottom__cta {
