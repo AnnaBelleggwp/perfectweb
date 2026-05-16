@@ -1,88 +1,6 @@
 ---
-type Review = {
-	name: string;
-	role: string;
-	project: string;
-	date: string;
-	stars: number;
-	quote: string;
-};
-
-const reviews: Review[] = [
-	{
-		name: 'иван петров',
-		role: 'основатель студии',
-		project: 'orbital.studio',
-		date: '03.2026',
-		stars: 5,
-		quote:
-			'собрали лендинг студии за две недели — от первого макета до продакшена. анимации тонкие, ни одного лишнего движения. получили ровно ту эстетику, за которой пришли.',
-	},
-	{
-		name: 'анна смирнова',
-		role: 'продакт-менеджер',
-		project: 'nova fintech',
-		date: '01.2026',
-		stars: 5,
-		quote:
-			'редкий случай, когда подрядчик сам предлагает идеи сильнее твоих. интерфейс личного кабинета переделали с нуля — конверсия в активацию выросла на 18%.',
-	},
-	{
-		name: 'олег зайцев',
-		role: 'арт-директор',
-		project: 'grid agency',
-		date: '11.2025',
-		stars: 5,
-		quote:
-			'чистая типографика, выверенная сетка, живые микровзаимодействия. коллеги пишут в директ — спрашивают, кто делал. всех отправляю сюда.',
-	},
-];
-
-const hashCode = (input: string): number => {
-	let hash = 2166136261;
-	for (let i = 0; i < input.length; i++) {
-		hash ^= input.charCodeAt(i);
-		hash = Math.imul(hash, 16777619);
-	}
-	return hash >>> 0;
-};
-
-const mulberry32 = (seed: number) => {
-	let t = seed >>> 0;
-	return () => {
-		t = (t + 0x6d2b79f5) >>> 0;
-		let r = t;
-		r = Math.imul(r ^ (r >>> 15), r | 1);
-		r ^= r + Math.imul(r ^ (r >>> 7), r | 61);
-		return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
-	};
-};
-
-const pixelAvatar = (seedInput: string) => {
-	const size = 7;
-	const rand = mulberry32(hashCode(seedInput));
-	const mid = Math.ceil(size / 2);
-	const cells: string[] = [];
-	const goldThreshold = 0.86;
-	const fillThreshold = 0.5;
-	for (let y = 0; y < size; y++) {
-		for (let x = 0; x < mid; x++) {
-			const r = rand();
-			if (r < fillThreshold) continue;
-			const pixelClass = r > goldThreshold ? 'avatar-pixel avatar-pixel--accent' : 'avatar-pixel';
-			cells.push(
-				`<rect class="${pixelClass}" x="${x}" y="${y}" width="1" height="1"/>`,
-			);
-			const mirrorX = size - 1 - x;
-			if (mirrorX !== x) {
-				cells.push(
-					`<rect class="${pixelClass}" x="${mirrorX}" y="${y}" width="1" height="1"/>`,
-				);
-			}
-		}
-	}
-	return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges" width="100%" height="100%"><rect class="avatar-bg" width="${size}" height="${size}"/>${cells.join('')}</svg>`;
-};
+const SKELETON_COUNT = 3;
+const skeletons = Array.from({ length: SKELETON_COUNT });
 ---
 
 <section id="reviews" class="section-anchor reviews-section">
@@ -109,44 +27,36 @@ const pixelAvatar = (seedInput: string) => {
 		</button>
 
 		<div class="reviews-deck" data-reviews-deck aria-live="polite">
-			{reviews.map((review, index) => (
+			{skeletons.map((_, index) => (
 				<article
-					class="reviews-card"
+					class="reviews-card reviews-card--skeleton"
 					data-reviews-card
 					data-depth={index}
 					aria-hidden={index === 0 ? 'false' : 'true'}
 					tabindex={index === 0 ? 0 : -1}
 				>
 					<div class="reviews-card__top">
-						<div
-							class="reviews-avatar"
-							aria-hidden="true"
-							set:html={pixelAvatar(review.name)}
-						/>
+						<div class="reviews-avatar reviews-skel reviews-skel--avatar" aria-hidden="true"></div>
 						<div class="reviews-id">
-							<p class="reviews-name">{review.name}</p>
-							<p class="reviews-role">{review.role}</p>
+							<span class="reviews-skel reviews-skel--name" aria-hidden="true"></span>
+							<span class="reviews-skel reviews-skel--role" aria-hidden="true"></span>
 						</div>
-						<div class="reviews-stars" aria-label={`оценка ${review.stars} из 5`}>
-							{Array.from({ length: 5 }).map((_, i) => (
-								<span
-									class={`reviews-star${i < review.stars ? ' is-on' : ''}`}
-									aria-hidden="true"
-								>
-									★
-								</span>
+						<div class="reviews-stars" aria-hidden="true">
+							{Array.from({ length: 5 }).map(() => (
+								<span class="reviews-star">☆</span>
 							))}
 						</div>
 					</div>
 
 					<blockquote class="reviews-quote">
-						<p>{review.quote}</p>
+						<span class="reviews-skel reviews-skel--line" aria-hidden="true"></span>
+						<span class="reviews-skel reviews-skel--line" aria-hidden="true"></span>
+						<span class="reviews-skel reviews-skel--line reviews-skel--line-short" aria-hidden="true"></span>
 					</blockquote>
 
 					<footer class="reviews-card__foot">
-						<span class="reviews-project">{review.project}</span>
-						<span class="reviews-dot" aria-hidden="true">•</span>
-						<span class="reviews-date">{review.date}</span>
+						<span class="reviews-skel reviews-skel--meta" aria-hidden="true"></span>
+						<span class="reviews-skel reviews-skel--meta reviews-skel--meta-short" aria-hidden="true"></span>
 					</footer>
 				</article>
 			))}
@@ -164,7 +74,7 @@ const pixelAvatar = (seedInput: string) => {
 
 	<footer class="reviews-footer">
 		<div class="reviews-dots" role="tablist" aria-label="навигация по отзывам">
-			{reviews.map((_, index) => (
+			{skeletons.map((_, index) => (
 				<button
 					type="button"
 					class="reviews-dot-btn"
@@ -172,14 +82,14 @@ const pixelAvatar = (seedInput: string) => {
 					data-index={index}
 					role="tab"
 					aria-selected={index === 0 ? 'true' : 'false'}
-					aria-label={`отзыв ${index + 1}`}
+					aria-label={`слот ${index + 1}`}
 				/>
 			))}
 		</div>
 		<p class="reviews-counter" data-reviews-counter>
 			<span data-reviews-current>01</span>
 			<span class="reviews-counter__sep">/</span>
-			<span>{String(reviews.length).padStart(2, '0')}</span>
+			<span>{String(SKELETON_COUNT).padStart(2, '0')}</span>
 		</p>
 	</footer>
 </section>
@@ -470,6 +380,107 @@ const pixelAvatar = (seedInput: string) => {
 
 	.reviews-date {
 		font-variant-numeric: tabular-nums;
+	}
+
+	/* ── Skeleton state ── */
+	.reviews-skel {
+		--skel-base: rgba(255, 255, 255, 0.055);
+		--skel-shine: rgba(255, 255, 255, 0.12);
+		position: relative;
+		display: block;
+		background: var(--skel-base);
+		border-radius: 4px;
+		overflow: hidden;
+	}
+
+	.reviews-skel::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			90deg,
+			transparent 0%,
+			var(--skel-shine) 50%,
+			transparent 100%
+		);
+		transform: translateX(-100%);
+		animation: reviews-skel-shimmer 1.8s ease-in-out infinite;
+		animation-delay: var(--skel-delay, 0s);
+	}
+
+	:root[data-theme="light"] .reviews-skel {
+		--skel-base: rgba(0, 0, 0, 0.06);
+		--skel-shine: rgba(0, 0, 0, 0.1);
+	}
+
+	.reviews-skel--avatar {
+		width: 56px;
+		height: 56px;
+		border-radius: 6px;
+		--skel-delay: 0s;
+	}
+
+	.reviews-skel--name {
+		width: 62%;
+		height: 1.2rem;
+		--skel-delay: 0.1s;
+	}
+
+	.reviews-skel--role {
+		width: 44%;
+		height: 0.78rem;
+		margin-top: 0.45rem;
+		--skel-delay: 0.18s;
+	}
+
+	.reviews-skel--line {
+		width: 100%;
+		height: 0.85rem;
+		margin-bottom: 0.55rem;
+		--skel-delay: 0.25s;
+	}
+
+	.reviews-skel--line:nth-child(2) {
+		--skel-delay: 0.32s;
+	}
+
+	.reviews-skel--line-short {
+		width: 62%;
+		margin-bottom: 0;
+		--skel-delay: 0.4s;
+	}
+
+	.reviews-skel--meta {
+		width: 5rem;
+		height: 0.7rem;
+		--skel-delay: 0.48s;
+	}
+
+	.reviews-skel--meta-short {
+		width: 3.2rem;
+		--skel-delay: 0.55s;
+	}
+
+	.reviews-card--skeleton .reviews-quote {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
+
+	.reviews-card--skeleton .reviews-card__foot {
+		gap: 0.75rem;
+	}
+
+	@keyframes reviews-skel-shimmer {
+		0% { transform: translateX(-100%); }
+		60% { transform: translateX(100%); }
+		100% { transform: translateX(100%); }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.reviews-skel::after {
+			animation: none;
+		}
 	}
 
 	.reviews-nav {
