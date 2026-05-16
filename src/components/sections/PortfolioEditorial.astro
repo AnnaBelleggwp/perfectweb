@@ -329,33 +329,32 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 }
 
 .pf-card3d[data-pos="0"] {
-	transform: translate(-50%, -50%) translateZ(0) rotateY(0deg) scale(1);
+	transform: translate(-50%, -50%) translateX(-18%) rotateY(0deg) scale(1);
 	opacity: 1;
 	z-index: 5;
 	filter: none;
 	cursor: default;
 }
 
-.pf-card3d[data-pos="-1"] {
-	transform: translate(-50%, -50%) translateX(-110%) rotateY(35deg) scale(0.82);
-	opacity: 0.55;
+.pf-card3d[data-pos="1"] {
+	transform: translate(-50%, -50%) translateX(48%) rotateY(-42deg) scale(0.86);
+	opacity: 0.78;
 	z-index: 3;
-	filter: blur(0.3px) saturate(0.85);
+	filter: blur(0.3px) saturate(0.9);
 	cursor: pointer;
 }
 
-.pf-card3d[data-pos="1"] {
-	transform: translate(-50%, -50%) translateX(110%) rotateY(-35deg) scale(0.82);
-	opacity: 0.55;
-	z-index: 3;
-	filter: blur(0.3px) saturate(0.85);
-	cursor: pointer;
+.pf-card3d[data-pos="-1"] {
+	transform: translate(-50%, -50%) translateX(-130%) rotateY(-42deg) scale(0.82);
+	opacity: 0;
+	z-index: 1;
+	pointer-events: none;
 }
 
 .pf-card3d[data-pos="hidden"] {
-	transform: translate(-50%, -50%) translateZ(-260px) scale(0.7);
+	transform: translate(-50%, -50%) translateX(60%) translateZ(-260px) rotateY(-42deg) scale(0.7);
 	opacity: 0;
-	z-index: 1;
+	z-index: 0;
 	pointer-events: none;
 }
 
@@ -628,12 +627,16 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 		padding: clamp(0.95rem, 3vw, 1.3rem);
 	}
 
-	.pf-card3d[data-pos="-1"] {
-		transform: translate(-50%, -50%) translateX(-92%) rotateY(28deg) scale(0.82);
+	.pf-card3d[data-pos="0"] {
+		transform: translate(-50%, -50%) translateX(-12%) rotateY(0deg) scale(1);
 	}
 
 	.pf-card3d[data-pos="1"] {
-		transform: translate(-50%, -50%) translateX(92%) rotateY(-28deg) scale(0.82);
+		transform: translate(-50%, -50%) translateX(50%) rotateY(-36deg) scale(0.84);
+	}
+
+	.pf-card3d[data-pos="-1"] {
+		transform: translate(-50%, -50%) translateX(-120%) rotateY(-36deg) scale(0.8);
 	}
 
 	.pf-bottom {
@@ -775,16 +778,12 @@ if (section) {
 	prevBtn?.addEventListener('click', () => go(activeIndex - 1));
 	nextBtn?.addEventListener('click', () => go(activeIndex + 1));
 
-	// Click on side card → move to center
+	// Click on right peek → it becomes center
 	cards.forEach((card) => {
 		card.addEventListener('click', (e) => {
-			const pos = card.dataset.pos;
-			if (pos === '1') {
+			if (card.dataset.pos === '1') {
 				e.preventDefault();
 				go(activeIndex + 1);
-			} else if (pos === '-1') {
-				e.preventDefault();
-				go(activeIndex - 1);
 			}
 		});
 	});
