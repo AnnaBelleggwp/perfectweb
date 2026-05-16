@@ -561,6 +561,15 @@ svg {
 		padding: 0.35rem 0.9rem 0.35rem 1.25rem;
 		border-radius: 0;
 		pointer-events: auto;
+		transition:
+			opacity 280ms ease,
+			transform 320ms cubic-bezier(0.22, 0.8, 0.24, 1);
+	}
+
+	.site-nav.is-hidden {
+		opacity: 0;
+		transform: translateX(20px);
+		pointer-events: none;
 	}
 
 	.site-nav::after {

@@ -11,7 +11,7 @@ const items = [
 ];
 ---
 
-<nav class="site-nav" aria-label="основная навигация">
+<nav class="site-nav" aria-label="основная навигация" data-site-nav>
 	<ul class="site-nav__list">
 		{items.map((item) => (
 			<li>
@@ -23,3 +23,19 @@ const items = [
 		))}
 	</ul>
 </nav>
+
+<script>
+	const nav = document.querySelector<HTMLElement>('[data-site-nav]');
+	const footer = document.querySelector('#footer');
+	if (nav && footer) {
+		const io = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					nav.classList.toggle('is-hidden', entry.isIntersecting);
+				}
+			},
+			{ threshold: 0 },
+		);
+		io.observe(footer);
+	}
+</script>
