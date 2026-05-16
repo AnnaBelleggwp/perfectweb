@@ -324,7 +324,7 @@ svg {
 	left: 0;
 	right: 0;
 	z-index: 40;
-	padding-top: 1rem;
+	padding-top: 0.25rem;
 }
 
 .page-stack {
