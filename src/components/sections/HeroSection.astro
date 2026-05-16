@@ -101,7 +101,7 @@
 .hero-actions {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
+	justify-content: flex-end;
 	gap: 0.75rem;
 	padding-top: 10px;
 }
@@ -111,10 +111,15 @@
 	--hero-fill-target: 220px;
 	--hero-fill-x: 50%;
 	--hero-fill-y: 50%;
-	position: relative;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 2;
 	display: inline-flex;
 	align-items: center;
-	font-size: clamp(2.2rem, 4.4vw, 2.8rem);
+	justify-content: center;
+	font-size: clamp(2.6rem, 5.6vw, 4.5rem);
 	font-weight: 300;
 	color: var(--color-text);
 	white-space: nowrap;
@@ -185,18 +190,6 @@
 	.hero-actions {
 		padding-bottom: clamp(0.6rem, 2.6vh, 1rem);
 	}
-
-	.hero-scroll-hint {
-		margin-left: auto;
-	}
-
-	.hero-link {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		z-index: 2;
-	}
 }
 </style>
 
@@ -247,4 +240,66 @@
 			link.classList.remove('is-hovered');
 		});
 	});
+
+	// ── Scramble / decrypt cycler on hero CTA ───────────────────
+	const heroLink = document.querySelector<HTMLAnchorElement>('.hero-link');
+	if (heroLink) {
+		const phrases = ['обсудить проект', 'обсудить дизайн', 'обсудить что-угодно'];
+		const POOL = 'абвгдежзийклмнопрстуфхцчшщъыьэюя0123456789#@$%&*<>/=+-';
+		const HOLD_MS = 4800;
+		const DURATION_MS = 600;
+		const FRAMES = Math.round(DURATION_MS / 16);
+
+		const randChar = () => POOL.charAt(Math.floor(Math.random() * POOL.length));
+		const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+		let activeIdx = 0;
+		let stopped = false;
+
+		const scrambleTo = (target: string): Promise<void> => new Promise((resolve) => {
+			if (prefersReduced) {
+				heroLink.textContent = target;
+				heroLink.dataset.label = target;
+				return resolve();
+			}
+			const previous = (heroLink.textContent ?? '').trim();
+			const maxLen = Math.max(previous.length, target.length);
+			const settle: number[] = [];
+			for (let i = 0; i < maxLen; i++) {
+				const base = Math.floor((i / Math.max(1, maxLen)) * FRAMES * 0.55);
+				const jitter = Math.floor(Math.random() * (FRAMES * 0.5));
+				settle.push(base + jitter);
+			}
+			const last = Math.max(...settle);
+
+			let frame = 0;
+			const tick = () => {
+				if (stopped) return resolve();
+				let out = '';
+				for (let i = 0; i < maxLen; i++) {
+					out += frame >= settle[i] ? (target[i] ?? '') : randChar();
+				}
+				heroLink.textContent = out;
+				heroLink.dataset.label = out;
+				frame++;
+				if (frame > last + 1) {
+					heroLink.textContent = target;
+					heroLink.dataset.label = target;
+					return resolve();
+				}
+				requestAnimationFrame(tick);
+			};
+			requestAnimationFrame(tick);
+		});
+
+		const loop = async () => {
+			while (!stopped) {
+				await new Promise((r) => setTimeout(r, HOLD_MS));
+				if (stopped) break;
+				activeIdx = (activeIdx + 1) % phrases.length;
+				await scrambleTo(phrases[activeIdx]);
+			}
+		};
+		void loop();
+	}
 </script>
