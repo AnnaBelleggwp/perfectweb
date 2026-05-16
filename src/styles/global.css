@@ -555,9 +555,8 @@ svg {
 
 	.site-nav {
 		position: fixed;
-		top: 50%;
+		top: clamp(0.75rem, 2.5vh, 1.5rem);
 		right: 0;
-		transform: translateY(-50%);
 		z-index: 40;
 		padding: 0.35rem 0.9rem 0.35rem 1.25rem;
 		border-radius: 0;
