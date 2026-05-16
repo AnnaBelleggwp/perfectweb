@@ -19,12 +19,7 @@
 				>
 					обсудить проект
 				</a>
-				<span class="hero-scroll-hint" aria-hidden="true">
-					<svg width="16" height="24" viewBox="0 0 16 24" fill="none">
-						<rect x="0.75" y="0.75" width="14.5" height="22.5" rx="7.25" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
-						<rect class="hero-scroll-dot" x="7" y="5" width="2" height="5" rx="1" fill="currentColor" opacity="0.7"/>
-					</svg>
-				</span>
+				<span class="hero-scroll-cue" aria-hidden="true">просто листай</span>
 			</div>
 		</div>
 	</div>
@@ -99,11 +94,15 @@
 }
 
 .hero-actions {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 2;
 	display: flex;
+	flex-direction: column;
 	align-items: center;
-	justify-content: flex-end;
-	gap: 0.75rem;
-	padding-top: 10px;
+	gap: 0.4rem;
 }
 
 .hero-link {
@@ -111,11 +110,7 @@
 	--hero-fill-target: 220px;
 	--hero-fill-x: 50%;
 	--hero-fill-y: 50%;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	z-index: 2;
+	position: relative;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -124,6 +119,14 @@
 	color: var(--color-text);
 	white-space: nowrap;
 	transition: color 180ms ease;
+}
+
+.hero-scroll-cue {
+	font-size: clamp(0.9rem, 1.3vw, 1.05rem);
+	font-weight: 300;
+	color: color-mix(in srgb, var(--color-text) 55%, transparent);
+	letter-spacing: 0.04em;
+	user-select: none;
 }
 
 .hero-link:hover,
@@ -155,22 +158,6 @@
 	--hero-fill-size: var(--hero-fill-target);
 }
 
-.hero-scroll-hint {
-	color: var(--color-accent);
-	display: flex;
-	flex-shrink: 0;
-}
-
-@keyframes scroll-dot {
-	0%   { transform: translateY(0);   opacity: 0.7; }
-	60%  { transform: translateY(7px); opacity: 0.2; }
-	100% { transform: translateY(0);   opacity: 0.7; }
-}
-
-.hero-scroll-dot {
-	animation: scroll-dot 2s ease-in-out infinite;
-}
-
 @property --hero-fill-size {
 	syntax: '<length>';
 	inherits: false;
@@ -178,7 +165,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.hero-scroll-dot,
 	.hero-link { animation: none; }
 
 	.hero-link::after {
