@@ -1,32 +1,22 @@
 ---
-import fs from 'node:fs';
-import path from 'node:path';
-
-const SRC_DIR = path.resolve(import.meta.dirname, '../../');
-
-const SOURCE_FILES = [
-	'components/sections/HeroSection.astro',
-	'components/sections/AboutSection.astro',
-	'components/sections/ServicesNumbered.astro',
-	'components/sections/PortfolioEditorial.astro',
-	'components/sections/ProcessSection.astro',
-	'components/sections/ReviewsSection.astro',
-	'components/sections/FaqSection.astro',
-	'components/sections/ContactSection.astro',
-	'components/sections/FooterSection.astro',
-	'components/navigation/SiteNav.astro',
-	'styles/global.css',
-	'scripts/bootstrap.ts',
-	'scripts/gsap.ts',
-	'scripts/dot-grid.ts',
-	'scripts/lenis.ts',
-	'scripts/scroll-spy.ts',
-	'scripts/theme.ts',
-	'scripts/code-rain.ts',
-	'pages/index.astro',
-	'layouts/MainLayout.astro',
-	'data/site-content.ts',
-];
+const rawModules = import.meta.glob(
+	[
+		'../sections/*.astro',
+		'../navigation/SiteNav.astro',
+		'../../styles/global.css',
+		'../../scripts/bootstrap.ts',
+		'../../scripts/gsap.ts',
+		'../../scripts/dot-grid.ts',
+		'../../scripts/lenis.ts',
+		'../../scripts/scroll-spy.ts',
+		'../../scripts/theme.ts',
+		'../../scripts/code-rain.ts',
+		'../../pages/index.astro',
+		'../../layouts/MainLayout.astro',
+		'../../data/site-content.ts',
+	],
+	{ query: '?raw', import: 'default', eager: true },
+) as Record<string, string>;
 
 const MIN_LINE_LENGTH = 8;
 const MAX_LINE_LENGTH = 90;
@@ -34,15 +24,7 @@ const MAX_LINE_LENGTH = 90;
 const collectLines = (): string[] => {
 	const allLines: string[] = [];
 
-	for (const relPath of SOURCE_FILES) {
-		const fullPath = path.join(SRC_DIR, relPath);
-		let content: string;
-		try {
-			content = fs.readFileSync(fullPath, 'utf-8');
-		} catch {
-			continue;
-		}
-
+	for (const content of Object.values(rawModules)) {
 		const raw = content.split('\n');
 		for (const line of raw) {
 			const trimmed = line.trimEnd();
@@ -63,7 +45,6 @@ const collectLines = (): string[] => {
 		}
 	}
 
-	// Shuffle deterministically with simple seed
 	for (let i = allLines.length - 1; i > 0; i--) {
 		const j = (i * 7 + 13) % (i + 1);
 		[allLines[i], allLines[j]] = [allLines[j], allLines[i]];

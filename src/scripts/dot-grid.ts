@@ -25,14 +25,21 @@ type DotGridOptions = {
 	returnDuration?: number;
 };
 
-const hexToRgb = (hex: string) => {
-	const m = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
-	if (!m) return { r: 0, g: 0, b: 0 };
-	return {
-		r: parseInt(m[1], 16),
-		g: parseInt(m[2], 16),
-		b: parseInt(m[3], 16),
-	};
+const colorParseCanvas = typeof document !== 'undefined' ? document.createElement('canvas') : null;
+const colorParseCtx = colorParseCanvas?.getContext('2d', { willReadFrequently: true }) ?? null;
+if (colorParseCanvas) {
+	colorParseCanvas.width = 1;
+	colorParseCanvas.height = 1;
+}
+
+const hexToRgb = (color: string) => {
+	if (!colorParseCtx) return { r: 0, g: 0, b: 0 };
+	colorParseCtx.fillStyle = '#000';
+	colorParseCtx.fillStyle = color;
+	colorParseCtx.clearRect(0, 0, 1, 1);
+	colorParseCtx.fillRect(0, 0, 1, 1);
+	const [r, g, b] = colorParseCtx.getImageData(0, 0, 1, 1).data;
+	return { r, g, b };
 };
 
 const readCssColor = (el: HTMLElement, prop: string, fallback: string) => {
