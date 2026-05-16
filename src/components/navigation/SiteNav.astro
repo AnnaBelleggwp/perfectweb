@@ -27,6 +27,7 @@ const items = [
 <script>
 	const nav = document.querySelector<HTMLElement>('[data-site-nav]');
 	const footer = document.querySelector('#footer');
+
 	if (nav && footer) {
 		const io = new IntersectionObserver(
 			(entries) => {
@@ -37,5 +38,32 @@ const items = [
 			{ threshold: 0 },
 		);
 		io.observe(footer);
+	}
+
+	if (nav) {
+		let lastY = window.scrollY;
+		let ticking = false;
+
+		const onScroll = () => {
+			if (ticking) return;
+			ticking = true;
+			requestAnimationFrame(() => {
+				const y = window.scrollY;
+				const delta = y - lastY;
+
+				if (Math.abs(delta) > 4) {
+					if (delta > 0 && y > 80) {
+						nav.classList.add('is-scroll-hidden');
+					} else if (delta < 0) {
+						nav.classList.remove('is-scroll-hidden');
+					}
+				}
+
+				lastY = y;
+				ticking = false;
+			});
+		};
+
+		window.addEventListener('scroll', onScroll, { passive: true });
 	}
 </script>

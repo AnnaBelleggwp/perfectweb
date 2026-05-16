@@ -566,7 +566,8 @@ svg {
 			transform 320ms cubic-bezier(0.22, 0.8, 0.24, 1);
 	}
 
-	.site-nav.is-hidden {
+	.site-nav.is-hidden,
+	.site-nav.is-scroll-hidden {
 		opacity: 0;
 		transform: translateX(20px);
 		pointer-events: none;
