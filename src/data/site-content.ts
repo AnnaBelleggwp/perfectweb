@@ -61,6 +61,7 @@ export type PortfolioItem = {
 	preview: PortfolioMedia | null;
 	detail: PortfolioMedia | null;
 	mockup: PortfolioMedia | null;
+	logo: string;
 	published: boolean;
 };
 
@@ -128,6 +129,7 @@ const DEFAULT_PORTFOLIO: PortfolioItem[] = [
 		preview: null,
 		detail: null,
 		mockup: null,
+		logo: '/logos/mervis.svg',
 		published: true,
 	},
 	{
@@ -148,6 +150,7 @@ const DEFAULT_PORTFOLIO: PortfolioItem[] = [
 		preview: null,
 		detail: null,
 		mockup: null,
+		logo: '',
 		published: true,
 	},
 	{
@@ -168,6 +171,7 @@ const DEFAULT_PORTFOLIO: PortfolioItem[] = [
 		preview: null,
 		detail: null,
 		mockup: null,
+		logo: '',
 		published: true,
 	},
 	{
@@ -188,6 +192,7 @@ const DEFAULT_PORTFOLIO: PortfolioItem[] = [
 		preview: null,
 		detail: null,
 		mockup: null,
+		logo: '',
 		published: true,
 	},
 ];
@@ -419,6 +424,7 @@ const sanitizePortfolio = (value: unknown): PortfolioItem[] => {
 				preview: sanitizeMedia(record.preview),
 				detail: sanitizeMedia(record.detail),
 				mockup: sanitizeMedia(record.mockup),
+				logo: sanitizeText(record.logo, fallback.logo, 500),
 				published: sanitizeBool(record.published, true),
 			};
 		})

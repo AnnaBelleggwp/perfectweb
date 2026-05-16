@@ -25,11 +25,7 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 			<div class="pf-head__mark">
 				<span class="section-mark pf-reveal">мои работы</span>
 			</div>
-			<h2 class="pf-title pf-reveal">отобранные проекты,</h2>
-			<p class="pf-subtitle pf-reveal">
-				в которых идея,<br />
-				технологии и визуал работают как единое целое.
-			</p>
+			<h2 class="pf-title pf-reveal">отобранные проекты, <span class="pf-title__sub">в которых идея,<br />технологии и визуал работают как единое целое.</span></h2>
 		</div>
 
 		<!-- ── Divider ─────────────────────────────────────── -->
@@ -57,9 +53,7 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 				data-pf-prev
 				aria-label="предыдущий проект"
 			>
-				<svg width="22" height="22" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-					<path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-				</svg>
+				<span aria-hidden="true">‹</span>
 			</button>
 
 			<div class="pf-deck" data-pf-deck>
@@ -76,6 +70,14 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 							aria-hidden={idx === 0 ? 'false' : 'true'}
 							tabindex={idx === 0 ? 0 : -1}
 						>
+							{!isTpl && item.logo && (
+								<img
+									src={item.logo}
+									alt=""
+									aria-hidden="true"
+									class="pf-card3d__watermark"
+								/>
+							)}
 							<div class="pf-card3d__top">
 								<div class="pf-card3d__num" aria-hidden="true">
 									<span>{isTpl ? '?' : num}</span>
@@ -107,25 +109,22 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 										<p><span class="pf-sym">//</span> ─ ─ ─ <span class="pf-caret" aria-hidden="true">_</span></p>
 									</>
 								) : (
-									item.description ? (
-										<p>{item.description}</p>
-									) : (
-										<p class="pf-card3d__body--empty"><span class="pf-sym">//</span> описание скоро</p>
-									)
+									<>
+										{item.description && <p>{item.description}</p>}
+										<p class="pf-card3d__stack">{item.tags.slice(0, 3).join(' · ')}</p>
+									</>
 								)}
 							</blockquote>
 
 							<footer class="pf-card3d__foot">
-								<span class="pf-card3d__tags">
-									{isTpl ? (
-										<><span class="pf-sym">[</span> tags <span class="pf-sym">]</span></>
-									) : (
-										item.tags.slice(0, 3).join(' · ')
-									)}
-								</span>
-								<span class="pf-card3d__dot" aria-hidden="true">•</span>
 								{isTpl ? (
-									<a href="#contact" class="pf-card3d__cta">обсудить</a>
+									<>
+										<span class="pf-card3d__tags">
+											<span class="pf-sym">[</span> tags <span class="pf-sym">]</span>
+										</span>
+										<span class="pf-card3d__dot" aria-hidden="true">•</span>
+										<a href="#contact" class="pf-card3d__cta">обсудить</a>
+									</>
 								) : (
 									<a href={item.caseUrl} class="pf-card3d__cta">смотреть →</a>
 								)}
@@ -141,25 +140,23 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 				data-pf-next
 				aria-label="следующий проект"
 			>
-				<svg width="22" height="22" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-					<path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-				</svg>
+				<span aria-hidden="true">›</span>
 			</button>
 		</div>
 
 		<!-- ── Bottom bar ──────────────────────────────────── -->
 		<div class="pf-bottom pf-reveal">
+			<p class="pf-counter" data-pf-counter>
+				<span data-pf-cur>01</span>
+				<span class="pf-counter__sep">/</span>
+				<span data-pf-total>01</span>
+			</p>
 			<a href="#contact" class="pf-bottom__cta" data-hover-fill data-label="обсудить проект">
 				обсудить проект
 				<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
 					<path d="M1 13L13 1M13 1H5M13 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 				</svg>
 			</a>
-			<p class="pf-counter" data-pf-counter>
-				<span data-pf-cur>01</span>
-				<span class="pf-counter__sep">/</span>
-				<span data-pf-total>01</span>
-			</p>
 		</div>
 
 	</div>
@@ -199,13 +196,10 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	word-break: break-word;
 }
 
-.pf-subtitle {
-	margin: 0;
-	font-size: clamp(1.05rem, 1.8vw, 1.3rem);
-	line-height: 1.3;
+.pf-title__sub {
+	font-size: 0.5em;
 	color: var(--color-text-muted);
-	font-weight: 300;
-	max-width: 38ch;
+	line-height: 1.3;
 }
 
 /* ── Divider ────────────────────────────────────────── */
@@ -276,8 +270,9 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 
 .pf-deck {
 	position: relative;
-	width: 100%;
-	height: clamp(380px, 50vh, 520px);
+	width: min(100%, 420px);
+	aspect-ratio: 320 / 440;
+	margin-inline: auto;
 	perspective: 1400px;
 	transform-style: preserve-3d;
 }
@@ -289,37 +284,40 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	width: 44px;
 	height: 44px;
 	padding: 0;
-	border-radius: 999px;
-	border: 1px solid var(--divider-subtle);
+	border: none;
 	background: transparent;
-	color: var(--color-text-muted);
+	color: var(--color-text);
+	font-size: 2rem;
+	line-height: 1;
 	cursor: pointer;
-	transition: color 200ms ease, border-color 200ms ease;
+	transition: color 180ms ease, text-shadow 180ms ease, transform 180ms ease;
 }
 
 .pf-nav:hover,
 .pf-nav:focus-visible {
 	outline: none;
 	color: var(--color-accent);
-	border-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+	text-shadow: 0 0 14px color-mix(in srgb, var(--color-accent) 55%, transparent);
+}
+
+.pf-nav:active {
+	transform: scale(0.9);
 }
 
 /* ── Card 3d ──────────────────────────────────────── */
 .pf-card3d {
 	position: absolute;
-	top: 50%;
-	left: 50%;
-	width: min(100%, 360px);
-	height: 100%;
+	inset: 0;
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
 	padding: clamp(1.1rem, 2.4vw, 1.6rem);
 	border-radius: 14px;
+	overflow: visible;
 	background: var(--card-bg);
-	border: var(--card-border);
+	border: 1px solid var(--divider-subtle);
 	box-shadow: var(--card-shadow);
-	transform-origin: center center;
+	transform-origin: 50% 50%;
 	transform-style: preserve-3d;
 	will-change: transform, opacity;
 	transition:
@@ -329,15 +327,16 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 }
 
 .pf-card3d[data-pos="0"] {
-	transform: translate(-50%, -50%) translateX(0%) rotateY(0deg) scale(1);
+	transform: translate3d(0, 0, 0) rotateY(0deg) scale(1);
 	opacity: 1;
 	z-index: 5;
 	filter: none;
 	cursor: default;
+	border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
 }
 
 .pf-card3d[data-pos="1"] {
-	transform: translate(-50%, -50%) translateX(58%) rotateY(-45deg) scale(0.84);
+	transform: translateX(58%) rotateY(-45deg) scale(0.84);
 	opacity: 0.75;
 	z-index: 3;
 	filter: blur(0.4px) saturate(0.88);
@@ -345,17 +344,35 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 }
 
 .pf-card3d[data-pos="-1"] {
-	transform: translate(-50%, -50%) translateX(-140%) rotateY(45deg) scale(0.78);
+	transform: translateX(-140%) rotateY(45deg) scale(0.78);
 	opacity: 0;
 	z-index: 1;
 	pointer-events: none;
 }
 
 .pf-card3d[data-pos="hidden"] {
-	transform: translate(-50%, -50%) translateX(58%) translateZ(-300px) rotateY(-45deg) scale(0.7);
+	transform: translateX(58%) translateZ(-300px) rotateY(-45deg) scale(0.7);
 	opacity: 0;
 	z-index: 0;
 	pointer-events: none;
+}
+
+/* ── Watermark logo ───────────────────────────────── */
+.pf-card3d__watermark {
+	position: absolute;
+	bottom: 0;
+	left: -25%;
+	width: 75%;
+	height: auto;
+	transform: translateY(50%);
+	opacity: 1;
+	filter: grayscale(1) brightness(1.8);
+	pointer-events: none;
+	user-select: none;
+}
+
+:global([data-theme="light"]) .pf-card3d__watermark {
+	filter: grayscale(1) brightness(0.7);
 }
 
 /* ── Card 3d content ──────────────────────────────── */
@@ -451,7 +468,7 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	margin: 0;
 }
 
-.pf-card3d.is-filled .pf-card3d__body p::before {
+.pf-card3d.is-filled .pf-card3d__body p:not(.pf-card3d__stack)::before {
 	font-family: Georgia, "Times New Roman", serif;
 	color: var(--color-accent);
 	opacity: 0.7;
@@ -459,7 +476,7 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	margin-right: 0.15em;
 }
 
-.pf-card3d.is-filled .pf-card3d__body p::after {
+.pf-card3d.is-filled .pf-card3d__body p:not(.pf-card3d__stack)::after {
 	font-family: Georgia, "Times New Roman", serif;
 	color: var(--color-accent);
 	opacity: 0.7;
@@ -476,6 +493,15 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	line-height: 1.4;
 	color: var(--color-text-muted);
 	opacity: 0.78;
+}
+
+.pf-card3d__stack {
+	font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+	font-size: 0.82rem;
+	letter-spacing: 0.06em;
+	color: var(--color-accent);
+	opacity: 0.75;
+	margin-top: auto;
 }
 
 .pf-card3d__body--empty {
@@ -553,7 +579,7 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	display: inline-flex;
 	align-items: center;
 	gap: 0.45rem;
-	font-size: clamp(1.3rem, 2.6vw, 1.9rem);
+	font-size: clamp(2.2rem, 4.4vw, 2.8rem);
 	font-weight: 300;
 	color: var(--color-text);
 	transition: color 180ms ease;
@@ -589,20 +615,10 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	display: none;
 }
 
-/* ── Tablet ─────────────────────────────────────────── */
-
 /* ── Mobile ─────────────────────────────────────────── */
 @media (max-width: 767px) {
 	.pf-title {
-		font-size: clamp(1.8rem, 7.2vw, 2.7rem);
-	}
-
-	.pf-subtitle br {
-		display: none;
-	}
-
-	.pf-filters {
-		flex-wrap: wrap;
+		font-size: clamp(2.2rem, 8.5vw, 3.2rem);
 	}
 
 	.pf-chip {
@@ -610,33 +626,23 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	}
 
 	.pf-stage {
-		gap: 0.5rem;
-	}
-
-	.pf-deck {
-		height: clamp(420px, 60vh, 500px);
+		grid-template-columns: 1fr;
 	}
 
 	.pf-nav {
-		width: 36px;
-		height: 36px;
+		display: none;
+	}
+
+	.pf-deck {
+		width: min(100%, 320px);
 	}
 
 	.pf-card3d {
-		width: min(100%, 320px);
 		padding: clamp(0.95rem, 3vw, 1.3rem);
 	}
 
-	.pf-card3d[data-pos="0"] {
-		transform: translate(-50%, -50%) translateX(0%) rotateY(0deg) scale(1);
-	}
-
-	.pf-card3d[data-pos="1"] {
-		transform: translate(-50%, -50%) translateX(55%) rotateY(-38deg) scale(0.82);
-	}
-
-	.pf-card3d[data-pos="-1"] {
-		transform: translate(-50%, -50%) translateX(-130%) rotateY(38deg) scale(0.76);
+	.pf-card3d__watermark {
+		left: -5%;
 	}
 
 	.pf-bottom {
@@ -646,7 +652,7 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	}
 
 	.pf-bottom__cta {
-		font-size: clamp(1.2rem, 5vw, 1.6rem);
+		font-size: clamp(1.4rem, 5.5vw, 1.9rem);
 		justify-content: center;
 		padding: 0.6rem 0;
 		border: 1px solid var(--divider-subtle);
