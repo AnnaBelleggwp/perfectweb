@@ -99,9 +99,10 @@
 }
 
 .hero-actions {
+	position: relative;
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
+	justify-content: center;
 	gap: 0.75rem;
 	padding-top: 10px;
 }
@@ -151,6 +152,10 @@
 }
 
 .hero-scroll-hint {
+	position: absolute;
+	right: 0;
+	top: 50%;
+	transform: translateY(-50%);
 	color: var(--color-accent);
 	display: flex;
 	flex-shrink: 0;
@@ -184,10 +189,6 @@
 @media (max-width: 767px) {
 	.hero-actions {
 		padding-bottom: clamp(0.6rem, 2.6vh, 1rem);
-	}
-
-	.hero-scroll-hint {
-		margin-left: auto;
 	}
 }
 </style>
