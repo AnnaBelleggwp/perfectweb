@@ -45,6 +45,12 @@
 	--cta-bg-hover: rgba(255, 215, 0, 0.25);
 
 	--nav-label-base: rgba(245, 245, 245, 0.95);
+	--nav-glass-bg: rgba(10, 10, 10, 0.55);
+	--nav-glass-blur: 20px;
+	--nav-glass-border: rgba(255, 255, 255, 0.08);
+	--nav-inset-highlight: rgba(255, 255, 255, 0.06);
+	--nav-noise-opacity: 0.03;
+	--nav-gradient-opacity: 0.35;
 
 	--shape-stroke: rgba(255, 215, 0, 0.74);
 	--shape-gradient-start: #ffd700;
@@ -141,6 +147,12 @@
 	--cta-bg-hover: rgba(255, 215, 0, 0.22);
 
 	--nav-label-base: rgba(18, 18, 18, 0.78);
+	--nav-glass-bg: rgba(245, 242, 234, 0.55);
+	--nav-glass-blur: 16px;
+	--nav-glass-border: rgba(18, 18, 18, 0.08);
+	--nav-inset-highlight: rgba(255, 255, 255, 0.5);
+	--nav-noise-opacity: 0.04;
+	--nav-gradient-opacity: 0.3;
 
 	--shape-stroke: rgba(255, 215, 0, 0.45);
 	--shape-gradient-start: #ffd700;
@@ -220,6 +232,24 @@
 	box-sizing: border-box;
 }
 
+html {
+	scrollbar-width: thin;
+	scrollbar-color: var(--color-accent) transparent;
+}
+
+html::-webkit-scrollbar {
+	width: 6px;
+}
+
+html::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+html::-webkit-scrollbar-thumb {
+	background: var(--color-accent);
+	border-radius: 3px;
+}
+
 html,
 body {
 	margin: 0;
@@ -243,6 +273,7 @@ html.is-mosaic-detail-open body {
 body {
 	position: relative;
 	min-height: 100svh;
+	overflow-x: clip;
 	font-family: var(--font-sans);
 	font-weight: 400;
 	color: var(--color-text);
@@ -409,6 +440,18 @@ svg {
 	position: relative;
 	border-radius: var(--radius-card);
 	padding: 0.7rem 1rem;
+}
+
+.site-nav::after {
+	content: "";
+	position: absolute;
+	bottom: 0;
+	left: 15%;
+	right: 15%;
+	height: 1px;
+	background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+	opacity: var(--nav-gradient-opacity);
+	pointer-events: none;
 }
 
 .site-nav__list {

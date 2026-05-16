@@ -78,9 +78,7 @@ const DEFAULT_ABOUT: AboutContent = {
 		'текст о принципах и подходе к работе — коротко и по делу. финальная версия после согласования контента.',
 	stack: ['Figma', 'Astro', 'React', 'TypeScript', 'GSAP', 'Tailwind', 'Webflow'],
 	stats: [
-		{ value: 3, suffix: '', label: 'года опыта' },
-		{ value: 15, suffix: '+', label: 'проектов' },
-		{ value: 19, suffix: '', label: 'клиентов' },
+		{ value: 6, suffix: '', label: 'лет в разработке' },
 	],
 };
 

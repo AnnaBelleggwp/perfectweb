@@ -10,82 +10,117 @@ const aboutSegments = parseAccentMarkup(about.bodyMarkup);
 ---
 
 <section id="about" class="section-anchor about-section">
-	<div class="about-grid">
+	<article class="about-card" data-tilt>
+		<div class="about-dots-texture" aria-hidden="true"></div>
+		<div class="about-inner">
 
-		<article class="about-card about-card--main" data-tilt>
-			<p class="eyebrow section-mark about-reveal">обо мне</p>
-			<h2 class="section-title about-reveal">{about.title}</h2>
-			<p class="body-copy about-reveal">
-				{aboutSegments.map((segment) =>
-					segment.accent ? <span class="about-highlight">{segment.text}</span> : segment.text,
-				)}
-			</p>
-			<div class="about-stats about-reveal">
-				{about.stats.map((stat) => (
-					<div class="about-stat" data-count={String(stat.value)}>
-						<div class="about-stat__top">
-							<span class="about-stat__num">{stat.value}</span>
-							{stat.suffix && <span class="about-stat__suffix">{stat.suffix}</span>}
-						</div>
-						<p class="about-stat__label">{stat.label}</p>
-					</div>
-				))}
+			<div class="about-primary">
+				<p class="eyebrow section-mark about-reveal">обо мне</p>
+				<h2 class="section-title about-reveal">{about.title}</h2>
+				<p class="body-copy about-reveal">
+					{aboutSegments.map((segment) =>
+						segment.accent ? <span class="about-highlight">{segment.text}</span> : segment.text,
+					)}
+				</p>
 			</div>
-		</article>
 
-		<div class="about-side">
-			<article class="about-card about-card--accent about-reveal" data-tilt>
-				<p class="eyebrow">подход</p>
-				<p class="about-quote">{about.approach}</p>
-			</article>
+			<div class="about-divider about-reveal" aria-hidden="true">
+				<span class="about-divider__line"></span>
+			</div>
 
-			<article class="about-card about-card--stack about-reveal" data-tilt>
-				<p class="eyebrow">стек</p>
-				<div class="about-tags">
-					{about.stack.map((tool) => <span class="about-tag">{tool}</span>)}
+			<div class="about-aside about-reveal">
+				<div class="about-aside__block">
+					<p class="section-mark">подход</p>
+					<p class="about-quote__text">{about.approach}</p>
 				</div>
-			</article>
+
+				<div class="about-aside__block">
+					<p class="section-mark">стек</p>
+					<div class="about-marquee" data-about-marquee>
+						<div class="about-marquee__track">
+							{[...about.stack, ...about.stack, ...about.stack, ...about.stack].map((tool) => (
+								<span class="about-tag">{tool}</span>
+							))}
+						</div>
+					</div>
+				</div>
+			</div>
+
 		</div>
 
-	</div>
+		{about.stats[0] && (
+			<div class="about-hero-stat about-reveal" data-count={String(about.stats[0].value)}>
+				<span class="about-hero-stat__num">{about.stats[0].value}</span>
+				<span class="about-hero-stat__label">{about.stats[0].label}</span>
+			</div>
+		)}
+	</article>
 </section>
 
 <style>
-.about-grid {
-	display: grid;
-	grid-template-columns: 55fr 45fr;
-	gap: var(--section-gap);
-	align-items: stretch;
-}
-
-.about-side {
-	display: flex;
-	flex-direction: column;
-	gap: var(--section-gap);
-	height: 100%;
-}
-
-.about-side > .about-card {
-	flex: 1;
+.about-section {
+	position: relative;
+	z-index: 2;
 }
 
 .about-card {
+	position: relative;
 	background: var(--card-bg);
-	border: var(--card-border);
+	border: 1px solid rgba(255, 215, 0, 0.25);
 	border-radius: var(--radius-card);
 	box-shadow: var(--card-shadow);
 	padding: var(--section-padding);
+	margin-bottom: clamp(4rem, 8vw, 7rem);
+	overflow: visible;
+}
+
+.about-dots-texture {
+	position: absolute;
+	bottom: 10px;
+	left: 10px;
+	width: 50%;
+	height: 50%;
+	z-index: 0;
+	pointer-events: none;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='8' cy='8' r='2.5' fill='%23ffd700'/%3E%3Crect x='22' y='6' width='4' height='4' fill='%23ffd700'/%3E%3Crect x='6' y='22' width='4' height='4' fill='%23ffd700'/%3E%3Ccircle cx='24' cy='24' r='2.5' fill='%23ffd700'/%3E%3C/svg%3E");
+	background-size: 32px 32px;
+	background-position: 4px 4px;
+	opacity: 0.6;
+	mask-image: linear-gradient(
+		to top right,
+		#000 0%,
+		rgba(0, 0, 0, 0.5) 30%,
+		transparent 55%
+	);
+	-webkit-mask-image: linear-gradient(
+		to top right,
+		#000 0%,
+		rgba(0, 0, 0, 0.5) 30%,
+		transparent 55%
+	);
+}
+
+.about-inner {
+	position: relative;
+	z-index: 1;
+	display: grid;
+	grid-template-columns: 1fr auto minmax(0, 38%);
+	align-items: stretch;
+}
+
+.about-primary {
 	display: flex;
 	flex-direction: column;
 	gap: clamp(1rem, 2.5vw, 1.5rem);
+	padding-right: clamp(1.25rem, 2.5vw, 2rem);
 }
 
-.about-card--main .section-title {
+.about-primary .section-title {
 	font-weight: 300;
 	text-transform: none;
 }
 
-.about-card--main .body-copy {
+.about-primary .body-copy {
 	font-weight: 300;
 	text-transform: none;
 }
@@ -103,79 +138,161 @@ const aboutSegments = parseAccentMarkup(about.bodyMarkup);
 	font-weight: 400;
 }
 
-.about-stats {
-	display: flex;
-	align-items: flex-start;
-	justify-content: space-between;
-	gap: 1rem;
-	padding-top: clamp(0.75rem, 1.5vw, 1.25rem);
-	border-top: 1px solid var(--divider-accent);
-	margin-top: auto;
-}
-
-.about-stat {
+.about-hero-stat {
+	position: absolute;
+	bottom: clamp(-5.94rem, -9vw, -4.44rem);
+	left: -55px;
+	z-index: 2;
 	display: flex;
 	align-items: baseline;
-	gap: 0.45rem;
+	gap: clamp(0.3rem, 0.8vw, 0.5rem);
+	pointer-events: none;
+}
+
+.about-hero-stat__num {
+	font-size: clamp(11rem, 22.2vw, 19rem);
+	font-weight: 300;
+	color: var(--color-accent);
 	line-height: 1;
+}
+
+.about-hero-stat__label {
+	font-size: clamp(3.3rem, 6.2vw, 5.5rem);
+	font-weight: 300;
+	font-style: italic;
+	color: var(--color-text-muted);
 	white-space: nowrap;
 }
 
-.about-stat__top {
-	display: inline-flex;
-	align-items: baseline;
-	gap: 0.05em;
-}
-
-.about-stat__num {
-	font-size: clamp(2.7rem, 5.5vw, 4.4rem);
-	font-weight: 400;
-	color: var(--color-accent);
-}
-
-.about-stat__suffix {
-	font-size: clamp(1.55rem, 2.8vw, 2.2rem);
-	font-weight: 400;
-	color: var(--color-accent);
-}
-
-.about-stat__label {
-	margin: 0;
-	font-size: clamp(0.95rem, 1.6vw, 1.1rem);
-	color: var(--color-text-muted);
-}
-
-.about-quote {
-	margin: 0;
-	font-size: clamp(1.1rem, 1.9vw, 1.4rem);
-	line-height: 1.25;
-	color: var(--color-text);
-}
-
-.about-tags {
+.about-divider {
 	display: flex;
-	flex-wrap: wrap;
-	gap: 0.45rem;
+	align-items: stretch;
+}
+
+.about-divider__line {
+	width: 1px;
+	background: linear-gradient(
+		180deg,
+		transparent 0%,
+		var(--color-accent) 15%,
+		var(--color-accent) 50%,
+		rgba(255, 215, 0, 0.15) 85%,
+		transparent 100%
+	);
+	box-shadow: 0 0 10px var(--accent-glow-soft);
+}
+
+.about-aside {
+	display: flex;
+	flex-direction: column;
+	gap: clamp(1.5rem, 3vw, 2.25rem);
+	padding-left: clamp(1.25rem, 2.5vw, 2rem);
+	overflow: hidden;
+}
+
+.about-aside .about-aside__block:last-child {
+	margin-top: auto;
+}
+
+.about-aside__block {
+	display: flex;
+	flex-direction: column;
+	gap: clamp(0.5rem, 1.2vw, 0.75rem);
+}
+
+.about-quote__text {
+	margin: 0;
+	font-size: clamp(1.15rem, 2.3vw, 1.55rem);
+	line-height: 1.15;
+	color: var(--color-text-muted);
+	font-weight: 300;
+	text-transform: none;
+}
+
+.about-marquee {
+	--marquee-speed: 22s;
+	overflow: hidden;
+	mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+	-webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+}
+
+.about-marquee__track {
+	display: flex;
+	gap: 0.5rem;
+	width: max-content;
+	animation: about-marquee var(--marquee-speed) linear infinite;
+}
+
+.about-marquee:hover .about-marquee__track {
+	animation-play-state: paused;
+}
+
+@keyframes about-marquee {
+	0% { transform: translateX(0); }
+	100% { transform: translateX(-50%); }
 }
 
 .about-tag {
-	padding: 0.28rem 0.7rem;
-	font-size: clamp(0.9rem, 1.4vw, 1rem);
-	border: var(--chip-border);
-	border-radius: 999px;
+	padding: 0.28rem 0;
+	font-size: clamp(1.15rem, 2.3vw, 1.55rem);
+	line-height: 1.15;
 	color: var(--color-accent);
-	background: var(--chip-bg);
+	font-weight: 300;
+	white-space: nowrap;
+}
+
+.about-tag + .about-tag::before {
+	content: "·";
+	margin-right: 0.5rem;
+	color: var(--color-accent);
+	opacity: 0.4;
 }
 
 :global(:root[data-theme="light"]) .about-tag {
-	background: rgba(109, 102, 93, 0.18);
-	color: #000;
-	border-color: #000;
+	color: var(--color-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.about-marquee__track {
+		animation: none;
+	}
 }
 
 @media (max-width: 767px) {
-	.about-grid {
+	.about-inner {
 		grid-template-columns: 1fr;
+	}
+
+	.about-primary {
+		padding-right: 0;
+		padding-bottom: clamp(1.25rem, 3vw, 2rem);
+	}
+
+	.about-divider {
+		align-items: center;
+	}
+
+	.about-divider__line {
+		width: 100%;
+		height: 1px;
+		background: linear-gradient(
+			90deg,
+			transparent 0%,
+			var(--color-accent) 15%,
+			var(--color-accent) 50%,
+			rgba(255, 215, 0, 0.15) 85%,
+			transparent 100%
+		);
+		box-shadow: 0 0 10px var(--accent-glow-soft);
+	}
+
+	.about-aside {
+		padding-left: 0;
+		padding-top: clamp(1.25rem, 3vw, 2rem);
+	}
+
+	.about-hero-stat {
+		left: -20px;
 	}
 }
 </style>
@@ -217,10 +334,9 @@ if (section) {
 		},
 	});
 
-	// Counter — starts after reveal stagger reaches the stats row
 	section.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
 		const target = parseInt(el.dataset.count ?? '0', 10);
-		const numEl = el.querySelector<HTMLElement>('.about-stat__num');
+		const numEl = el.querySelector<HTMLElement>('.about-hero-stat__num');
 		if (!numEl) return;
 
 		const obj = { val: 0 };
@@ -242,17 +358,17 @@ if (section) {
 		});
 	});
 
-	// 3D tilt on hover
-	section.querySelectorAll<HTMLElement>('[data-tilt]').forEach((card) => {
-		gsap.set(card, { transformPerspective: 900 });
+	const card = section.querySelector<HTMLElement>('[data-tilt]');
+	if (card) {
+		gsap.set(card, { transformPerspective: 1200 });
 
 		card.addEventListener('mousemove', (e) => {
 			const rect = card.getBoundingClientRect();
 			const x = (e.clientX - rect.left - rect.width  / 2) / rect.width;
 			const y = (e.clientY - rect.top  - rect.height / 2) / rect.height;
 			gsap.to(card, {
-				rotateY:  x * 8,
-				rotateX: -y * 8,
+				rotateY:  x * 4,
+				rotateX: -y * 4,
 				duration: 0.35,
 				ease: 'power2.out',
 			});
@@ -266,6 +382,6 @@ if (section) {
 				ease: 'power3.out',
 			});
 		});
-	});
+	}
 }
 </script>
