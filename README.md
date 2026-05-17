@@ -1,52 +1,52 @@
 # kerizov.design
 
-Personal portfolio landing page with premium glass-card aesthetics and terminal-inspired UI.
+Персональный лендинг-портфолио с премиальной стеклянной эстетикой и терминальным UI.
 
-## Stack
+## Стек
 
-**Core**
-- Astro 5 (SSR, Node adapter)
+**Основа**
+- Astro 5 (SSR, Node-адаптер)
 - TypeScript
-- SCSS / CSS custom properties (dark/light theming via `data-theme`)
+- SCSS / CSS custom properties (тёмная/светлая тема через `data-theme`)
 
-**Fonts & visuals**
-- Alumni Sans (headings), JetBrains Mono (code/terminal UI)
-- GSAP + ScrollTrigger (scroll-driven reveals)
-- CSS 3D transforms, perspective (card carousels)
-- Canvas API (procedural pixel avatars)
+**Шрифты и визуал**
+- Alumni Sans (заголовки), JetBrains Mono (код/терминальный UI)
+- GSAP + ScrollTrigger (анимации при скролле)
+- CSS 3D-трансформации, перспектива (карусели карточек)
+- Canvas API (процедурные пиксельные аватары)
 
-**Backend**
-- Node.js runtime (Astro SSR)
-- File-based CMS (`storage/site-content.json`)
-- JSONL storage for reviews and contact submissions
-- Rate-limited API endpoints (`/api/reviews.json`, `/api/contact.json`, `/api/cms/*`)
+**Бэкенд**
+- Node.js (Astro SSR)
+- Файловая CMS (`storage/site-content.json`)
+- JSONL-хранилище для отзывов и заявок
+- API-эндпоинты с rate-limiting (`/api/reviews.json`, `/api/contact.json`, `/api/cms/*`)
 
-**Infrastructure**
-- VPS (Ubuntu) + PM2 process manager
+**Инфраструктура**
+- VPS (Ubuntu) + PM2
 - Nginx reverse proxy + Let's Encrypt SSL
-- GitHub Actions CI/CD (build → rsync → PM2 restart)
+- GitHub Actions CI/CD (сборка → rsync → PM2 restart)
 
-## Architecture
+## Архитектура
 
 ```
 src/
-├── components/sections/   # Astro components (Hero, Portfolio, Reviews, etc.)
-├── data/                  # Content types & sanitizers
-├── layouts/               # MainLayout (theme, fonts, meta)
-├── pages/                 # Routes: index, admin, API endpoints
-├── scripts/               # Client-side admin app
-└── styles/                # Global CSS, theme variables
+├── components/sections/   # Astro-компоненты (Hero, Portfolio, Reviews и др.)
+├── data/                  # Типы контента и санитайзеры
+├── layouts/               # MainLayout (тема, шрифты, мета)
+├── pages/                 # Роуты: index, admin, API-эндпоинты
+├── scripts/               # Клиентский админ-интерфейс
+└── styles/                # Глобальные стили, переменные темы
 
-storage/                   # Runtime data (not in git)
-├── site-content.json      # CMS content
-├── reviews.jsonl          # User reviews (moderated)
+storage/                   # Рантайм-данные (не в git)
+├── site-content.json      # Контент CMS
+├── reviews.jsonl          # Отзывы пользователей (с модерацией)
 ├── contact-submissions.jsonl
-└── media/                 # Uploaded images
+└── media/                 # Загруженные изображения
 
-public/                    # Static assets (favicon, logos)
+public/                    # Статика (favicon, логотипы)
 ```
 
-## Running locally
+## Локальный запуск
 
 ```bash
 pnpm install
@@ -54,15 +54,15 @@ cp .env.example .env
 pnpm dev
 ```
 
-## Production
+## Продакшен
 
 ```bash
 pnpm build
 HOST=0.0.0.0 PORT=3000 pnpm start
 ```
 
-## Environment variables
+## Переменные окружения
 
-- `CMS_TOKEN` — admin API auth token
-- `HOST` — server bind address
-- `PORT` — server port
+- `CMS_TOKEN` — токен авторизации для админ-API
+- `HOST` — адрес привязки сервера
+- `PORT` — порт сервера
