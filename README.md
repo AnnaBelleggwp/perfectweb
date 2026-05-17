@@ -1,13 +1,52 @@
-# perfectweb
+# kerizov.design
 
-Серверный проект на Astro 5 + Node adapter + CMS API.
+Personal portfolio landing page with premium glass-card aesthetics and terminal-inspired UI.
 
-## Требования
+## Stack
 
-- Node.js `>= 22.12.0`
-- pnpm
+**Core**
+- Astro 5 (SSR, Node adapter)
+- TypeScript
+- SCSS / CSS custom properties (dark/light theming via `data-theme`)
 
-## Локальный запуск
+**Fonts & visuals**
+- Alumni Sans (headings), JetBrains Mono (code/terminal UI)
+- GSAP + ScrollTrigger (scroll-driven reveals)
+- CSS 3D transforms, perspective (card carousels)
+- Canvas API (procedural pixel avatars)
+
+**Backend**
+- Node.js runtime (Astro SSR)
+- File-based CMS (`storage/site-content.json`)
+- JSONL storage for reviews and contact submissions
+- Rate-limited API endpoints (`/api/reviews.json`, `/api/contact.json`, `/api/cms/*`)
+
+**Infrastructure**
+- VPS (Ubuntu) + PM2 process manager
+- Nginx reverse proxy + Let's Encrypt SSL
+- GitHub Actions CI/CD (build → rsync → PM2 restart)
+
+## Architecture
+
+```
+src/
+├── components/sections/   # Astro components (Hero, Portfolio, Reviews, etc.)
+├── data/                  # Content types & sanitizers
+├── layouts/               # MainLayout (theme, fonts, meta)
+├── pages/                 # Routes: index, admin, API endpoints
+├── scripts/               # Client-side admin app
+└── styles/                # Global CSS, theme variables
+
+storage/                   # Runtime data (not in git)
+├── site-content.json      # CMS content
+├── reviews.jsonl          # User reviews (moderated)
+├── contact-submissions.jsonl
+└── media/                 # Uploaded images
+
+public/                    # Static assets (favicon, logos)
+```
+
+## Running locally
 
 ```bash
 pnpm install
@@ -15,122 +54,15 @@ cp .env.example .env
 pnpm dev
 ```
 
-## Production build
+## Production
 
 ```bash
-pnpm install --frozen-lockfile
 pnpm build
 HOST=0.0.0.0 PORT=3000 pnpm start
 ```
 
-Альтернативный скрипт:
+## Environment variables
 
-```bash
-pnpm start:prod
-```
-
-## ENV переменные
-
-Скопируйте `.env.example` в `.env` и укажите:
-
-- `CMS_TOKEN` — токен доступа к CMS API (обязательно)
-- `HOST` — хост для Node-сервера (обычно `0.0.0.0`)
-- `PORT` — порт приложения (обычно `3000`)
-
-## Что пушится в GitHub
-
-В репозиторий должны попадать исходники и deploy-конфиги:
-
-- `src/`
-- `public/`
-- `deploy/`
-- `package.json`
-- `pnpm-lock.yaml`
-- `astro.config.mjs`
-- `ecosystem.config.cjs`
-- `.env.example`
-
-Не нужно пушить:
-
-- `node_modules/`
-- `dist/`
-- `.astro/`
-- `.env`
-
-## Важное по CMS/медиа
-
-Контент и загруженные изображения хранятся в папке `storage/`:
-
-- `storage/site-content.json`
-- `storage/media/...`
-
-Для продакшена эта папка должна:
-
-- быть доступна на запись процессу Node
-- сохраняться между перезапусками/релизами
-
-Сама папка `storage/` не хранится в Git целиком. Это намеренно: там runtime-данные.
-Если нужен первый запуск с текущим локальным контентом и изображениями, `storage/` нужно перенести на сервер отдельно.
-
-## Деплой на VPS (рекомендуемый)
-
-1. Залить проект на GitHub.
-2. На VPS клонировать репозиторий в рабочую директорию, например `/var/www/perfectweb`.
-3. Создать `.env` с `CMS_TOKEN`.
-4. Установить зависимости: `pnpm install --frozen-lockfile`.
-5. Собрать: `pnpm build`.
-6. Подготовить `storage/`:
-
-```bash
-mkdir -p storage
-```
-
-Если нужен текущий локальный CMS-контент и медиа, перенести их отдельно:
-
-```bash
-rsync -av storage/ user@server:/var/www/perfectweb/storage/
-```
-
-7. Запустить через PM2:
-
-```bash
-pm2 start ecosystem.config.cjs
-pm2 save
-pm2 startup
-```
-
-8. Проксировать домен через Nginx на `127.0.0.1:3000`.
-
-Готовый шаблон конфига: `deploy/nginx/perfectweb.conf`.
-Health endpoint для мониторинга: `/api/health.json`.
-
-## Обновление релиза на VPS
-
-После первого деплоя обычное обновление выглядит так:
-
-```bash
-git pull
-pnpm install --frozen-lockfile
-pnpm build
-pm2 restart perfectweb
-```
-
-Важно: не удаляйте `storage/` между релизами, иначе потеряете контент CMS, медиа и заявки.
-
-## Альтернатива PM2: systemd
-
-Шаблон юнита: `deploy/systemd/perfectweb.service`.
-
-Перед запуском обязательно поправьте:
-
-- `WorkingDirectory`
-- `ExecStart`
-- `CMS_TOKEN`
-- `User`/`Group`
-
-## Полезные команды
-
-- `pnpm dev` — dev-сервер
-- `pnpm build` — production-сборка
-- `pnpm start` — запуск собранного проекта
-- `pnpm start:prod` — запуск с дефолтными `HOST/PORT`
+- `CMS_TOKEN` — admin API auth token
+- `HOST` — server bind address
+- `PORT` — server port
