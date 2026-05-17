@@ -11,6 +11,7 @@ const skeletons = Array.from({ length: SKELETON_COUNT });
 			class="reviews-link"
 			data-hover-fill
 			data-label="написать отзыв"
+			data-reviews-write
 		>
 			написать отзыв
 		</button>
@@ -37,34 +38,47 @@ const skeletons = Array.from({ length: SKELETON_COUNT });
 				>
 					<div class="reviews-card__top">
 						<div class="reviews-avatar reviews-tpl-avatar" aria-hidden="true">
-							<span>?</span>
+							<span class="rv-view">?</span>
+							<canvas class="rv-edit" width="7" height="7" data-rv-avatar></canvas>
 						</div>
 						<div class="reviews-id">
 							<p class="reviews-name reviews-tpl-name">
-								<span class="reviews-tpl-sym">{`{`}</span> name <span class="reviews-tpl-sym">{`}`}</span>
+								<span class="rv-view"><span class="reviews-tpl-sym">{`{`}</span> name <span class="reviews-tpl-sym">{`}`}</span></span>
+								<input class="rv-edit rv-input rv-input--name" type="text" data-rv-name placeholder="" maxlength="80" />
 							</p>
 							<p class="reviews-role reviews-tpl-role">
-								<span class="reviews-tpl-sym">{`<`}</span>role<span class="reviews-tpl-sym">{` />`}</span>
+								<span class="rv-view"><span class="reviews-tpl-sym">{`<`}</span>role<span class="reviews-tpl-sym">{` />`}</span></span>
+								<input class="rv-edit rv-input rv-input--role" type="text" data-rv-role placeholder="" maxlength="100" />
 							</p>
 						</div>
-						<div class="reviews-stars" aria-hidden="true">
-							{Array.from({ length: 5 }).map(() => (
-								<span class="reviews-star">☆</span>
+						<div class="reviews-stars" data-rv-stars>
+							{Array.from({ length: 5 }).map((_, i) => (
+								<button type="button" class="reviews-star" data-rv-star={i + 1}>☆</button>
 							))}
 						</div>
 					</div>
 
 					<blockquote class="reviews-quote reviews-tpl-quote">
-						<p><span class="reviews-tpl-sym">//</span> review.quote</p>
-						<p><span class="reviews-tpl-sym">//</span> ─ ─ ─ <span class="reviews-tpl-caret" aria-hidden="true">_</span></p>
+						<div class="rv-view">
+							<p><span class="reviews-tpl-sym">//</span> review.quote</p>
+							<p><span class="reviews-tpl-sym">//</span> ─ ─ ─ <span class="reviews-tpl-caret" aria-hidden="true">_</span></p>
+						</div>
+						<textarea class="rv-edit rv-textarea" data-rv-message placeholder="" maxlength="1200" rows={4}></textarea>
 					</blockquote>
 
 					<footer class="reviews-card__foot reviews-tpl-foot">
-						<span class="reviews-project">
+						<span class="reviews-project rv-view">
 							<span class="reviews-tpl-sym">[</span> project <span class="reviews-tpl-sym">]</span>
 						</span>
-						<span class="reviews-dot" aria-hidden="true">•</span>
-						<span class="reviews-date">__.____</span>
+						<span class="reviews-dot rv-view" aria-hidden="true">•</span>
+						<span class="reviews-date rv-view">__.____</span>
+						<div class="rv-foot-edit rv-edit">
+							<input class="rv-input rv-input--project" type="text" data-rv-project placeholder="" maxlength="120" />
+							<span class="rv-actions">
+								<button type="button" class="rv-btn rv-btn--cancel" data-rv-cancel>&gt; cancel</button>
+								<button type="button" class="rv-btn rv-btn--submit" data-rv-submit>&gt; submit_review</button>
+							</span>
+						</div>
 					</footer>
 				</article>
 			))}
@@ -181,7 +195,6 @@ const skeletons = Array.from({ length: SKELETON_COUNT });
 		}
 	}
 
-
 	.reviews-stage {
 		position: relative;
 		display: grid;
@@ -245,22 +258,6 @@ const skeletons = Array.from({ length: SKELETON_COUNT });
 		cursor: pointer;
 	}
 
-	.reviews-card[data-depth="3"] {
-		transform: translate3d(-22px, 18px, -200px) rotate(-4deg) scale(0.88);
-		opacity: 0.32;
-		filter: blur(1px) saturate(0.78);
-		z-index: 2;
-		cursor: pointer;
-	}
-
-	.reviews-card[data-depth="4"] {
-		transform: translate3d(-32px, 8px, -260px) rotate(-6deg) scale(0.84);
-		opacity: 0.18;
-		filter: blur(1.4px) saturate(0.7);
-		z-index: 1;
-		cursor: pointer;
-	}
-
 	.reviews-card__top {
 		display: grid;
 		grid-template-columns: 56px 1fr auto;
@@ -268,32 +265,32 @@ const skeletons = Array.from({ length: SKELETON_COUNT });
 		gap: 0.85rem;
 	}
 
-		.reviews-avatar {
+	.reviews-avatar {
 		width: 56px;
 		height: 56px;
 		border-radius: 6px;
 		overflow: hidden;
 		border: 1px solid var(--divider-subtle);
-			background: var(--avatar-bg);
-			image-rendering: pixelated;
-		}
+		background: var(--avatar-bg);
+		image-rendering: pixelated;
+	}
 
-		.reviews-avatar :global(svg) {
-			width: 100%;
-			height: 100%;
-		}
+	.reviews-avatar :global(svg) {
+		width: 100%;
+		height: 100%;
+	}
 
-		.reviews-avatar :global(.avatar-bg) {
-			fill: var(--avatar-bg);
-		}
+	.reviews-avatar :global(.avatar-bg) {
+		fill: var(--avatar-bg);
+	}
 
-		.reviews-avatar :global(.avatar-pixel) {
-			fill: var(--avatar-pixel);
-		}
+	.reviews-avatar :global(.avatar-pixel) {
+		fill: var(--avatar-pixel);
+	}
 
-		.reviews-avatar :global(.avatar-pixel--accent) {
-			fill: var(--avatar-pixel-accent);
-		}
+	.reviews-avatar :global(.avatar-pixel--accent) {
+		fill: var(--avatar-pixel-accent);
+	}
 
 	.reviews-id {
 		display: flex;
@@ -328,7 +325,14 @@ const skeletons = Array.from({ length: SKELETON_COUNT });
 	}
 
 	.reviews-star {
+		padding: 0;
+		border: none;
+		background: transparent;
+		font: inherit;
+		font-size: inherit;
+		line-height: 1;
 		color: color-mix(in srgb, var(--color-text) 14%, transparent);
+		cursor: default;
 	}
 
 	.reviews-star.is-on {
@@ -584,14 +588,6 @@ const skeletons = Array.from({ length: SKELETON_COUNT });
 		.reviews-card[data-depth="2"] {
 			transform: translate3d(18px, 14px, -120px) rotate(4deg) scale(0.93);
 		}
-
-		.reviews-card[data-depth="3"] {
-			transform: translate3d(-14px, 14px, -180px) rotate(-3deg) scale(0.9);
-		}
-
-		.reviews-card[data-depth="4"] {
-			transform: translate3d(-22px, 6px, -240px) rotate(-5deg) scale(0.86);
-		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
@@ -599,6 +595,154 @@ const skeletons = Array.from({ length: SKELETON_COUNT });
 			transition: opacity 200ms ease;
 			filter: none !important;
 		}
+	}
+
+	/* ── Inline review form (view/edit toggle) ── */
+	.rv-edit {
+		display: none;
+	}
+
+	.reviews-card.is-editing .rv-view {
+		display: none;
+	}
+
+	.reviews-card.is-editing .rv-edit {
+		display: block;
+	}
+
+	.reviews-card.is-editing .reviews-tpl-avatar {
+		background: transparent !important;
+		border-style: solid !important;
+		border-color: var(--color-accent) !important;
+		opacity: 1;
+		overflow: hidden;
+	}
+
+	.reviews-card.is-editing .reviews-tpl-avatar canvas.rv-edit {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	.reviews-card.is-editing .reviews-stars {
+		opacity: 1;
+	}
+
+	.reviews-card.is-editing .reviews-star {
+		cursor: pointer;
+		transition: color 160ms ease, transform 160ms ease;
+	}
+
+	.reviews-card.is-editing .reviews-star:hover {
+		transform: scale(1.25);
+	}
+
+	.rv-input {
+		width: 100%;
+		padding: 0;
+		border: none;
+		border-bottom: 1px dashed var(--divider-subtle);
+		background: transparent;
+		font: inherit;
+		font-size: inherit;
+		color: var(--color-text);
+		outline: none;
+		caret-color: var(--color-accent);
+		transition: border-color 200ms ease;
+	}
+
+	.rv-input:focus {
+		border-bottom-color: var(--color-accent);
+	}
+
+	.rv-input::placeholder,
+	.rv-textarea::placeholder {
+		color: var(--color-text-muted);
+		opacity: 0.4;
+		font-weight: 400;
+	}
+
+	.rv-input--name {
+		font-weight: 500;
+		font-size: 1.05rem;
+	}
+
+	.rv-input--role {
+		font-size: 0.85rem;
+		color: var(--color-text-muted);
+	}
+
+	.rv-input--project {
+		font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+		font-size: 0.78rem;
+		letter-spacing: 0.06em;
+		color: var(--color-accent);
+		border-bottom: none;
+	}
+
+	.rv-textarea {
+		width: 100%;
+		flex: 1;
+		resize: none;
+		padding: 0.2rem 0;
+		border: none;
+		background: transparent;
+		color: var(--color-text);
+		font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+		font-size: 0.92rem;
+		line-height: 1.4;
+		outline: none;
+		caret-color: var(--color-accent);
+	}
+
+	.reviews-card.is-editing .reviews-quote {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.reviews-card.is-editing .rv-foot-edit {
+		display: flex;
+		width: 100%;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.rv-actions {
+		display: inline-flex;
+		gap: 0.6rem;
+		margin-left: auto;
+	}
+
+	.rv-btn {
+		padding: 0;
+		border: none;
+		background: transparent;
+		font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+		font-size: 0.78rem;
+		letter-spacing: 0.04em;
+		cursor: pointer;
+		transition: color 180ms ease, text-shadow 180ms ease;
+	}
+
+	.rv-btn--cancel {
+		color: var(--color-text-muted);
+	}
+
+	.rv-btn--cancel:hover {
+		color: var(--color-text);
+	}
+
+	.rv-btn--submit {
+		color: var(--color-accent);
+	}
+
+	.rv-btn--submit:hover {
+		text-shadow: 0 0 10px color-mix(in srgb, var(--color-accent) 40%, transparent);
+	}
+
+	.rv-btn--submit:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
 	}
 </style>
 
@@ -619,6 +763,7 @@ const skeletons = Array.from({ length: SKELETON_COUNT });
 
 		const total = cards.length;
 		let activeIndex = 0;
+		let editingCard: HTMLElement | null = null;
 
 		const update = () => {
 			cards.forEach((card, i) => {
@@ -640,6 +785,7 @@ const skeletons = Array.from({ length: SKELETON_COUNT });
 		};
 
 		const go = (next: number) => {
+			if (editingCard) return;
 			activeIndex = (next + total) % total;
 			update();
 		};
@@ -708,5 +854,230 @@ const skeletons = Array.from({ length: SKELETON_COUNT });
 		);
 
 		update();
+
+		// ── Inline review form ────────────────────
+		const writeBtn = section?.querySelector<HTMLButtonElement>('[data-reviews-write]');
+
+		const POOL = 'абвгдежзиклмнопрстуфхцчшщэюя01234_./\\|<>{}[]';
+		const FRAMES = 18;
+
+		const scramble = (el: HTMLElement): Promise<void> => new Promise((resolve) => {
+			const original = el.textContent ?? '';
+			const len = original.length;
+			if (!len) return resolve();
+			const settle: number[] = [];
+			for (let i = 0; i < len; i++) {
+				settle.push(Math.floor(Math.random() * FRAMES));
+			}
+			const last = Math.max(...settle);
+			let frame = 0;
+			const tick = () => {
+				let out = '';
+				for (let i = 0; i < len; i++) {
+					out += frame >= settle[i] ? '' : POOL[Math.floor(Math.random() * POOL.length)];
+				}
+				el.textContent = out;
+				frame++;
+				if (frame > last + 1) {
+					el.textContent = '';
+					return resolve();
+				}
+				requestAnimationFrame(tick);
+			};
+			requestAnimationFrame(tick);
+		});
+
+		const descramble = (el: HTMLElement, target: string): Promise<void> => new Promise((resolve) => {
+			const len = target.length;
+			if (!len) { el.textContent = target; return resolve(); }
+			const settle: number[] = [];
+			for (let i = 0; i < len; i++) {
+				const base = Math.floor((i / len) * FRAMES * 0.5);
+				settle.push(base + Math.floor(Math.random() * (FRAMES * 0.6)));
+			}
+			const last = Math.max(...settle);
+			let frame = 0;
+			const tick = () => {
+				let out = '';
+				for (let i = 0; i < len; i++) {
+					out += frame >= settle[i] ? target[i] : POOL[Math.floor(Math.random() * POOL.length)];
+				}
+				el.textContent = out;
+				frame++;
+				if (frame > last + 1) {
+					el.textContent = target;
+					return resolve();
+				}
+				requestAnimationFrame(tick);
+			};
+			requestAnimationFrame(tick);
+		});
+
+		const generatePixelAvatar = (canvas: HTMLCanvasElement) => {
+			const ctx = canvas.getContext('2d');
+			if (!ctx) return;
+			const size = 7;
+			ctx.clearRect(0, 0, size, size);
+			const hue = Math.floor(Math.random() * 360);
+			const bg = `hsl(${hue}, 20%, 12%)`;
+			const fg = `hsl(${hue}, 70%, 60%)`;
+			const accent = `hsl(${(hue + 40) % 360}, 80%, 55%)`;
+			ctx.fillStyle = bg;
+			ctx.fillRect(0, 0, size, size);
+			for (let y = 0; y < size; y++) {
+				for (let x = 0; x < Math.ceil(size / 2); x++) {
+					if (Math.random() > 0.55) {
+						ctx.fillStyle = Math.random() > 0.7 ? accent : fg;
+						ctx.fillRect(x, y, 1, 1);
+						ctx.fillRect(size - 1 - x, y, 1, 1);
+					}
+				}
+			}
+		};
+
+		const getViewEls = (card: HTMLElement) =>
+			Array.from(card.querySelectorAll<HTMLElement>('.rv-view'));
+
+		const openForm = async () => {
+			const card = cards[activeIndex];
+			if (!card || editingCard) return;
+			editingCard = card;
+
+			const viewEls = getViewEls(card);
+			const savedHTML = viewEls.map((el) => el.innerHTML);
+			const savedText = viewEls.map((el) => el.textContent ?? '');
+			card.dataset.origHTML = JSON.stringify(savedHTML);
+			card.dataset.origText = JSON.stringify(savedText);
+
+			await Promise.all(viewEls.map((el) => scramble(el)));
+
+			const canvas = card.querySelector<HTMLCanvasElement>('[data-rv-avatar]');
+			if (canvas) generatePixelAvatar(canvas);
+
+			card.classList.add('is-editing');
+
+			const nameInput = card.querySelector<HTMLInputElement>('[data-rv-name]');
+			const roleInput = card.querySelector<HTMLInputElement>('[data-rv-role]');
+			const msgArea = card.querySelector<HTMLTextAreaElement>('[data-rv-message]');
+			const projInput = card.querySelector<HTMLInputElement>('[data-rv-project]');
+
+			const descrambleInput = (el: HTMLInputElement | HTMLTextAreaElement | null, text: string, delay: number) => {
+				if (!el) return;
+				setTimeout(() => {
+					const len = text.length;
+					const settle: number[] = [];
+					for (let i = 0; i < len; i++) {
+						const base = Math.floor((i / len) * FRAMES * 0.4);
+						settle.push(base + Math.floor(Math.random() * (FRAMES * 0.6)));
+					}
+					const last = Math.max(...settle, 0);
+					let frame = 0;
+					const tick = () => {
+						let out = '';
+						for (let i = 0; i < len; i++) {
+							out += frame >= settle[i] ? text[i] : POOL[Math.floor(Math.random() * POOL.length)];
+						}
+						el.placeholder = out;
+						frame++;
+						if (frame > last + 1) {
+							el.placeholder = text;
+							return;
+						}
+						requestAnimationFrame(tick);
+					};
+					requestAnimationFrame(tick);
+				}, delay);
+			};
+
+			descrambleInput(nameInput, 'ваше имя', 120);
+			descrambleInput(roleInput, 'должность / компания', 200);
+			descrambleInput(msgArea, '// напишите отзыв...', 280);
+			descrambleInput(projInput, '[ проект ]', 380);
+
+			if (nameInput) setTimeout(() => nameInput.focus(), 400);
+		};
+
+		const closeForm = async (card: HTMLElement) => {
+			card.querySelectorAll<HTMLInputElement>('input[data-rv-name], input[data-rv-role], input[data-rv-project]')
+				.forEach((i) => { i.value = ''; i.placeholder = ''; });
+			const ta = card.querySelector<HTMLTextAreaElement>('[data-rv-message]');
+			if (ta) { ta.value = ''; ta.placeholder = ''; }
+			card.querySelectorAll<HTMLButtonElement>('[data-rv-star]')
+				.forEach((s) => { s.classList.remove('is-on'); s.textContent = '☆'; });
+
+			card.classList.remove('is-editing');
+
+			const viewEls = getViewEls(card);
+			const savedText: string[] = JSON.parse(card.dataset.origText || '[]');
+			const savedHTML: string[] = JSON.parse(card.dataset.origHTML || '[]');
+
+			await Promise.all(viewEls.map((el, i) => descramble(el, savedText[i] ?? '')));
+			viewEls.forEach((el, i) => { el.innerHTML = savedHTML[i] ?? ''; });
+
+			editingCard = null;
+		};
+
+		writeBtn?.addEventListener('click', openForm);
+
+		cards.forEach((card) => {
+			const cancelBtn = card.querySelector<HTMLButtonElement>('[data-rv-cancel]');
+			const submitBtn = card.querySelector<HTMLButtonElement>('[data-rv-submit]');
+			const starBtns = Array.from(card.querySelectorAll<HTMLButtonElement>('[data-rv-star]'));
+
+			cancelBtn?.addEventListener('click', () => closeForm(card));
+
+			starBtns.forEach((btn) => {
+				btn.addEventListener('click', () => {
+					if (!card.classList.contains('is-editing')) return;
+					const val = Number(btn.dataset.rvStar);
+					starBtns.forEach((s) => {
+						const sv = Number(s.dataset.rvStar);
+						const on = sv <= val;
+						s.classList.toggle('is-on', on);
+						s.textContent = on ? '★' : '☆';
+					});
+				});
+			});
+
+			submitBtn?.addEventListener('click', async () => {
+				const name = card.querySelector<HTMLInputElement>('[data-rv-name]')?.value?.trim() ?? '';
+				const role = card.querySelector<HTMLInputElement>('[data-rv-role]')?.value?.trim() ?? '';
+				const message = card.querySelector<HTMLTextAreaElement>('[data-rv-message]')?.value?.trim() ?? '';
+				const project = card.querySelector<HTMLInputElement>('[data-rv-project]')?.value?.trim() ?? '';
+				const onStars = starBtns.filter((s) => s.classList.contains('is-on'));
+				const stars = onStars.length || 5;
+
+				if (!name || !message) {
+					submitBtn.textContent = '> error: name & message required';
+					setTimeout(() => { submitBtn.textContent = '> submit_review'; }, 2000);
+					return;
+				}
+
+				submitBtn.disabled = true;
+				submitBtn.textContent = '> sending...';
+
+				try {
+					const res = await fetch('/api/reviews.json', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ name, role, message, project, stars }),
+					});
+					const json = await res.json();
+					if (json.ok) {
+						submitBtn.textContent = '> done ✓';
+						setTimeout(() => closeForm(card), 1200);
+					} else {
+						submitBtn.textContent = `> ${json.error || 'ошибка'}`;
+					}
+				} catch {
+					submitBtn.textContent = '> network error';
+				}
+
+				setTimeout(() => {
+					submitBtn.textContent = '> submit_review';
+					submitBtn.disabled = false;
+				}, 2500);
+			});
+		});
 	}
 </script>
