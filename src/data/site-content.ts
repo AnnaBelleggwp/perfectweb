@@ -121,7 +121,7 @@ const DEFAULT_PORTFOLIO: PortfolioItem[] = [
 		title: 'название первого',
 		client: 'клиент / индустрия',
 		description: '',
-		tags: ['React', 'Figma', 'Next.js'],
+		tags: [],
 		year: 2024,
 		duration: '6 недель',
 		liveUrl: '#',
