@@ -265,7 +265,9 @@ html {
 }
 
 html.is-mosaic-detail-open,
-html.is-mosaic-detail-open body {
+html.is-mosaic-detail-open body,
+html.is-pf-detail-open,
+html.is-pf-detail-open body {
 	overflow: hidden;
 	touch-action: none;
 }

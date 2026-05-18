@@ -69,6 +69,12 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 							data-index={idx}
 							aria-hidden={idx === 0 ? 'false' : 'true'}
 							tabindex={idx === 0 ? 0 : -1}
+							data-live-url={isTpl ? undefined : item.liveUrl}
+							data-duration={isTpl ? undefined : item.duration}
+							data-client={isTpl ? undefined : item.client}
+							data-all-tags={isTpl ? undefined : JSON.stringify(item.tags)}
+							data-description={isTpl ? undefined : item.description}
+							data-preview-url={isTpl ? undefined : (item.preview?.variants[0]?.url || item.preview?.originalUrl || '')}
 						>
 							{!isTpl && item.logo && (
 								<img
@@ -159,6 +165,52 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 			</a>
 		</div>
 
+	</div>
+
+	<div class="pf-detail-overlay" data-pf-overlay hidden aria-hidden="true">
+		<div class="pf-detail-backdrop" data-pf-backdrop></div>
+		<article class="pf-detail" data-pf-detail role="dialog" aria-modal="true" aria-label="детали проекта">
+			<button type="button" class="pf-detail__close" data-pf-detail-close aria-label="закрыть">
+				<span aria-hidden="true">×</span>
+			</button>
+
+			<div class="pf-detail__layout">
+				<div class="pf-detail__preview" data-pf-detail-preview>
+					<img class="pf-detail__img" data-pf-detail-img src="" alt="" />
+					<img class="pf-detail__logo" data-pf-detail-logo src="" alt="" aria-hidden="true" />
+				</div>
+
+				<div class="pf-detail__info">
+					<div class="pf-detail__head">
+						<div class="pf-detail__num-box">
+							<span data-pf-detail-num></span>
+						</div>
+						<div class="pf-detail__id">
+							<p class="pf-detail__title" data-pf-detail-title></p>
+							<p class="pf-detail__cat" data-pf-detail-cat></p>
+						</div>
+						<div class="pf-detail__year" data-pf-detail-year></div>
+					</div>
+
+					<blockquote class="pf-detail__desc" data-pf-detail-desc></blockquote>
+
+					<div class="pf-detail__tags" data-pf-detail-tags></div>
+
+					<div class="pf-detail__foot" data-pf-detail-foot>
+						<span data-pf-detail-duration></span>
+						<span class="pf-detail__dot">•</span>
+						<span data-pf-detail-client></span>
+					</div>
+
+					<a class="pf-detail__cta" data-pf-detail-link href="#" target="_blank" rel="noopener">
+						перейти на сайт
+						<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+							<path d="M1 13L13 1M13 1H5M13 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</a>
+				</div>
+			</div>
+		</article>
 	</div>
 </section>
 
@@ -415,8 +467,8 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 
 .pf-card3d__title {
 	margin: 0;
-	font-size: 1.25rem;
-	font-weight: 600;
+	font-size: 1.85rem;
+	font-weight: 300;
 	color: var(--color-text);
 	line-height: 1;
 	white-space: nowrap;
@@ -693,6 +745,302 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 		animation: none;
 	}
 }
+
+/* ══════════════════════════════════════════════════════
+   Detail modal
+   ══════════════════════════════════════════════════════ */
+
+.pf-detail-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 100;
+}
+
+.pf-detail-overlay[hidden] {
+	display: none;
+}
+
+.pf-detail-backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.65);
+	backdrop-filter: blur(14px);
+	-webkit-backdrop-filter: blur(14px);
+}
+
+:global(:root[data-theme="light"]) .pf-detail-backdrop {
+	background: rgba(245, 242, 234, 0.72);
+}
+
+.pf-detail {
+	position: fixed;
+	overflow: hidden;
+	background: var(--card-bg);
+	border: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
+	border-radius: 14px;
+	box-shadow:
+		var(--card-shadow),
+		0 0 80px rgba(255, 215, 0, 0.06);
+	z-index: 101;
+}
+
+.pf-detail__close {
+	position: absolute;
+	top: 1rem;
+	right: 1rem;
+	z-index: 3;
+	padding: 0;
+	border: none;
+	background: none;
+	font-size: 1.5rem;
+	line-height: 1;
+	color: var(--color-text-muted);
+	cursor: pointer;
+	transition: color 180ms ease;
+}
+
+.pf-detail__close:hover,
+.pf-detail__close:focus-visible {
+	color: var(--color-accent);
+	outline: none;
+}
+
+.pf-detail__layout {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	height: 100%;
+}
+
+.pf-detail__preview {
+	position: relative;
+	overflow: hidden;
+	flex-shrink: 0;
+	background: rgba(0, 0, 0, 0.25);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+:global(:root[data-theme="light"]) .pf-detail__preview {
+	background: rgba(18, 18, 18, 0.04);
+}
+
+.pf-detail__img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.pf-detail__img[src=""] {
+	display: none;
+}
+
+.pf-detail__logo {
+	position: absolute;
+	bottom: -10%;
+	left: -10%;
+	width: 70%;
+	height: auto;
+	opacity: 0.12;
+	filter: grayscale(1) brightness(1.8);
+	pointer-events: none;
+	user-select: none;
+}
+
+:global(:root[data-theme="light"]) .pf-detail__logo {
+	filter: grayscale(1) brightness(0.6);
+}
+
+.pf-detail__logo[src=""] {
+	display: none;
+}
+
+.pf-detail__info {
+	position: relative;
+	flex-shrink: 0;
+	display: flex;
+	flex-direction: column;
+	gap: clamp(1rem, 2.5vw, 1.5rem);
+	padding: clamp(1.5rem, 3vw, 2.5rem);
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: var(--color-accent) transparent;
+}
+
+.pf-detail__head {
+	display: grid;
+	grid-template-columns: 56px 1fr auto;
+	align-items: center;
+	gap: 0.85rem;
+}
+
+.pf-detail__num-box {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 56px;
+	height: 56px;
+	border-radius: 6px;
+	border: 1px solid var(--divider-subtle);
+	background: var(--avatar-bg);
+	color: var(--color-text-muted);
+	font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+	font-size: 1.1rem;
+}
+
+.pf-detail__id {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+	min-width: 0;
+}
+
+.pf-detail__title {
+	margin: 0;
+	font-size: 1.85rem;
+	font-weight: 300;
+	color: var(--color-text);
+	line-height: 1;
+}
+
+.pf-detail__cat {
+	margin: 0;
+	font-size: 0.92rem;
+	color: var(--color-accent);
+	line-height: 1;
+	opacity: 0.85;
+}
+
+.pf-detail__year {
+	font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+	font-size: 0.85rem;
+	color: var(--color-text-muted);
+	letter-spacing: 0.08em;
+}
+
+.pf-detail__desc {
+	margin: 0;
+	font-size: clamp(1.05rem, 1.8vw, 1.2rem);
+	line-height: 1.4;
+	color: var(--color-text);
+	max-width: 52ch;
+}
+
+.pf-detail__desc:not(:empty)::before {
+	content: "«";
+	color: var(--color-accent);
+	opacity: 0.7;
+	font-family: Georgia, "Times New Roman", serif;
+	margin-right: 0.12em;
+}
+
+.pf-detail__desc:not(:empty)::after {
+	content: "»";
+	color: var(--color-accent);
+	opacity: 0.7;
+	font-family: Georgia, "Times New Roman", serif;
+	margin-left: 0.12em;
+}
+
+.pf-detail__tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.45rem;
+}
+
+.pf-detail__tags:empty {
+	display: none;
+}
+
+.pf-detail__tag {
+	padding: 0.28rem 0.7rem;
+	font-size: clamp(0.85rem, 1.3vw, 0.95rem);
+	border: var(--chip-border);
+	border-radius: 999px;
+	color: var(--color-accent);
+	background: var(--chip-bg);
+}
+
+.pf-detail__foot {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding-top: 0.75rem;
+	border-top: 1px dashed var(--divider-subtle);
+	font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+	font-size: 0.78rem;
+	letter-spacing: 0.08em;
+	color: var(--color-text-muted);
+	text-transform: none;
+}
+
+.pf-detail__foot:empty,
+.pf-detail__foot[hidden] {
+	display: none;
+}
+
+.pf-detail__dot {
+	opacity: 0.5;
+}
+
+.pf-detail__cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-top: auto;
+	padding-top: 0.5rem;
+	font-size: clamp(1.1rem, 2vw, 1.3rem);
+	font-weight: 300;
+	color: var(--color-accent);
+	transition: color 180ms ease;
+}
+
+.pf-detail__cta:hover {
+	color: var(--color-text);
+}
+
+.pf-detail__cta svg {
+	transition: transform 240ms ease;
+}
+
+.pf-detail__cta:hover svg {
+	transform: translate(2px, -2px);
+}
+
+.pf-detail__cta[hidden] {
+	display: none;
+}
+
+@media (max-width: 767px) {
+	.pf-detail__layout {
+		flex-direction: column;
+	}
+
+	.pf-detail__preview {
+		width: 100% !important;
+		min-height: 160px;
+		max-height: 220px;
+	}
+
+	.pf-detail__info {
+		width: 100% !important;
+	}
+
+	.pf-detail__title {
+		font-size: 1.5rem;
+	}
+
+	.pf-detail__head {
+		grid-template-columns: 48px 1fr auto;
+		gap: 0.65rem;
+	}
+
+	.pf-detail__num-box {
+		width: 48px;
+		height: 48px;
+	}
+}
 </style>
 
 <script>
@@ -864,5 +1212,261 @@ if (section) {
 		});
 		link.addEventListener('pointerleave', () => link.classList.remove('is-hovered'));
 	});
+
+	// ── Detail modal (slide-up → expand-width) ──────────
+	const overlay = document.querySelector<HTMLElement>('[data-pf-overlay]');
+	const backdrop = document.querySelector<HTMLElement>('[data-pf-backdrop]');
+	const detail = document.querySelector<HTMLElement>('[data-pf-detail]');
+	const detailCloseBtn = document.querySelector<HTMLButtonElement>('[data-pf-detail-close]');
+	const previewPanel = document.querySelector<HTMLElement>('[data-pf-detail-preview]');
+	const infoEl = document.querySelector<HTMLElement>('.pf-detail__info');
+	const closeBtnEl = document.querySelector<HTMLElement>('.pf-detail__close');
+
+	if (overlay && backdrop && detail && previewPanel && infoEl) {
+		let sourceCard: HTMLElement | null = null;
+		let detailOpen = false;
+		let animTl: ReturnType<typeof gsap.timeline> | null = null;
+		let savedCardRect: DOMRect | null = null;
+
+		const INFO_WIDTH = 420;
+		const isMobile = () => window.innerWidth < 768;
+
+		const populateDetail = (card: HTMLElement) => {
+			const num = card.querySelector('.pf-card3d__num span')?.textContent ?? '';
+			const title = card.querySelector('.pf-card3d__title')?.textContent ?? '';
+			const cat = card.querySelector('.pf-card3d__cat')?.textContent ?? '';
+			const year = card.querySelector('.pf-card3d__year')?.textContent ?? '';
+			const desc = card.dataset.description ?? '';
+			const liveUrl = card.dataset.liveUrl ?? '#';
+			const duration = card.dataset.duration ?? '';
+			const client = card.dataset.client ?? '';
+			const previewUrl = card.dataset.previewUrl ?? '';
+			const logoSrc = card.querySelector<HTMLImageElement>('.pf-card3d__watermark')?.src ?? '';
+			let tags: string[] = [];
+			try { tags = JSON.parse(card.dataset.allTags ?? '[]'); } catch {}
+
+			const numEl = detail.querySelector('[data-pf-detail-num]');
+			const titleEl = detail.querySelector('[data-pf-detail-title]');
+			const catEl = detail.querySelector('[data-pf-detail-cat]');
+			const yearEl = detail.querySelector('[data-pf-detail-year]');
+			const descEl = detail.querySelector('[data-pf-detail-desc]');
+			const linkEl = detail.querySelector<HTMLAnchorElement>('[data-pf-detail-link]');
+			const durationEl = detail.querySelector('[data-pf-detail-duration]');
+			const clientEl = detail.querySelector('[data-pf-detail-client]');
+			const footEl = detail.querySelector<HTMLElement>('[data-pf-detail-foot]');
+			const imgEl = detail.querySelector<HTMLImageElement>('[data-pf-detail-img]');
+			const logoEl = detail.querySelector<HTMLImageElement>('[data-pf-detail-logo]');
+			const tagsContainer = detail.querySelector('[data-pf-detail-tags]');
+
+			if (numEl) numEl.textContent = num;
+			if (titleEl) titleEl.textContent = title;
+			if (catEl) catEl.textContent = cat;
+			if (yearEl) yearEl.textContent = year;
+			if (descEl) descEl.textContent = desc;
+			if (linkEl) { linkEl.href = liveUrl; linkEl.hidden = !liveUrl || liveUrl === '#'; }
+			if (durationEl) durationEl.textContent = duration;
+			if (clientEl) clientEl.textContent = client;
+			if (footEl) footEl.hidden = !duration && !client;
+			if (imgEl) { imgEl.src = previewUrl; imgEl.alt = title; }
+			if (logoEl) logoEl.src = logoSrc;
+
+			if (tagsContainer) {
+				tagsContainer.innerHTML = '';
+				tags.forEach((tag) => {
+					const span = document.createElement('span');
+					span.className = 'pf-detail__tag';
+					span.textContent = tag;
+					tagsContainer.appendChild(span);
+				});
+			}
+		};
+
+		const resetDetail = () => {
+			gsap.set(detail, { clearProps: 'all' });
+			gsap.set(gsap.utils.toArray('.pf-detail__info > *', detail), { clearProps: 'all' });
+			if (closeBtnEl) gsap.set(closeBtnEl, { clearProps: 'all' });
+			previewPanel.style.width = '';
+			infoEl.style.width = '';
+			detail.style.willChange = '';
+		};
+
+		const openDetail = (card: HTMLElement) => {
+			if (detailOpen) return;
+			detailOpen = true;
+			sourceCard = card;
+			if (animTl) { animTl.kill(); animTl = null; }
+
+			populateDetail(card);
+
+			const cardRect = card.getBoundingClientRect();
+			savedCardRect = cardRect;
+			const vw = window.innerWidth;
+			const vh = window.innerHeight;
+			const mobile = isMobile();
+
+			const cardW = cardRect.width;
+			const cardH = cardRect.height;
+			const expandedW = mobile ? vw - 32 : Math.min(cardW + INFO_WIDTH, vw - 64);
+			const expandedH = mobile ? Math.min(vh - 64, cardH + 320) : cardH;
+
+			const infoChildren = gsap.utils.toArray<HTMLElement>('.pf-detail__info > *', detail);
+
+			previewPanel.style.width = cardW + 'px';
+			infoEl.style.width = mobile ? '100%' : INFO_WIDTH + 'px';
+			detail.style.willChange = 'top, left, width, height';
+
+			gsap.set(detail, {
+				position: 'fixed',
+				top: cardRect.top,
+				left: cardRect.left,
+				width: cardW,
+				height: cardH,
+				opacity: 1,
+				borderRadius: 14,
+				force3D: true,
+			});
+			gsap.set(backdrop, { opacity: 0 });
+			gsap.set(infoChildren, { opacity: 0, x: 24 });
+			if (closeBtnEl) gsap.set(closeBtnEl, { opacity: 0, scale: 0.8 });
+
+			card.style.visibility = 'hidden';
+			overlay.hidden = false;
+			overlay.setAttribute('aria-hidden', 'false');
+			document.documentElement.classList.add('is-pf-detail-open');
+
+			const centerTop = Math.max(16, (vh - expandedH) / 2);
+			const centerLeft = Math.max(16, (vw - expandedW) / 2);
+
+			const tl = gsap.timeline();
+			animTl = tl;
+
+			tl.to(detail, {
+				top: Math.max(16, (vh - cardH) / 2),
+				left: (vw - cardW) / 2,
+				duration: 0.38,
+				ease: 'power3.out',
+				force3D: true,
+			}, 0);
+
+			tl.to(backdrop, {
+				opacity: 1,
+				duration: 0.3,
+				ease: 'power2.out',
+			}, 0);
+
+			tl.to(detail, {
+				width: expandedW,
+				height: expandedH,
+				top: centerTop,
+				left: centerLeft,
+				duration: 0.42,
+				ease: 'power2.inOut',
+				force3D: true,
+			}, 0.32);
+
+			tl.to(infoChildren, {
+				opacity: 1,
+				x: 0,
+				duration: 0.35,
+				stagger: 0.04,
+				ease: 'power2.out',
+			}, 0.58);
+
+			if (closeBtnEl) {
+				tl.to(closeBtnEl, {
+					opacity: 1,
+					scale: 1,
+					duration: 0.22,
+					ease: 'back.out(1.4)',
+				}, 0.52);
+			}
+
+			tl.call(() => { detail.style.willChange = ''; });
+		};
+
+		const closeDetail = () => {
+			if (!detailOpen) return;
+			detailOpen = false;
+			if (animTl) { animTl.kill(); animTl = null; }
+
+			const card = sourceCard;
+			const rect = savedCardRect;
+			const infoChildren = gsap.utils.toArray<HTMLElement>('.pf-detail__info > *', detail);
+
+			detail.style.willChange = 'top, left, width, height, opacity';
+
+			const tl = gsap.timeline({
+				onComplete: () => {
+					overlay.hidden = true;
+					overlay.setAttribute('aria-hidden', 'true');
+					document.documentElement.classList.remove('is-pf-detail-open');
+					resetDetail();
+					gsap.set(infoChildren, { clearProps: 'all' });
+					if (card) card.style.visibility = '';
+					sourceCard = null;
+					savedCardRect = null;
+				},
+			});
+			animTl = tl;
+
+			if (closeBtnEl) tl.to(closeBtnEl, { opacity: 0, scale: 0.8, duration: 0.1, ease: 'power2.in' }, 0);
+			tl.to(infoChildren, { opacity: 0, x: 16, duration: 0.15, ease: 'power2.in' }, 0);
+
+			if (card && rect) {
+				const cardW = rect.width;
+				const cardH = rect.height;
+				const vw = window.innerWidth;
+				const vh = window.innerHeight;
+
+				tl.to(detail, {
+					width: cardW,
+					height: cardH,
+					top: Math.max(16, (vh - cardH) / 2),
+					left: (vw - cardW) / 2,
+					duration: 0.36,
+					ease: 'power2.inOut',
+					force3D: true,
+				}, 0.12);
+
+				tl.to(detail, {
+					top: rect.top,
+					left: rect.left,
+					opacity: 0,
+					duration: 0.3,
+					ease: 'power3.in',
+					force3D: true,
+				}, 0.42);
+			} else {
+				tl.to(detail, {
+					opacity: 0,
+					duration: 0.25,
+					ease: 'power2.in',
+				}, 0.12);
+			}
+
+			tl.to(backdrop, { opacity: 0, duration: 0.28, ease: 'power2.in' }, 0.2);
+		};
+
+		cards.forEach((card) => {
+			if (!card.classList.contains('is-filled')) return;
+			const cta = card.querySelector<HTMLAnchorElement>('.pf-card3d__cta');
+			if (!cta) return;
+			cta.addEventListener('click', (e) => {
+				if (card.dataset.pos !== '0') return;
+				e.preventDefault();
+				openDetail(card);
+			});
+		});
+
+		detailCloseBtn?.addEventListener('click', closeDetail);
+		backdrop?.addEventListener('click', closeDetail);
+
+		window.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape' && detailOpen) {
+				e.preventDefault();
+				closeDetail();
+			}
+		});
+	}
 }
 </script>
