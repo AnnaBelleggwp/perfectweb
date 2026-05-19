@@ -14,9 +14,7 @@ const loadEnvFile = (filePath) => {
 		if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
 			value = value.slice(1, -1);
 		}
-		if (!process.env[key]) {
-			process.env[key] = value;
-		}
+		process.env[key] = value;
 	}
 };
 
@@ -30,13 +28,10 @@ module.exports = {
 			interpreter: 'node',
 			env: {
 				NODE_ENV: 'production',
-				HOST: '0.0.0.0',
-				PORT: 3000,
-				CMS_USERNAME: process.env.CMS_USERNAME,
-				CMS_PASSWORD: process.env.CMS_PASSWORD,
-				CMS_SESSION_SECRET: process.env.CMS_SESSION_SECRET,
-				CMS_ALLOW_TOKEN_LOGIN: process.env.CMS_ALLOW_TOKEN_LOGIN,
-				CMS_TOKEN: process.env.CMS_TOKEN,
+				HOST: process.env.HOST || '0.0.0.0',
+				PORT: process.env.PORT || 3000,
+				CMS_USERNAME: process.env.CMS_USERNAME || '',
+				CMS_PASSWORD: process.env.CMS_PASSWORD || '',
 			},
 			max_memory_restart: '400M',
 			time: true,

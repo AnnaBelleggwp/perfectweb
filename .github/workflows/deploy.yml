@@ -54,5 +54,6 @@ jobs:
             mkdir -p storage/media/assets
             grep -q "CMS_USERNAME" .env.production 2>/dev/null || printf 'CMS_USERNAME=admin\nCMS_PASSWORD=210rootroot\n' >> .env.production
             pnpm install --prod --frozen-lockfile
-            pm2 restart perfectweb --update-env || pm2 start ecosystem.config.cjs
+            pm2 delete perfectweb 2>/dev/null || true
+            pm2 start ecosystem.config.cjs
             pm2 save
