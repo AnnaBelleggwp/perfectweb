@@ -18,7 +18,6 @@ const REVIEW_ITEM_URL = '/api/cms/reviews';
 const STATUS_URL = '/api/cms/status.json';
 const BACKUPS_URL = '/api/cms/backups.json';
 const BACKUP_ITEM_URL = '/api/cms/backups';
-const TOKEN_STORAGE_KEY = 'perfectweb.cms.token';
 
 type ContactSubmission = {
 	id: string;
@@ -608,16 +607,10 @@ const fetchContent = async () => {
 	return normalizeSiteContent((await response.json()) as unknown);
 };
 
-const authHeaders = (token: string): Record<string, string> =>
-	token ? { Authorization: `Bearer ${token}` } : {};
-
-const saveContent = async (content: SiteContent, token: string) => {
+const saveContent = async (content: SiteContent) => {
 	const response = await fetch(API_URL, {
 		method: 'PUT',
-		headers: {
-			'Content-Type': 'application/json',
-			...authHeaders(token),
-		},
+		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify(content),
 	});
 
@@ -628,13 +621,10 @@ const saveContent = async (content: SiteContent, token: string) => {
 	return normalizeSiteContent((await response.json()) as unknown);
 };
 
-const resetContent = async (token: string) => {
+const resetContent = async () => {
 	const response = await fetch(API_URL, {
 		method: 'DELETE',
-		headers: {
-			'Content-Type': 'application/json',
-			...authHeaders(token),
-		},
+		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({}),
 	});
 
@@ -645,13 +635,12 @@ const resetContent = async (token: string) => {
 	return normalizeSiteContent((await response.json()) as unknown);
 };
 
-const uploadMedia = async (token: string, file: File) => {
+const uploadMedia = async (file: File) => {
 	const formData = new FormData();
 	formData.append('file', file);
 
 	const response = await fetch(MEDIA_UPLOAD_URL, {
 		method: 'POST',
-		headers: authHeaders(token),
 		body: formData,
 	});
 
@@ -663,10 +652,9 @@ const uploadMedia = async (token: string, file: File) => {
 	return (await response.json()) as PortfolioMedia;
 };
 
-const deleteMedia = async (token: string, assetId: string) => {
+const deleteMedia = async (assetId: string) => {
 	const response = await fetch(`${MEDIA_ITEM_URL}/${encodeURIComponent(assetId)}`, {
 		method: 'DELETE',
-		headers: authHeaders(token),
 	});
 
 	if (!response.ok && response.status !== 404) {
@@ -674,36 +662,25 @@ const deleteMedia = async (token: string, assetId: string) => {
 	}
 };
 
-const repairMediaStorage = async (token: string) => {
-	const response = await fetch(MEDIA_REPAIR_URL, {
-		method: 'POST',
-		headers: authHeaders(token),
-	});
+const repairMediaStorage = async () => {
+	const response = await fetch(MEDIA_REPAIR_URL, { method: 'POST' });
 	if (!response.ok) throw new Error(`MEDIA_REPAIR ${response.status}`);
 };
 
-const fetchContactSubmissions = async (token: string) => {
-	const response = await fetch(CONTACT_SUBMISSIONS_URL, {
-		method: 'GET',
-		headers: authHeaders(token),
-		cache: 'no-store',
-	});
+const fetchContactSubmissions = async () => {
+	const response = await fetch(CONTACT_SUBMISSIONS_URL, { cache: 'no-store' });
 	if (!response.ok) throw new Error(`CONTACTS_GET ${response.status}`);
 	const payload = (await response.json()) as { submissions?: ContactSubmission[] };
 	return payload.submissions ?? [];
 };
 
 const updateContactStatus = async (
-	token: string,
 	id: string,
 	status: ContactSubmission['status'],
 ) => {
 	const response = await fetch(`${CONTACT_SUBMISSION_ITEM_URL}/${encodeURIComponent(id)}`, {
 		method: 'PATCH',
-		headers: {
-			'Content-Type': 'application/json',
-			...authHeaders(token),
-		},
+		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ status }),
 	});
 	if (!response.ok) throw new Error(`CONTACT_PATCH ${response.status}`);
@@ -711,32 +688,24 @@ const updateContactStatus = async (
 	return payload.submission;
 };
 
-const deleteContactSubmission = async (token: string, id: string) => {
+const deleteContactSubmission = async (id: string) => {
 	const response = await fetch(`${CONTACT_SUBMISSION_ITEM_URL}/${encodeURIComponent(id)}`, {
 		method: 'DELETE',
-		headers: authHeaders(token),
 	});
 	if (!response.ok && response.status !== 404) throw new Error(`CONTACT_DELETE ${response.status}`);
 };
 
-const fetchReviews = async (token: string) => {
-	const response = await fetch(REVIEWS_ADMIN_URL, {
-		method: 'GET',
-		headers: authHeaders(token),
-		cache: 'no-store',
-	});
+const fetchReviews = async () => {
+	const response = await fetch(REVIEWS_ADMIN_URL, { cache: 'no-store' });
 	if (!response.ok) throw new Error(`REVIEWS_GET ${response.status}`);
 	const payload = (await response.json()) as { reviews?: CmsReview[] };
 	return payload.reviews ?? [];
 };
 
-const updateReviewApproval = async (token: string, id: string, approved: boolean) => {
+const updateReviewApproval = async (id: string, approved: boolean) => {
 	const response = await fetch(`${REVIEW_ITEM_URL}/${encodeURIComponent(id)}`, {
 		method: 'PATCH',
-		headers: {
-			'Content-Type': 'application/json',
-			...authHeaders(token),
-		},
+		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ approved }),
 	});
 	if (!response.ok) throw new Error(`REVIEW_PATCH ${response.status}`);
@@ -744,42 +713,30 @@ const updateReviewApproval = async (token: string, id: string, approved: boolean
 	return payload.review;
 };
 
-const deleteReview = async (token: string, id: string) => {
+const deleteReview = async (id: string) => {
 	const response = await fetch(`${REVIEW_ITEM_URL}/${encodeURIComponent(id)}`, {
 		method: 'DELETE',
-		headers: authHeaders(token),
 	});
 	if (!response.ok && response.status !== 404) throw new Error(`REVIEW_DELETE ${response.status}`);
 };
 
-const fetchCmsStatus = async (token: string) => {
-	const response = await fetch(STATUS_URL, {
-		method: 'GET',
-		headers: authHeaders(token),
-		cache: 'no-store',
-	});
+const fetchCmsStatus = async () => {
+	const response = await fetch(STATUS_URL, { cache: 'no-store' });
 	if (!response.ok) throw new Error(`STATUS_GET ${response.status}`);
 	return (await response.json()) as CmsStatus;
 };
 
-const fetchBackups = async (token: string) => {
-	const response = await fetch(BACKUPS_URL, {
-		method: 'GET',
-		headers: authHeaders(token),
-		cache: 'no-store',
-	});
+const fetchBackups = async () => {
+	const response = await fetch(BACKUPS_URL, { cache: 'no-store' });
 	if (!response.ok) throw new Error(`BACKUPS_GET ${response.status}`);
 	const payload = (await response.json()) as { backups?: BackupSummary[] };
 	return payload.backups ?? [];
 };
 
-const createCmsBackup = async (token: string, note: string) => {
+const createCmsBackup = async (note: string) => {
 	const response = await fetch(BACKUPS_URL, {
 		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			...authHeaders(token),
-		},
+		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ note }),
 	});
 	if (!response.ok) throw new Error(`BACKUP_CREATE ${response.status}`);
@@ -787,18 +744,16 @@ const createCmsBackup = async (token: string, note: string) => {
 	return payload.backup;
 };
 
-const restoreCmsBackup = async (token: string, id: string) => {
+const restoreCmsBackup = async (id: string) => {
 	const response = await fetch(`${BACKUP_ITEM_URL}/${encodeURIComponent(id)}/restore`, {
 		method: 'POST',
-		headers: authHeaders(token),
 	});
 	if (!response.ok) throw new Error(`BACKUP_RESTORE ${response.status}`);
 };
 
-const deleteCmsBackup = async (token: string, id: string) => {
+const deleteCmsBackup = async (id: string) => {
 	const response = await fetch(`${BACKUP_ITEM_URL}/${encodeURIComponent(id)}`, {
 		method: 'DELETE',
-		headers: authHeaders(token),
 	});
 	if (!response.ok && response.status !== 404) throw new Error(`BACKUP_DELETE ${response.status}`);
 };
@@ -854,7 +809,6 @@ const initLogin = () => {
 				status.dataset.tone = 'warn';
 				return;
 			}
-			sessionStorage.removeItem(TOKEN_STORAGE_KEY);
 			window.location.reload();
 		} catch {
 			status.textContent = 'ошибка сети';
@@ -872,10 +826,9 @@ export const initAdminApp = () => {
 	const resetButton = document.querySelector<HTMLButtonElement>('[data-admin-reset]');
 	const exportButton = document.querySelector<HTMLButtonElement>('[data-admin-export]');
 	const importInput = document.querySelector<HTMLInputElement>('[data-admin-import]');
-	const tokenInput = document.querySelector<HTMLInputElement>('[data-admin-token]');
 	const logoutButton = document.querySelector<HTMLButtonElement>('[data-admin-logout]');
 
-	if (!root || !status || !saveButton || !resetButton || !exportButton || !importInput || !tokenInput) {
+	if (!root || !status || !saveButton || !resetButton || !exportButton || !importInput) {
 		return;
 	}
 
@@ -885,8 +838,6 @@ export const initAdminApp = () => {
 	let cmsStatus: CmsStatus | null = null;
 	let backups: BackupSummary[] = [];
 	let isDirty = false;
-	let authToken = sessionStorage.getItem(TOKEN_STORAGE_KEY) ?? '';
-	tokenInput.value = authToken;
 
 	const setStatus = (text: string, tone: 'ok' | 'warn' = 'ok') => {
 		status.textContent = text;
@@ -909,16 +860,6 @@ export const initAdminApp = () => {
 		});
 	};
 
-	const requireToken = () => {
-		authToken = tokenInput.value.trim();
-		if (authToken) {
-			sessionStorage.setItem(TOKEN_STORAGE_KEY, authToken);
-		} else {
-			sessionStorage.removeItem(TOKEN_STORAGE_KEY);
-		}
-		return true;
-	};
-
 	const load = async () => {
 		setStatus('загрузка данных...');
 		try {
@@ -927,10 +868,10 @@ export const initAdminApp = () => {
 			isDirty = false;
 			try {
 				[contactSubmissions, reviews, cmsStatus, backups] = await Promise.all([
-					fetchContactSubmissions(authToken),
-					fetchReviews(authToken),
-					fetchCmsStatus(authToken),
-					fetchBackups(authToken),
+					fetchContactSubmissions(),
+					fetchReviews(),
+					fetchCmsStatus(),
+					fetchBackups(),
 				]);
 				rerender();
 				setStatus('данные загружены');
@@ -945,12 +886,11 @@ export const initAdminApp = () => {
 	};
 
 	const refreshInbox = async () => {
-		if (!requireToken()) return;
 		setStatus('обновление заявок и отзывов...');
 		try {
 			[contactSubmissions, reviews] = await Promise.all([
-				fetchContactSubmissions(authToken),
-				fetchReviews(authToken),
+				fetchContactSubmissions(),
+				fetchReviews(),
 			]);
 			rerender();
 			setStatus('заявки и отзывы обновлены');
@@ -961,12 +901,11 @@ export const initAdminApp = () => {
 	};
 
 	const refreshSystem = async () => {
-		if (!requireToken()) return;
 		setStatus('обновление статуса и backup...');
 		try {
 			[cmsStatus, backups] = await Promise.all([
-				fetchCmsStatus(authToken),
-				fetchBackups(authToken),
+				fetchCmsStatus(),
+				fetchBackups(),
 			]);
 			rerender();
 			setStatus('статус и backup обновлены');
@@ -1069,7 +1008,6 @@ export const initAdminApp = () => {
 		target.value = '';
 		if (!file) return;
 
-		if (!requireToken()) return;
 
 		setStatus(`загрузка файла (${mediaKey})...`);
 		try {
@@ -1077,12 +1015,12 @@ export const initAdminApp = () => {
 			if (!item) throw new Error('portfolio_item_not_found');
 
 			const prevAssetId = item[mediaKey]?.assetId;
-			const uploaded = await uploadMedia(authToken, file);
+			const uploaded = await uploadMedia(file);
 			uploaded.alt = item[mediaKey]?.alt || item.title;
 			item[mediaKey] = uploaded;
 
 			if (prevAssetId && prevAssetId !== uploaded.assetId) {
-				await deleteMedia(authToken, prevAssetId).catch(() => undefined);
+				await deleteMedia(prevAssetId).catch(() => undefined);
 			}
 
 			rerender();
@@ -1216,8 +1154,7 @@ export const initAdminApp = () => {
 		}
 
 		if (action === 'remove-portfolio-media' && Number.isInteger(portfolioIndex) && mediaKey) {
-			if (!requireToken()) return;
-
+	
 			const item = state.portfolio[portfolioIndex];
 			if (!item) return;
 			const media = item[mediaKey];
@@ -1225,7 +1162,7 @@ export const initAdminApp = () => {
 
 			setStatus('удаление файла...');
 			try {
-				await deleteMedia(authToken, media.assetId);
+				await deleteMedia(media.assetId);
 				item[mediaKey] = null;
 				rerender();
 				markDirty();
@@ -1247,13 +1184,12 @@ export const initAdminApp = () => {
 		}
 
 		if (action === 'repair-media') {
-			if (!requireToken()) return;
-			if (!window.confirm('Починить media manifest? Перед правкой будет создан manifest.previous.json.')) return;
+				if (!window.confirm('Починить media manifest? Перед правкой будет создан manifest.previous.json.')) return;
 
 			setStatus('repair media...');
 			try {
-				await repairMediaStorage(authToken);
-				cmsStatus = await fetchCmsStatus(authToken);
+				await repairMediaStorage();
+				cmsStatus = await fetchCmsStatus();
 				rerender();
 				setStatus('media manifest проверен и исправлен');
 			} catch (error) {
@@ -1264,13 +1200,12 @@ export const initAdminApp = () => {
 		}
 
 		if (action === 'create-backup') {
-			if (!requireToken()) return;
-			const note = window.prompt('Комментарий к backup', 'manual')?.trim() || 'manual';
+				const note = window.prompt('Комментарий к backup', 'manual')?.trim() || 'manual';
 			setStatus('создание backup...');
 			try {
-				const backup = await createCmsBackup(authToken, note);
+				const backup = await createCmsBackup(note);
 				if (backup) backups = [backup, ...backups.filter((item) => item.id !== backup.id)];
-				cmsStatus = await fetchCmsStatus(authToken).catch(() => cmsStatus);
+				cmsStatus = await fetchCmsStatus().catch(() => cmsStatus);
 				rerender();
 				setStatus('backup создан');
 			} catch (error) {
@@ -1281,19 +1216,18 @@ export const initAdminApp = () => {
 		}
 
 		if (action === 'restore-backup') {
-			if (!requireToken()) return;
-			const id = button.dataset.backupId ?? '';
+				const id = button.dataset.backupId ?? '';
 			if (!id || !window.confirm('Восстановить backup? Текущее состояние будет сохранено в pre-restore backup.')) return;
 
 			setStatus('восстановление backup...');
 			try {
-				await restoreCmsBackup(authToken, id);
+				await restoreCmsBackup(id);
 				state = await fetchContent();
 				[contactSubmissions, reviews, cmsStatus, backups] = await Promise.all([
-					fetchContactSubmissions(authToken),
-					fetchReviews(authToken),
-					fetchCmsStatus(authToken),
-					fetchBackups(authToken),
+					fetchContactSubmissions(),
+					fetchReviews(),
+					fetchCmsStatus(),
+					fetchBackups(),
 				]);
 				isDirty = false;
 				rerender();
@@ -1306,15 +1240,14 @@ export const initAdminApp = () => {
 		}
 
 		if (action === 'delete-backup') {
-			if (!requireToken()) return;
-			const id = button.dataset.backupId ?? '';
+				const id = button.dataset.backupId ?? '';
 			if (!id || !window.confirm('Удалить backup без восстановления?')) return;
 
 			setStatus('удаление backup...');
 			try {
-				await deleteCmsBackup(authToken, id);
+				await deleteCmsBackup(id);
 				backups = backups.filter((backup) => backup.id !== id);
-				cmsStatus = await fetchCmsStatus(authToken).catch(() => cmsStatus);
+				cmsStatus = await fetchCmsStatus().catch(() => cmsStatus);
 				rerender();
 				setStatus('backup удалён');
 			} catch (error) {
@@ -1325,14 +1258,13 @@ export const initAdminApp = () => {
 		}
 
 		if (action === 'contact-status') {
-			if (!requireToken()) return;
-			const id = button.dataset.contactId ?? '';
+				const id = button.dataset.contactId ?? '';
 			const nextStatus = button.dataset.contactStatus as ContactSubmission['status'] | undefined;
 			if (!id || !nextStatus) return;
 
 			setStatus('обновление заявки...');
 			try {
-				const updated = await updateContactStatus(authToken, id, nextStatus);
+				const updated = await updateContactStatus(id, nextStatus);
 				if (updated) {
 					contactSubmissions = contactSubmissions.map((submission) =>
 						submission.id === updated.id ? updated : submission,
@@ -1348,13 +1280,12 @@ export const initAdminApp = () => {
 		}
 
 		if (action === 'delete-contact') {
-			if (!requireToken()) return;
-			const id = button.dataset.contactId ?? '';
+				const id = button.dataset.contactId ?? '';
 			if (!id || !window.confirm('Удалить заявку без восстановления?')) return;
 
 			setStatus('удаление заявки...');
 			try {
-				await deleteContactSubmission(authToken, id);
+				await deleteContactSubmission(id);
 				contactSubmissions = contactSubmissions.filter((submission) => submission.id !== id);
 				rerender();
 				setStatus('заявка удалена');
@@ -1366,14 +1297,13 @@ export const initAdminApp = () => {
 		}
 
 		if (action === 'review-approval') {
-			if (!requireToken()) return;
-			const id = button.dataset.reviewId ?? '';
+				const id = button.dataset.reviewId ?? '';
 			const approved = button.dataset.reviewApproved === 'true';
 			if (!id) return;
 
 			setStatus('обновление отзыва...');
 			try {
-				const updated = await updateReviewApproval(authToken, id, approved);
+				const updated = await updateReviewApproval(id, approved);
 				if (updated) {
 					reviews = reviews.map((review) => review.id === updated.id ? updated : review);
 				}
@@ -1387,13 +1317,12 @@ export const initAdminApp = () => {
 		}
 
 		if (action === 'delete-review') {
-			if (!requireToken()) return;
-			const id = button.dataset.reviewId ?? '';
+				const id = button.dataset.reviewId ?? '';
 			if (!id || !window.confirm('Удалить отзыв без восстановления?')) return;
 
 			setStatus('удаление отзыва...');
 			try {
-				await deleteReview(authToken, id);
+				await deleteReview(id);
 				reviews = reviews.filter((review) => review.id !== id);
 				rerender();
 				setStatus('отзыв удалён');
@@ -1404,20 +1333,10 @@ export const initAdminApp = () => {
 		}
 	});
 
-	tokenInput.addEventListener('change', () => {
-		authToken = tokenInput.value.trim();
-		if (authToken) {
-			sessionStorage.setItem(TOKEN_STORAGE_KEY, authToken);
-		} else {
-			sessionStorage.removeItem(TOKEN_STORAGE_KEY);
-		}
-	});
-
 	saveButton.addEventListener('click', async () => {
-		if (!requireToken()) return;
 		setStatus('сохранение...');
 		try {
-			state = await saveContent(state, authToken);
+			state = await saveContent(state);
 			isDirty = false;
 			rerender();
 			setStatus('сохранено на сервере');
@@ -1428,11 +1347,10 @@ export const initAdminApp = () => {
 	});
 
 	resetButton.addEventListener('click', async () => {
-		if (!requireToken()) return;
 		if (!window.confirm('Сбросить контент на сервере к дефолту?')) return;
 		setStatus('сброс...');
 		try {
-			state = await resetContent(authToken);
+			state = await resetContent();
 			isDirty = false;
 			rerender();
 			setStatus('контент сброшен');
@@ -1478,7 +1396,6 @@ export const initAdminApp = () => {
 		try {
 			await fetch(SESSION_URL, { method: 'DELETE' });
 		} finally {
-			sessionStorage.removeItem(TOKEN_STORAGE_KEY);
 			window.location.reload();
 		}
 	});

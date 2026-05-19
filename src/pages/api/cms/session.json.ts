@@ -4,8 +4,7 @@ import {
 	clearCmsSessionSetCookie,
 	createCmsSessionSetCookie,
 	isCmsCredentialsValid,
-	isCmsSessionAuthorized,
-	isCmsTokenValid,
+	isCmsAuthorized,
 	revokeCmsSession,
 } from '../../../lib/cms/auth';
 
@@ -44,7 +43,7 @@ const isLoginLimited = (key: string) => {
 };
 
 export const GET: APIRoute = async ({ request }) => {
-	return new Response(JSON.stringify({ ok: true, authorized: isCmsSessionAuthorized(request) }), {
+	return new Response(JSON.stringify({ ok: true, authorized: isCmsAuthorized(request) }), {
 		status: 200,
 		headers: jsonHeaders,
 	});
@@ -69,12 +68,10 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 		});
 	}
 
-	const token = typeof payload.token === 'string' ? payload.token.trim() : '';
 	const username = typeof payload.username === 'string' ? payload.username.trim() : '';
 	const password = typeof payload.password === 'string' ? payload.password.trim() : '';
-	const isAuthorized = token ? isCmsTokenValid(token) : isCmsCredentialsValid(username, password);
 
-	if (!isAuthorized) {
+	if (!isCmsCredentialsValid(username, password)) {
 		recordFailedLogin(key);
 		return new Response(JSON.stringify({ ok: false, error: 'unauthorized' }), {
 			status: 401,

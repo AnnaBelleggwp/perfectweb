@@ -1,8 +1,8 @@
 ---
-import { isCmsSessionAuthorized } from '../lib/cms/auth';
+import { isCmsAuthorized } from '../lib/cms/auth';
 import AdminLayout from '../layouts/AdminLayout.astro';
 
-const isAuthorized = isCmsSessionAuthorized(Astro.request);
+const isAuthorized = isCmsAuthorized(Astro.request);
 ---
 
 <AdminLayout>
@@ -34,7 +34,6 @@ const isAuthorized = isCmsSessionAuthorized(Astro.request);
 					</nav>
 
 					<div class="admin-secondary-bar">
-						<input class="admin-token" type="password" placeholder="token" data-admin-token />
 						<button type="button" class="admin-btn admin-btn--ghost admin-btn--sm" data-admin-reset>сбросить</button>
 						<button type="button" class="admin-btn admin-btn--ghost admin-btn--sm" data-admin-export>экспорт</button>
 						<label class="admin-btn admin-btn--ghost admin-btn--sm admin-import">
@@ -221,18 +220,6 @@ const isAuthorized = isCmsSessionAuthorized(Astro.request);
 	margin-top: 0.75rem;
 	padding-bottom: 0.75rem;
 	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.admin-token {
-	width: 120px;
-	font: inherit;
-	font-family: "JetBrains Mono", "SF Mono", monospace;
-	font-size: 0.82rem;
-	padding: 0.3rem 0.55rem;
-	border-radius: 6px;
-	border: 1px solid rgba(255, 255, 255, 0.12);
-	background: rgba(255, 255, 255, 0.04);
-	color: var(--color-text);
 }
 
 .admin-import {
@@ -621,10 +608,6 @@ const isAuthorized = isCmsSessionAuthorized(Astro.request);
 
 	.admin-tabs {
 		overflow-x: auto;
-	}
-
-	.admin-token {
-		width: 100%;
 	}
 
 	:global(.admin-inline-grid) {

@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import type { APIRoute } from 'astro';
 
-import { getCmsSessionStoreStatus, isCmsAuthorized } from '../../../lib/cms/auth';
+import { isCmsAuthorized } from '../../../lib/cms/auth';
 import { listBackups } from '../../../lib/cms/backup-service';
 import { inspectMediaStorage } from '../../../lib/cms/media-service';
 import { STORAGE_DIR, pathExists, writeTextAtomic } from '../../../lib/cms/storage-utils';
@@ -80,7 +80,6 @@ export const GET: APIRoute = async ({ request }) => {
 			exists: await pathExists(STORAGE_DIR),
 			writable: await checkWritable(),
 		},
-		sessions: getCmsSessionStoreStatus(),
 		files: {
 			content: await fileStat(contentFile),
 			contactSubmissions: await fileStat(contactFile),

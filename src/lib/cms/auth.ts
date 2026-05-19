@@ -20,12 +20,6 @@ type CmsSessionStore = {
 };
 
 const getEnvValue = (value: unknown) => (typeof value === 'string' ? value.trim() : '');
-const isTruthyEnv = (value: unknown) => ['1', 'true', 'yes', 'on'].includes(getEnvValue(value).toLowerCase());
-
-export const getCmsToken = () => {
-	const token = import.meta.env.CMS_TOKEN ?? process.env.CMS_TOKEN;
-	return getEnvValue(token);
-};
 
 const getCmsUsername = () => {
 	const username = import.meta.env.CMS_USERNAME ?? process.env.CMS_USERNAME;
@@ -37,20 +31,7 @@ const getCmsPassword = () => {
 	return getEnvValue(password);
 };
 
-const getCmsSessionSecret = () => {
-	const secret = import.meta.env.CMS_SESSION_SECRET ?? process.env.CMS_SESSION_SECRET;
-	return getEnvValue(secret) || getCmsToken() || getCmsPassword();
-};
-
-const isProduction = () => {
-	const mode = getEnvValue(import.meta.env.MODE) || getEnvValue(process.env.NODE_ENV);
-	return mode === 'production';
-};
-
-export const isCmsTokenLoginAllowed = () => {
-	const explicit = import.meta.env.CMS_ALLOW_TOKEN_LOGIN ?? process.env.CMS_ALLOW_TOKEN_LOGIN;
-	return !isProduction() || isTruthyEnv(explicit);
-};
+const getSessionSecret = () => getCmsPassword();
 
 const safeEqual = (left: string, right: string) => {
 	const leftBuffer = Buffer.from(left);
@@ -58,30 +39,15 @@ const safeEqual = (left: string, right: string) => {
 	return leftBuffer.length === rightBuffer.length && timingSafeEqual(leftBuffer, rightBuffer);
 };
 
-export const isCmsTokenValid = (incoming: string) => {
-	const token = getCmsToken();
-	if (!token) return false;
-	return incoming.length > 0 && safeEqual(incoming, token);
-};
-
 export const isCmsCredentialsValid = (username: string, password: string) => {
 	const configuredUsername = getCmsUsername();
 	const configuredPassword = getCmsPassword();
-	if (configuredUsername && configuredPassword) {
-		return (
-			username.length > 0 &&
-			password.length > 0 &&
-			safeEqual(username, configuredUsername) &&
-			safeEqual(password, configuredPassword)
-		);
-	}
-
-	const token = getCmsToken();
+	if (!configuredUsername || !configuredPassword) return false;
 	return (
-		isCmsTokenLoginAllowed() &&
-		token.length > 0 &&
-		safeEqual(username, 'admin') &&
-		safeEqual(password, token)
+		username.length > 0 &&
+		password.length > 0 &&
+		safeEqual(username, configuredUsername) &&
+		safeEqual(password, configuredPassword)
 	);
 };
 
@@ -156,7 +122,7 @@ const pruneExpiredSessions = (store: CmsSessionStore, now = Date.now()) => {
 };
 
 const sessionSignature = (payload: string) => {
-	const secret = getCmsSessionSecret();
+	const secret = getSessionSecret();
 	if (!secret) return '';
 	return createHmac('sha256', secret).update(payload).digest('base64url');
 };
@@ -165,13 +131,6 @@ const isSecureRequest = (request: Request) => {
 	const forwardedProto = request.headers.get('x-forwarded-proto');
 	if (forwardedProto) return forwardedProto.split(',')[0]?.trim() === 'https';
 	return new URL(request.url).protocol === 'https:';
-};
-
-const isBearerAuthorized = (request: Request) => {
-	const auth = request.headers.get('authorization') ?? '';
-	if (!auth.startsWith('Bearer ')) return false;
-	const incoming = auth.slice('Bearer '.length).trim();
-	return isCmsTokenValid(incoming);
 };
 
 const parseCmsSessionCookie = (request: Request) => {
@@ -193,8 +152,8 @@ const parseCmsSessionCookie = (request: Request) => {
 	};
 };
 
-export const isCmsSessionAuthorized = (request: Request) => {
-	const secret = getCmsSessionSecret();
+export const isCmsAuthorized = (request: Request) => {
+	const secret = getSessionSecret();
 	if (!secret) return false;
 
 	const session = parseCmsSessionCookie(request);
@@ -222,11 +181,8 @@ export const isCmsSessionAuthorized = (request: Request) => {
 	);
 };
 
-export const isCmsAuthorized = (request: Request) =>
-	isBearerAuthorized(request) || isCmsSessionAuthorized(request);
-
 export const createCmsSessionSetCookie = (request: Request) => {
-	const secret = getCmsSessionSecret();
+	const secret = getSessionSecret();
 	if (!secret) return '';
 
 	const issuedAt = Date.now();
@@ -274,26 +230,4 @@ export const revokeCmsSession = (request: Request) => {
 	if (!store.sessions[session.sessionId]) return;
 	delete store.sessions[session.sessionId];
 	writeSessionStore(store);
-};
-
-export const getCmsSessionStoreStatus = () => {
-	const store = readSessionStore();
-	const changed = pruneExpiredSessions(store);
-	if (changed) {
-		try {
-			writeSessionStore(store);
-		} catch {
-			return {
-				exists: fs.existsSync(CMS_SESSIONS_FILE),
-				activeCount: Object.keys(store.sessions).length,
-				writable: false,
-			};
-		}
-	}
-
-	return {
-		exists: fs.existsSync(CMS_SESSIONS_FILE),
-		activeCount: Object.keys(store.sessions).length,
-		writable: true,
-	};
 };
