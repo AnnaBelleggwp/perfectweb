@@ -52,6 +52,7 @@ jobs:
             export PATH=$PATH:/usr/local/bin:/root/.local/share/pnpm
             cd /var/www/perfectweb
             mkdir -p storage/media/assets
+            grep -q "CMS_ALLOW_TOKEN_LOGIN" .env.production 2>/dev/null || echo "CMS_ALLOW_TOKEN_LOGIN=true" >> .env.production
             pnpm install --prod --frozen-lockfile
             pm2 restart perfectweb --update-env || pm2 start ecosystem.config.cjs
             pm2 save
