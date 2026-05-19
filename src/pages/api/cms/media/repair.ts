@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 
 import { isCmsAuthorized } from '../../../../lib/cms/auth';
-import { deleteMediaAsset } from '../../../../lib/cms/media-service';
+import { repairMediaManifest } from '../../../../lib/cms/media-service';
 import { StorageError } from '../../../../lib/cms/storage-utils';
 
 export const prerender = false;
@@ -11,7 +11,7 @@ const jsonHeaders = {
 	'Cache-Control': 'no-store, max-age=0',
 };
 
-export const DELETE: APIRoute = async ({ request, params }) => {
+export const POST: APIRoute = async ({ request }) => {
 	if (!isCmsAuthorized(request)) {
 		return new Response(JSON.stringify({ error: 'unauthorized' }), {
 			status: 401,
@@ -19,23 +19,15 @@ export const DELETE: APIRoute = async ({ request, params }) => {
 		});
 	}
 
-	const id = params.id;
-	if (!id) {
-		return new Response(JSON.stringify({ error: 'media_id_required' }), {
-			status: 400,
-			headers: jsonHeaders,
-		});
-	}
-
 	try {
-		const deleted = await deleteMediaAsset(id);
-		return new Response(JSON.stringify({ ok: deleted }), {
-			status: deleted ? 200 : 404,
+		const result = await repairMediaManifest();
+		return new Response(JSON.stringify({ ok: true, ...result }), {
+			status: 200,
 			headers: jsonHeaders,
 		});
 	} catch (error) {
 		return new Response(
-			JSON.stringify({ error: error instanceof StorageError ? error.code : 'media_delete_failed' }),
+			JSON.stringify({ error: error instanceof StorageError ? error.code : 'media_repair_failed' }),
 			{ status: 500, headers: jsonHeaders },
 		);
 	}

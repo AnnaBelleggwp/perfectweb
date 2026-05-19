@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 
 import { isCmsAuthorized } from '../../../../lib/cms/auth';
 import { uploadMediaAsset } from '../../../../lib/cms/media-service';
+import { StorageError } from '../../../../lib/cms/storage-utils';
 
 export const prerender = false;
 
@@ -45,7 +46,7 @@ export const POST: APIRoute = async ({ request }) => {
 	} catch (error) {
 		const message = error instanceof Error ? error.message : 'media_upload_failed';
 		return new Response(JSON.stringify({ error: message }), {
-			status: 400,
+			status: error instanceof StorageError ? 500 : 400,
 			headers: jsonHeaders,
 		});
 	}

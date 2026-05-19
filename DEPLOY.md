@@ -60,8 +60,8 @@ chmod 600 ~/.ssh/authorized_keys
 # Обновить систему
 apt update && apt upgrade -y
 
-# Установить Node.js 20
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+# Установить Node.js 22
+curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
 apt install -y nodejs
 
 # Установить PM2 (менеджер процессов)
@@ -72,6 +72,7 @@ apt install -y nginx
 
 # Создать директорию приложения
 mkdir -p /var/www/perfectweb
+mkdir -p /var/www/perfectweb/storage/media/assets
 ```
 
 ### 2.3 Настроить Nginx
@@ -138,7 +139,7 @@ certbot --nginx -d ТВОЙ_ДОМЕН
 ### 2.6 Проверить
 
 ```bash
-node -v          # должно быть v20.x
+node -v          # должно быть v22.x
 pm2 -v           # должно показать версию
 nginx -t         # должно быть "ok"
 ```
@@ -196,6 +197,14 @@ gh secret set VPS_USER --body "root"
 
 # Добавить приватный SSH-ключ
 gh secret set VPS_SSH_KEY < ~/.ssh/perfectweb_deploy
+
+# Добавить логин/пароль CMS-админки
+gh secret set CMS_USERNAME --body "admin"
+gh secret set CMS_PASSWORD --body "СИЛЬНЫЙ_ПАРОЛЬ"
+
+# Добавить секрет подписи сессии и опциональный API-токен
+gh secret set CMS_SESSION_SECRET --body "СЛУЧАЙНЫЙ_ДЛИННЫЙ_СЕКРЕТ"
+gh secret set CMS_TOKEN --body "ОПЦИОНАЛЬНЫЙ_API_ТОКЕН"
 ```
 
 ### Вариант B: Через браузер
@@ -204,13 +213,19 @@ gh secret set VPS_SSH_KEY < ~/.ssh/perfectweb_deploy
 2. Settings → Secrets and variables → Actions
 3. New repository secret
 
-Добавь три секрета:
+Добавь секреты:
 
 | Имя | Значение |
 |-----|----------|
 | `VPS_HOST` | IP-адрес сервера (например `185.123.45.67`) |
 | `VPS_USER` | `root` |
 | `VPS_SSH_KEY` | Содержимое файла `~/.ssh/perfectweb_deploy` (весь текст, включая `-----BEGIN...` и `-----END...`) |
+| `CMS_USERNAME` | Логин для входа в `/admin` |
+| `CMS_PASSWORD` | Сильный пароль для входа в `/admin` |
+| `CMS_SESSION_SECRET` | Длинный случайный секрет подписи сессии |
+| `CMS_TOKEN` | Опциональный Bearer-токен для CMS API |
+
+Fallback-вход `admin` + `CMS_TOKEN` в production выключен по умолчанию. Включать его стоит только временно через `CMS_ALLOW_TOKEN_LOGIN=true`.
 
 ---
 

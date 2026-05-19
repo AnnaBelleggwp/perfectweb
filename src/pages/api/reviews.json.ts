@@ -1,10 +1,12 @@
 import type { APIRoute } from 'astro';
-import { appendFileSync, readFileSync, existsSync } from 'node:fs';
-import { join } from 'node:path';
+
+import {
+	ReviewValidationError,
+	createReview,
+	listApprovedReviews,
+} from '../../lib/reviews/reviews-service';
 
 export const prerender = false;
-
-const STORAGE_PATH = join(process.cwd(), 'storage', 'reviews.jsonl');
 
 const jsonHeaders = {
 	'Content-Type': 'application/json; charset=utf-8',
@@ -24,20 +26,13 @@ const rateLimit = (key: string) => {
 	return true;
 };
 
-const sanitize = (val: unknown, max: number): string => {
-	if (typeof val !== 'string') return '';
-	return val.trim().slice(0, max);
-};
-
 export const GET: APIRoute = async () => {
-	if (!existsSync(STORAGE_PATH)) {
+	try {
+		const reviews = await listApprovedReviews();
+		return new Response(JSON.stringify(reviews), { headers: jsonHeaders });
+	} catch {
 		return new Response(JSON.stringify([]), { headers: jsonHeaders });
 	}
-	const lines = readFileSync(STORAGE_PATH, 'utf-8').split('\n').filter(Boolean);
-	const reviews = lines
-		.map((line) => { try { return JSON.parse(line); } catch { return null; } })
-		.filter((r) => r && r.approved);
-	return new Response(JSON.stringify(reviews), { headers: jsonHeaders });
 };
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
@@ -58,35 +53,22 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 		);
 	}
 
-	const name = sanitize(payload.name, 80);
-	const role = sanitize(payload.role, 100);
-	const message = sanitize(payload.message, 1200);
-	const project = sanitize(payload.project, 120);
-	const stars = Math.min(5, Math.max(1, Number(payload.stars) || 5));
-
-	if (!name || !message) {
+	try {
+		const review = await createReview(payload, clientAddress);
 		return new Response(
-			JSON.stringify({ ok: false, error: 'Имя и отзыв обязательны' }),
-			{ status: 400, headers: jsonHeaders },
+			JSON.stringify({ ok: true, id: review.id, createdAt: review.createdAt }),
+			{ status: 201, headers: jsonHeaders },
+		);
+	} catch (error) {
+		if (error instanceof ReviewValidationError) {
+			return new Response(
+				JSON.stringify({ ok: false, error: error.message, field: error.field }),
+				{ status: 400, headers: jsonHeaders },
+			);
+		}
+		return new Response(
+			JSON.stringify({ ok: false, error: 'server' }),
+			{ status: 500, headers: jsonHeaders },
 		);
 	}
-
-	const review = {
-		id: crypto.randomUUID(),
-		name,
-		role,
-		message,
-		project,
-		stars,
-		approved: false,
-		createdAt: new Date().toISOString(),
-		ip: clientAddress,
-	};
-
-	appendFileSync(STORAGE_PATH, JSON.stringify(review) + '\n', 'utf-8');
-
-	return new Response(
-		JSON.stringify({ ok: true }),
-		{ status: 201, headers: jsonHeaders },
-	);
 };

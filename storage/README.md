@@ -5,6 +5,9 @@
 - `site-content.json` - контент CMS
 - `media/` - загруженные изображения
 - `contact-submissions.jsonl` - входящие заявки
+- `reviews.jsonl` - отзывы и статусы модерации
+- `cms-sessions.json` - активные серверные сессии админки
+- `backups/` - ручные и pre-restore backup-архивы CMS
 
 Приложение умеет создать эту структуру само при первом запуске, если папка пуста.
 

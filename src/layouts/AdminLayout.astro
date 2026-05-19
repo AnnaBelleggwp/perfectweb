@@ -1,0 +1,32 @@
+---
+import '../styles/global.css';
+import alumniSansCyrillic400 from '@fontsource/alumni-sans/files/alumni-sans-cyrillic-400-normal.woff2?url';
+import alumniSansLatin400 from '@fontsource/alumni-sans/files/alumni-sans-latin-400-normal.woff2?url';
+
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const {
+	title = 'kerizov.design — админка',
+	description = 'серверная cms для контента kerizov.design',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="ru" data-theme="dark">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content={description} />
+		<meta name="robots" content="noindex, nofollow" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="preload" href={alumniSansCyrillic400} as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href={alumniSansLatin400} as="font" type="font/woff2" crossorigin />
+		<title>{title}</title>
+	</head>
+	<body>
+		<slot />
+	</body>
+</html>

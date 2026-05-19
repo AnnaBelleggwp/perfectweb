@@ -10,12 +10,29 @@ const jsonHeaders = {
 	'Cache-Control': 'no-store, max-age=0',
 };
 
-export const GET: APIRoute = async () => {
-	const content = await readSiteContent();
-	return new Response(JSON.stringify(content), {
-		status: 200,
+const serverError = (error = 'content_storage_error') =>
+	new Response(JSON.stringify({ error }), {
+		status: 500,
 		headers: jsonHeaders,
 	});
+
+export const GET: APIRoute = async ({ request }) => {
+	if (!isCmsAuthorized(request)) {
+		return new Response(JSON.stringify({ error: 'unauthorized' }), {
+			status: 401,
+			headers: jsonHeaders,
+		});
+	}
+
+	try {
+		const content = await readSiteContent();
+		return new Response(JSON.stringify(content), {
+			status: 200,
+			headers: jsonHeaders,
+		});
+	} catch {
+		return serverError('content_read_failed');
+	}
 };
 
 export const PUT: APIRoute = async ({ request }) => {
@@ -36,11 +53,15 @@ export const PUT: APIRoute = async ({ request }) => {
 		});
 	}
 
-	const next = await writeSiteContent(payload);
-	return new Response(JSON.stringify(next), {
-		status: 200,
-		headers: jsonHeaders,
-	});
+	try {
+		const next = await writeSiteContent(payload);
+		return new Response(JSON.stringify(next), {
+			status: 200,
+			headers: jsonHeaders,
+		});
+	} catch {
+		return serverError('content_write_failed');
+	}
 };
 
 export const DELETE: APIRoute = async ({ request }) => {
@@ -51,9 +72,13 @@ export const DELETE: APIRoute = async ({ request }) => {
 		});
 	}
 
-	const next = await resetSiteContent();
-	return new Response(JSON.stringify(next), {
-		status: 200,
-		headers: jsonHeaders,
-	});
+	try {
+		const next = await resetSiteContent();
+		return new Response(JSON.stringify(next), {
+			status: 200,
+			headers: jsonHeaders,
+		});
+	} catch {
+		return serverError('content_reset_failed');
+	}
 };

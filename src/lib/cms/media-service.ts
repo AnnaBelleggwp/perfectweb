@@ -5,6 +5,13 @@ import path from 'node:path';
 import sharp from 'sharp';
 
 import type { PortfolioMedia, PortfolioMediaVariant } from '../../data/site-content';
+import {
+	STORAGE_DIR,
+	StorageError,
+	backupExistingFile,
+	pathExists,
+	writeTextAtomic,
+} from './storage-utils';
 
 type StoredMediaFormat = 'webp';
 
@@ -30,10 +37,34 @@ type StoredMediaManifest = {
 	assets: Record<string, StoredMediaAsset>;
 };
 
-const STORAGE_DIR = path.join(process.cwd(), 'storage');
+type MediaFileIssue = {
+	assetId: string;
+	fileName: string;
+};
+
+type MediaDuplicateIssue = MediaFileIssue & {
+	count: number;
+};
+
+type MediaAssetIssue = {
+	assetId: string;
+	error: string;
+};
+
+export type MediaStorageIntegrity = {
+	assetCount: number;
+	manifestFileCount: number;
+	diskFileCount: number;
+	missingFiles: MediaFileIssue[];
+	orphanFiles: MediaFileIssue[];
+	duplicateManifestFiles: MediaDuplicateIssue[];
+	invalidAssets: MediaAssetIssue[];
+};
+
 const STORAGE_MEDIA_DIR = path.join(STORAGE_DIR, 'media');
 const STORAGE_MEDIA_ASSETS_DIR = path.join(STORAGE_MEDIA_DIR, 'assets');
 const STORAGE_MEDIA_MANIFEST_FILE = path.join(STORAGE_MEDIA_DIR, 'manifest.json');
+const STORAGE_MEDIA_MANIFEST_PREVIOUS_FILE = 'manifest.previous.json';
 
 const MAX_UPLOAD_BYTES = 18 * 1024 * 1024;
 const VARIANT_WIDTHS = [480, 768, 1024, 1366, 1600, 1920, 2560];
@@ -49,7 +80,7 @@ const ensureMediaStorage = async () => {
 		await fs.access(STORAGE_MEDIA_MANIFEST_FILE);
 	} catch {
 		const initial: StoredMediaManifest = { assets: {} };
-		await fs.writeFile(STORAGE_MEDIA_MANIFEST_FILE, `${JSON.stringify(initial, null, 2)}\n`, 'utf-8');
+		await writeTextAtomic(STORAGE_MEDIA_MANIFEST_FILE, `${JSON.stringify(initial, null, 2)}\n`);
 	}
 };
 
@@ -59,18 +90,66 @@ const readManifest = async (): Promise<StoredMediaManifest> => {
 		const raw = await fs.readFile(STORAGE_MEDIA_MANIFEST_FILE, 'utf-8');
 		const parsed = JSON.parse(raw) as unknown;
 		if (typeof parsed !== 'object' || parsed === null || !('assets' in parsed)) {
-			return { assets: {} };
+			throw new Error('invalid_manifest_shape');
 		}
 		const assets = (parsed as { assets?: Record<string, StoredMediaAsset> }).assets;
 		return { assets: assets ?? {} };
-	} catch {
-		return { assets: {} };
+	} catch (error) {
+		throw new StorageError(
+			'media_manifest_read_failed',
+			'Failed to read or parse storage/media/manifest.json',
+			error,
+		);
 	}
 };
 
 const writeManifest = async (manifest: StoredMediaManifest) => {
 	await ensureMediaStorage();
-	await fs.writeFile(STORAGE_MEDIA_MANIFEST_FILE, `${JSON.stringify(manifest, null, 2)}\n`, 'utf-8');
+	await backupExistingFile(STORAGE_MEDIA_MANIFEST_FILE, STORAGE_MEDIA_MANIFEST_PREVIOUS_FILE);
+	await writeTextAtomic(STORAGE_MEDIA_MANIFEST_FILE, `${JSON.stringify(manifest, null, 2)}\n`);
+};
+
+const listDiskAssetFiles = async () => {
+	await ensureMediaStorage();
+	const diskFiles: MediaFileIssue[] = [];
+	const assetDirs = await fs.readdir(STORAGE_MEDIA_ASSETS_DIR, { withFileTypes: true });
+
+	for (const assetDir of assetDirs) {
+		if (!assetDir.isDirectory()) continue;
+		const assetId = normalizeId(assetDir.name);
+		if (!assetId || assetId !== assetDir.name) continue;
+
+		const files = await fs.readdir(path.join(STORAGE_MEDIA_ASSETS_DIR, assetDir.name), {
+			withFileTypes: true,
+		});
+		for (const file of files) {
+			if (!file.isFile()) continue;
+			diskFiles.push({
+				assetId,
+				fileName: file.name,
+			});
+		}
+	}
+
+	return diskFiles;
+};
+
+const readDiskMediaFileMeta = async (assetId: string, file: StoredMediaFile) => {
+	const filePath = path.join(STORAGE_MEDIA_ASSETS_DIR, assetId, file.fileName);
+	try {
+		const [stat, meta] = await Promise.all([
+			fs.stat(filePath),
+			sharp(filePath).metadata(),
+		]);
+		return {
+			...file,
+			width: meta.width || file.width,
+			height: meta.height || file.height,
+			byteSize: stat.size,
+		};
+	} catch {
+		return file;
+	}
 };
 
 const ensureImageFile = (file: File) => {
@@ -94,8 +173,14 @@ const toPublicMedia = (asset: StoredMediaAsset): PortfolioMedia => {
 		throw new Error('asset_missing_original');
 	}
 
+	const seenVariantFiles = new Set<string>();
 	const variants: PortfolioMediaVariant[] = asset.files
-		.filter((file) => file.role === 'variant')
+		.filter((file) => {
+			if (file.role !== 'variant') return false;
+			if (seenVariantFiles.has(file.fileName)) return false;
+			seenVariantFiles.add(file.fileName);
+			return true;
+		})
 		.sort((a, b) => a.width - b.width)
 		.map((file) => ({
 			url: buildMediaUrl(asset.id, file.fileName),
@@ -118,16 +203,19 @@ const toPublicMedia = (asset: StoredMediaAsset): PortfolioMedia => {
 };
 
 const makeVariant = async (buffer: Buffer, width: number) => {
-	const transformed = sharp(buffer).resize({ width, withoutEnlargement: true });
-	const metadata = await transformed.metadata();
-	if (!metadata.width || !metadata.height) {
+	const { data, info } = await sharp(buffer)
+		.resize({ width, withoutEnlargement: true })
+		.webp({ quality: 84 })
+		.toBuffer({ resolveWithObject: true });
+
+	if (!info.width || !info.height) {
 		throw new Error('image_processing_failed');
 	}
-	const output = await transformed.webp({ quality: 84 }).toBuffer();
+
 	return {
-		buffer: output,
-		width: metadata.width,
-		height: metadata.height,
+		buffer: data,
+		width: info.width,
+		height: info.height,
 	};
 };
 
@@ -160,10 +248,13 @@ export const uploadMediaAsset = async (file: File): Promise<PortfolioMedia> => {
 	});
 
 	const targetWidths = VARIANT_WIDTHS.filter((width) => width < sourceMeta.width);
+	const writtenVariantNames = new Set<string>();
 
 	for (const width of targetWidths) {
 		const variant = await makeVariant(source, width);
 		const fileName = `w${variant.width}.webp`;
+		if (writtenVariantNames.has(fileName)) continue;
+		writtenVariantNames.add(fileName);
 		await fs.writeFile(path.join(assetDir, fileName), variant.buffer);
 		files.push({
 			fileName,
@@ -228,7 +319,9 @@ export const resolveMediaFile = async (assetIdRaw: string, fileNameRaw: string) 
 
 	const filePath = path.join(STORAGE_MEDIA_ASSETS_DIR, assetId, fileName);
 	try {
-		await fs.access(filePath);
+		if (!(await pathExists(filePath))) {
+			return null;
+		}
 	} catch {
 		return null;
 	}
@@ -236,5 +329,115 @@ export const resolveMediaFile = async (assetIdRaw: string, fileNameRaw: string) 
 	return {
 		filePath,
 		contentType: fileMimeByName(fileName),
+	};
+};
+
+export const inspectMediaStorage = async (): Promise<MediaStorageIntegrity> => {
+	const manifest = await readManifest();
+	const diskFiles = await listDiskAssetFiles();
+	const diskFileSet = new Set(diskFiles.map((file) => `${file.assetId}/${file.fileName}`));
+	const manifestFileCounts = new Map<string, number>();
+	const missingFiles: MediaFileIssue[] = [];
+	const duplicateManifestFiles: MediaDuplicateIssue[] = [];
+	const invalidAssets: MediaAssetIssue[] = [];
+	let manifestFileCount = 0;
+
+	for (const [assetId, asset] of Object.entries(manifest.assets)) {
+		if (asset.id !== assetId) {
+			invalidAssets.push({ assetId, error: 'asset_id_mismatch' });
+		}
+		if (!Array.isArray(asset.files)) {
+			invalidAssets.push({ assetId, error: 'asset_files_invalid' });
+			continue;
+		}
+		if (!asset.files.some((file) => file.role === 'original')) {
+			invalidAssets.push({ assetId, error: 'asset_missing_original' });
+		}
+
+		for (const file of asset.files) {
+			const fileName = path.basename(file.fileName || '');
+			if (!fileName || fileName !== file.fileName) {
+				invalidAssets.push({ assetId, error: 'asset_file_name_invalid' });
+				continue;
+			}
+
+			manifestFileCount += 1;
+			const key = `${assetId}/${fileName}`;
+			manifestFileCounts.set(key, (manifestFileCounts.get(key) ?? 0) + 1);
+			if (!diskFileSet.has(key)) {
+				missingFiles.push({ assetId, fileName });
+			}
+		}
+	}
+
+	for (const [key, count] of manifestFileCounts) {
+		if (count <= 1) continue;
+		const [assetId, fileName] = key.split('/');
+		duplicateManifestFiles.push({ assetId, fileName, count });
+	}
+
+	const orphanFiles = diskFiles.filter(
+		(file) => !manifestFileCounts.has(`${file.assetId}/${file.fileName}`),
+	);
+
+	return {
+		assetCount: Object.keys(manifest.assets).length,
+		manifestFileCount,
+		diskFileCount: diskFiles.length,
+		missingFiles,
+		orphanFiles,
+		duplicateManifestFiles,
+		invalidAssets,
+	};
+};
+
+export const repairMediaManifest = async () => {
+	const before = await inspectMediaStorage();
+	const manifest = await readManifest();
+	let changed = false;
+
+	for (const [assetId, asset] of Object.entries(manifest.assets)) {
+		if (asset.id !== assetId) {
+			asset.id = assetId;
+			changed = true;
+		}
+		if (!Array.isArray(asset.files)) {
+			asset.files = [];
+			changed = true;
+			continue;
+		}
+
+		const seen = new Set<string>();
+		const files: StoredMediaFile[] = [];
+		for (const file of asset.files) {
+			const fileName = path.basename(file.fileName || '');
+			if (!fileName || fileName !== file.fileName) {
+				changed = true;
+				continue;
+			}
+
+			const key = `${file.role}:${fileName}`;
+			if (seen.has(key)) {
+				changed = true;
+				continue;
+			}
+			seen.add(key);
+			files.push(await readDiskMediaFileMeta(assetId, file));
+		}
+
+		if (files.length !== asset.files.length) {
+			changed = true;
+		}
+		asset.files = files;
+	}
+
+	if (changed) {
+		await writeManifest(manifest);
+	}
+
+	return {
+		changed,
+		before,
+		after: await inspectMediaStorage(),
 	};
 };

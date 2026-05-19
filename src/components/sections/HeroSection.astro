@@ -216,11 +216,11 @@
 		});
 	}
 
-	const links = document.querySelectorAll('[data-hover-fill]');
+		const links = document.querySelectorAll<HTMLElement>('[data-hover-fill]');
 
-	links.forEach((link) => {
-		link.addEventListener('pointerenter', (event) => {
-			const pointerEvent = event;
+		links.forEach((link) => {
+			link.addEventListener('pointerenter', (event: PointerEvent) => {
+				const pointerEvent = event;
 			const rect = link.getBoundingClientRect();
 			const localX = Math.max(0, Math.min(rect.width, pointerEvent.clientX - rect.left));
 			const localY = Math.max(0, Math.min(rect.height, pointerEvent.clientY - rect.top));

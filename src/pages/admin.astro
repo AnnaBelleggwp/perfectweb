@@ -1,31 +1,64 @@
 ---
-import MainLayout from '../layouts/MainLayout.astro';
+import { isCmsSessionAuthorized } from '../lib/cms/auth';
+import AdminLayout from '../layouts/AdminLayout.astro';
+
+const isAuthorized = isCmsSessionAuthorized(Astro.request);
 ---
 
-<MainLayout title="kerizov.design — админка" description="серверная cms для контента kerizov.design">
+<AdminLayout>
 	<main class="admin-page">
 		<section class="admin-shell">
 			<header class="admin-head">
-				<h1>админка контента</h1>
-				<p>
-					редактируются блоки «обо мне», «услуги» и «портфолио». сохранение идет на сервер через API.
-				</p>
+				<div class="admin-head__left">
+					<span class="admin-head__tag">cms</span>
+					<h1>kerizov.design</h1>
+				</div>
+				{isAuthorized && (
+					<div class="admin-head__actions">
+						<button type="button" class="admin-btn admin-btn--primary" data-admin-save>сохранить</button>
+						<button type="button" class="admin-btn admin-btn--ghost" data-admin-logout>выйти</button>
+						<a href="/" class="admin-btn admin-btn--ghost">сайт ↗</a>
+					</div>
+				)}
 			</header>
 
-			<div class="admin-toolbar">
-				<input class="admin-token" type="password" placeholder="cms token" data-admin-token />
-				<button type="button" data-admin-save>сохранить</button>
-				<button type="button" data-admin-reset>сбросить</button>
-				<button type="button" data-admin-export>экспорт json</button>
-				<label class="admin-import">
-					импорт json
-					<input type="file" accept="application/json" data-admin-import />
-				</label>
-				<a href="/" class="admin-link">открыть сайт</a>
-			</div>
+			{isAuthorized ? (
+				<>
+					<p class="admin-status" data-admin-status></p>
 
-			<p class="admin-status" data-admin-status></p>
-			<div data-admin-root></div>
+					<nav class="admin-tabs" data-admin-tabs>
+						<button type="button" class="admin-tab is-active" data-tab="content">контент</button>
+						<button type="button" class="admin-tab" data-tab="portfolio">портфолио</button>
+						<button type="button" class="admin-tab" data-tab="inbox">входящие</button>
+						<button type="button" class="admin-tab" data-tab="system">система</button>
+					</nav>
+
+					<div class="admin-secondary-bar">
+						<input class="admin-token" type="password" placeholder="token" data-admin-token />
+						<button type="button" class="admin-btn admin-btn--ghost admin-btn--sm" data-admin-reset>сбросить</button>
+						<button type="button" class="admin-btn admin-btn--ghost admin-btn--sm" data-admin-export>экспорт</button>
+						<label class="admin-btn admin-btn--ghost admin-btn--sm admin-import">
+							импорт
+							<input type="file" accept="application/json" data-admin-import />
+						</label>
+					</div>
+
+					<div data-admin-root></div>
+				</>
+			) : (
+				<form class="admin-login" data-admin-login>
+					<label>
+						<span>логин</span>
+						<input class="admin-input" type="text" autocomplete="username" data-admin-login-username />
+					</label>
+					<label>
+						<span>пароль</span>
+						<input class="admin-input" type="password" autocomplete="current-password" data-admin-login-password />
+					</label>
+					<button type="submit" class="admin-btn admin-btn--primary">войти</button>
+					<p class="admin-status" data-admin-login-status></p>
+				</form>
+			)}
 		</section>
 	</main>
 
@@ -33,71 +66,173 @@ import MainLayout from '../layouts/MainLayout.astro';
 		import { initAdminApp } from '../scripts/admin-app';
 
 		initAdminApp();
+
+		document.querySelector('[data-admin-tabs]')?.addEventListener('click', (e) => {
+			const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-tab]');
+			if (!btn) return;
+			const tab = btn.dataset.tab!;
+			document.querySelectorAll<HTMLElement>('[data-tab]').forEach((t) => t.classList.toggle('is-active', t.dataset.tab === tab));
+			document.querySelectorAll<HTMLElement>('[data-panel]').forEach((p) => p.hidden = p.dataset.panel !== tab);
+		});
 	</script>
-</MainLayout>
+</AdminLayout>
 
 <style>
+/* ── base ──────────────────────────────────────────── */
 .admin-page {
 	padding: clamp(1rem, 2.5vw, 2rem);
 	text-transform: none;
 }
 
 .admin-shell {
-	max-width: 1000px;
+	max-width: 960px;
 	margin: 0 auto;
-	background: rgba(10, 10, 10, 0.88);
-	border: 1px solid rgba(255, 255, 255, 0.15);
-	border-radius: 1rem;
-	padding: clamp(1rem, 2.2vw, 1.75rem);
-	box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
+}
+
+/* ── header ────────────────────────────────────────── */
+.admin-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1rem;
+	flex-wrap: wrap;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-head__left {
+	display: flex;
+	align-items: center;
+	gap: 0.65rem;
+}
+
+.admin-head__tag {
+	font-family: "JetBrains Mono", "SF Mono", monospace;
+	font-size: 0.75rem;
+	letter-spacing: 0.08em;
+	padding: 0.2rem 0.5rem;
+	border-radius: 4px;
+	background: rgba(255, 215, 0, 0.12);
+	color: var(--color-accent);
+	border: 1px solid rgba(255, 215, 0, 0.3);
 }
 
 .admin-head h1 {
 	margin: 0;
-	font-size: clamp(2rem, 4vw, 2.8rem);
-	line-height: 0.95;
-	font-weight: 600;
-}
-
-.admin-head p {
-	margin: 0.35rem 0 0;
-	color: var(--color-text-muted);
-	font-size: clamp(1rem, 2vw, 1.2rem);
-}
-
-.admin-toolbar {
-	margin-top: 1rem;
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.55rem;
-}
-
-.admin-token {
-	min-width: 12rem;
-	font: inherit;
-	font-size: 1rem;
-	padding: 0.45rem 0.8rem;
-	border-radius: 999px;
-	border: 1px solid rgba(255, 255, 255, 0.22);
-	background: rgba(0, 0, 0, 0.45);
+	font-size: clamp(1.4rem, 3vw, 1.8rem);
+	font-weight: 300;
+	line-height: 1;
 	color: var(--color-text);
 }
 
-.admin-toolbar button,
-.admin-import,
-.admin-link {
+.admin-head__actions {
+	display: flex;
+	gap: 0.45rem;
+}
+
+/* ── buttons ───────────────────────────────────────── */
+:global(.admin-btn) {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	gap: 0.35rem;
-	padding: 0.45rem 0.8rem;
-	border-radius: 999px;
-	border: 1px solid rgba(255, 215, 0, 0.45);
-	background: rgba(255, 215, 0, 0.12);
-	color: var(--color-accent);
+	gap: 0.3rem;
+	padding: 0.4rem 0.85rem;
+	border-radius: 6px;
 	font: inherit;
-	font-size: 1rem;
+	font-size: 0.9rem;
 	cursor: pointer;
+	transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+	text-decoration: none;
+	border: 1px solid transparent;
+	background: none;
+	color: var(--color-text);
+}
+
+:global(.admin-btn--primary) {
+	background: var(--color-accent);
+	color: #0a0a0a;
+	font-weight: 600;
+	border-color: var(--color-accent);
+}
+
+:global(.admin-btn--primary:hover) {
+	background: #e6c200;
+}
+
+:global(.admin-btn--ghost) {
+	border-color: rgba(255, 255, 255, 0.15);
+	color: var(--color-text-muted);
+}
+
+:global(.admin-btn--ghost:hover) {
+	border-color: rgba(255, 255, 255, 0.3);
+	color: var(--color-text);
+}
+
+:global(.admin-btn--danger) {
+	border-color: rgba(255, 80, 80, 0.4);
+	color: rgba(255, 100, 100, 0.9);
+}
+
+:global(.admin-btn--danger:hover) {
+	background: rgba(255, 80, 80, 0.12);
+}
+
+:global(.admin-btn--sm) {
+	font-size: 0.82rem;
+	padding: 0.3rem 0.6rem;
+}
+
+/* ── tabs ──────────────────────────────────────────── */
+.admin-tabs {
+	display: flex;
+	gap: 0;
+	margin-top: 1rem;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-tab {
+	padding: 0.55rem 1rem;
+	font: inherit;
+	font-size: 0.9rem;
+	color: var(--color-text-muted);
+	background: none;
+	border: none;
+	border-bottom: 2px solid transparent;
+	cursor: pointer;
+	transition: color 150ms ease, border-color 150ms ease;
+}
+
+.admin-tab:hover {
+	color: var(--color-text);
+}
+
+.admin-tab.is-active {
+	color: var(--color-accent);
+	border-bottom-color: var(--color-accent);
+}
+
+/* ── secondary bar ─────────────────────────────────── */
+.admin-secondary-bar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+	align-items: center;
+	margin-top: 0.75rem;
+	padding-bottom: 0.75rem;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.admin-token {
+	width: 120px;
+	font: inherit;
+	font-family: "JetBrains Mono", "SF Mono", monospace;
+	font-size: 0.82rem;
+	padding: 0.3rem 0.55rem;
+	border-radius: 6px;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	background: rgba(255, 255, 255, 0.04);
+	color: var(--color-text);
 }
 
 .admin-import {
@@ -112,91 +247,183 @@ import MainLayout from '../layouts/MainLayout.astro';
 	cursor: pointer;
 }
 
-.admin-link {
-	text-decoration: none;
+/* ── status ────────────────────────────────────────── */
+.admin-status {
+	margin: 0.6rem 0 0;
+	font-family: "JetBrains Mono", "SF Mono", monospace;
+	font-size: 0.82rem;
+	color: rgba(255, 255, 255, 0.45);
 }
 
-.admin-status {
-	margin: 0.9rem 0 0;
-	font-size: 1rem;
-	color: var(--color-text-muted);
+.admin-status:empty {
+	display: none;
 }
 
 .admin-status[data-tone="warn"] {
 	color: var(--color-accent);
 }
 
-:global(.admin-block) {
-	margin-top: 1rem;
-	padding: 1rem;
-	border-radius: 0.8rem;
-	border: 1px solid rgba(255, 255, 255, 0.12);
-	background: rgba(20, 20, 20, 0.65);
+/* ── login ─────────────────────────────────────────── */
+.admin-login {
+	margin-top: 2rem;
 	display: grid;
 	gap: 0.75rem;
+	max-width: 22rem;
 }
 
-:global(.admin-block h2),
+.admin-login label {
+	display: grid;
+	gap: 0.3rem;
+}
+
+.admin-login label span {
+	font-size: 0.85rem;
+	color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── shared input ──────────────────────────────────── */
+:global(.admin-input),
+.admin-input {
+	width: 100%;
+	font: inherit;
+	font-size: 0.95rem;
+	padding: 0.5rem 0.65rem;
+	border-radius: 6px;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	background: rgba(255, 255, 255, 0.04);
+	color: var(--color-text);
+	transition: border-color 150ms ease;
+}
+
+:global(.admin-input:focus),
+.admin-input:focus {
+	outline: none;
+	border-color: rgba(255, 215, 0, 0.4);
+}
+
+/* ── panel (tab content) ───────────────────────────── */
+:global([data-panel][hidden]) {
+	display: none;
+}
+
+/* ── block card ────────────────────────────────────── */
+:global(.admin-block) {
+	margin-top: 0.85rem;
+	padding: 1rem;
+	border-radius: 8px;
+	border: 1px solid rgba(255, 255, 255, 0.07);
+	background: rgba(255, 255, 255, 0.025);
+	display: grid;
+	gap: 0.7rem;
+}
+
+:global(.admin-block h2) {
+	margin: 0;
+	font-size: 1.1rem;
+	font-weight: 400;
+	color: var(--color-text);
+	line-height: 1;
+}
+
 :global(.admin-block h3) {
 	margin: 0;
+	font-size: 0.95rem;
+	font-weight: 400;
+	color: var(--color-text);
 	line-height: 1;
-	font-weight: 600;
 }
 
 :global(.admin-block label) {
 	display: grid;
-	gap: 0.35rem;
+	gap: 0.25rem;
 }
 
 :global(.admin-block label > span),
 :global(.admin-subhead) {
-	font-size: 1rem;
-	color: var(--color-text-muted);
+	font-size: 0.82rem;
+	color: rgba(255, 255, 255, 0.45);
 }
 
 :global(.admin-block input),
 :global(.admin-block textarea) {
 	width: 100%;
 	font: inherit;
-	font-size: 1rem;
-	padding: 0.5rem 0.6rem;
-	border-radius: 0.5rem;
-	border: 1px solid rgba(255, 255, 255, 0.22);
-	background: rgba(0, 0, 0, 0.45);
+	font-size: 0.92rem;
+	padding: 0.45rem 0.6rem;
+	border-radius: 6px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	background: rgba(255, 255, 255, 0.03);
 	color: var(--color-text);
+	transition: border-color 150ms ease;
+}
+
+:global(.admin-block input:focus),
+:global(.admin-block textarea:focus) {
+	outline: none;
+	border-color: rgba(255, 215, 0, 0.4);
+}
+
+:global(.admin-block textarea) {
+	resize: vertical;
+	min-height: 2.4rem;
 }
 
 :global(.admin-block small) {
-	color: var(--color-text-muted);
+	font-size: 0.8rem;
+	color: rgba(255, 255, 255, 0.35);
 }
 
+/* ── lists & grids ─────────────────────────────────── */
 :global(.admin-list) {
 	display: grid;
-	gap: 0.75rem;
+	gap: 0.6rem;
 }
 
 :global(.admin-inline-grid) {
 	display: grid;
-	grid-template-columns: 120px 120px 1fr auto;
-	gap: 0.5rem;
+	grid-template-columns: 100px 100px 1fr auto;
+	gap: 0.45rem;
 	align-items: center;
 }
 
 :global(.admin-row-actions) {
 	display: flex;
-	gap: 0.4rem;
+	gap: 0.3rem;
 }
 
-:global(.admin-row-actions button),
-:global(.admin-block > button) {
+:global(.admin-row-actions button) {
 	font: inherit;
-	font-size: 0.95rem;
-	padding: 0.35rem 0.65rem;
-	border-radius: 999px;
-	border: 1px solid rgba(255, 215, 0, 0.45);
-	background: rgba(255, 215, 0, 0.12);
-	color: var(--color-accent);
+	font-size: 0.8rem;
+	padding: 0.25rem 0.5rem;
+	border-radius: 5px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	background: none;
+	color: var(--color-text-muted);
 	cursor: pointer;
+	transition: border-color 150ms ease, color 150ms ease;
+}
+
+:global(.admin-row-actions button:hover) {
+	border-color: rgba(255, 255, 255, 0.25);
+	color: var(--color-text);
+}
+
+:global(.admin-block > button) {
+	justify-self: start;
+	font: inherit;
+	font-size: 0.85rem;
+	padding: 0.35rem 0.7rem;
+	border-radius: 6px;
+	border: 1px dashed rgba(255, 255, 255, 0.15);
+	background: none;
+	color: var(--color-text-muted);
+	cursor: pointer;
+	transition: border-color 150ms ease, color 150ms ease;
+}
+
+:global(.admin-block > button:hover) {
+	border-color: var(--color-accent);
+	color: var(--color-accent);
 }
 
 :global(.admin-service-head) {
@@ -207,9 +434,10 @@ import MainLayout from '../layouts/MainLayout.astro';
 	flex-wrap: wrap;
 }
 
+/* ── portfolio ─────────────────────────────────────── */
 :global(.admin-portfolio-grid) {
 	display: grid;
-	gap: 0.6rem;
+	gap: 0.5rem;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -222,30 +450,35 @@ import MainLayout from '../layouts/MainLayout.astro';
 	display: inline-flex;
 	align-items: center;
 	gap: 0.5rem;
+	font-size: 0.88rem;
+	color: var(--color-text-muted);
 }
 
 :global(.admin-checkbox-row input[type='checkbox']) {
 	width: auto;
+	accent-color: var(--color-accent);
 }
 
 :global(.admin-portfolio-media-grid) {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 0.6rem;
+	gap: 0.5rem;
 }
 
 :global(.admin-media-slot) {
-	padding: 0.6rem;
-	border-radius: 0.55rem;
-	border: 1px solid rgba(255, 255, 255, 0.12);
-	background: rgba(0, 0, 0, 0.3);
+	padding: 0.55rem;
+	border-radius: 6px;
+	border: 1px solid rgba(255, 255, 255, 0.07);
+	background: rgba(255, 255, 255, 0.02);
 	display: grid;
-	gap: 0.45rem;
+	gap: 0.4rem;
 }
 
 :global(.admin-media-title) {
 	margin: 0;
-	font-size: 0.95rem;
+	font-family: "JetBrains Mono", "SF Mono", monospace;
+	font-size: 0.78rem;
+	letter-spacing: 0.04em;
 	color: var(--color-accent);
 }
 
@@ -254,44 +487,155 @@ import MainLayout from '../layouts/MainLayout.astro';
 	align-items: center;
 	justify-content: space-between;
 	gap: 0.5rem;
-	font-size: 0.9rem;
-	color: var(--color-text-muted);
+	font-size: 0.82rem;
+	color: rgba(255, 255, 255, 0.45);
 }
 
 :global(.admin-media-info button) {
 	font: inherit;
-	font-size: 0.85rem;
-	padding: 0.25rem 0.5rem;
-	border-radius: 999px;
-	border: 1px solid rgba(255, 215, 0, 0.45);
-	background: rgba(255, 215, 0, 0.12);
-	color: var(--color-accent);
+	font-size: 0.78rem;
+	padding: 0.2rem 0.45rem;
+	border-radius: 5px;
+	border: 1px solid rgba(255, 80, 80, 0.3);
+	background: none;
+	color: rgba(255, 100, 100, 0.8);
 	cursor: pointer;
+	transition: background 150ms ease;
+}
+
+:global(.admin-media-info button:hover) {
+	background: rgba(255, 80, 80, 0.1);
 }
 
 :global(.admin-upload-inline span) {
-	font-size: 0.9rem;
-	color: var(--color-text-muted);
+	font-size: 0.82rem;
+	color: rgba(255, 255, 255, 0.4);
 }
 
 :global(.admin-media-empty) {
 	margin: 0;
-	font-size: 0.9rem;
-	color: var(--color-text-muted);
+	font-size: 0.82rem;
+	color: rgba(255, 255, 255, 0.3);
 }
 
+/* ── inbox / reviews ───────────────────────────────── */
+:global(.admin-empty),
+:global(.admin-meta),
+:global(.admin-message) {
+	margin: 0;
+}
+
+:global(.admin-empty) {
+	color: rgba(255, 255, 255, 0.35);
+	font-size: 0.88rem;
+}
+
+:global(.admin-meta) {
+	color: rgba(255, 255, 255, 0.4);
+	font-size: 0.82rem;
+	font-family: "JetBrains Mono", "SF Mono", monospace;
+}
+
+:global(.admin-message) {
+	white-space: pre-wrap;
+	line-height: 1.4;
+	color: rgba(255, 255, 255, 0.8);
+}
+
+:global(.admin-badge) {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 1.4rem;
+	padding: 0.12rem 0.5rem;
+	border-radius: 4px;
+	font-family: "JetBrains Mono", "SF Mono", monospace;
+	font-size: 0.72rem;
+	letter-spacing: 0.04em;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	color: rgba(255, 255, 255, 0.5);
+}
+
+:global(.admin-inbox-item) {
+	background: rgba(255, 255, 255, 0.015);
+}
+
+/* ── status panel ──────────────────────────────────── */
+:global(.admin-status-grid) {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.5rem;
+}
+
+:global(.admin-status-grid > div),
+:global(.admin-backup-row) {
+	padding: 0.55rem;
+	border-radius: 6px;
+	border: 1px solid rgba(255, 255, 255, 0.07);
+	background: rgba(255, 255, 255, 0.02);
+}
+
+:global(.admin-status-grid span) {
+	display: block;
+	font-family: "JetBrains Mono", "SF Mono", monospace;
+	font-size: 0.72rem;
+	letter-spacing: 0.04em;
+	color: rgba(255, 255, 255, 0.35);
+}
+
+:global(.admin-status-grid strong) {
+	display: block;
+	margin-top: 0.15rem;
+	font-size: 0.85rem;
+	font-weight: 400;
+	color: var(--color-text);
+	overflow-wrap: anywhere;
+}
+
+:global(.admin-backup-row) {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	gap: 0.75rem;
+	align-items: center;
+}
+
+:global(.admin-backup-row p) {
+	margin: 0.2rem 0 0;
+	color: rgba(255, 255, 255, 0.4);
+	font-size: 0.82rem;
+}
+
+:global(.admin-backup-row strong) {
+	display: block;
+	font-size: 0.88rem;
+	font-weight: 400;
+	overflow-wrap: anywhere;
+}
+
+/* ── mobile ────────────────────────────────────────── */
 @media (max-width: 767px) {
-	:global(.admin-inline-grid) {
-		grid-template-columns: 1fr;
+	.admin-head {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.admin-tabs {
+		overflow-x: auto;
 	}
 
 	.admin-token {
 		width: 100%;
 	}
 
+	:global(.admin-inline-grid) {
+		grid-template-columns: 1fr;
+	}
+
 	:global(.admin-portfolio-grid),
 	:global(.admin-portfolio-media-grid),
-	:global(.admin-portfolio-layout-grid) {
+	:global(.admin-portfolio-layout-grid),
+	:global(.admin-status-grid),
+	:global(.admin-backup-row) {
 		grid-template-columns: 1fr;
 	}
 }

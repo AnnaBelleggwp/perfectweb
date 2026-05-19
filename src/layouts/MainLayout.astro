@@ -1,12 +1,8 @@
 ---
 import '../styles/global.css';
 import ThemeToggle from '../components/navigation/ThemeToggle.astro';
-import alumniSansCyrillic300 from '@fontsource/alumni-sans/files/alumni-sans-cyrillic-300-normal.woff2?url';
-import alumniSansLatin300 from '@fontsource/alumni-sans/files/alumni-sans-latin-300-normal.woff2?url';
 import alumniSansCyrillic400 from '@fontsource/alumni-sans/files/alumni-sans-cyrillic-400-normal.woff2?url';
 import alumniSansLatin400 from '@fontsource/alumni-sans/files/alumni-sans-latin-400-normal.woff2?url';
-import alumniSansCyrillic600 from '@fontsource/alumni-sans/files/alumni-sans-cyrillic-600-normal.woff2?url';
-import alumniSansLatin600 from '@fontsource/alumni-sans/files/alumni-sans-latin-600-normal.woff2?url';
 
 interface Props {
 	title?: string;
@@ -33,12 +29,8 @@ const {
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="preload" href={alumniSansCyrillic300} as="font" type="font/woff2" crossorigin />
-		<link rel="preload" href={alumniSansLatin300} as="font" type="font/woff2" crossorigin />
 		<link rel="preload" href={alumniSansCyrillic400} as="font" type="font/woff2" crossorigin />
 		<link rel="preload" href={alumniSansLatin400} as="font" type="font/woff2" crossorigin />
-		<link rel="preload" href={alumniSansCyrillic600} as="font" type="font/woff2" crossorigin />
-		<link rel="preload" href={alumniSansLatin600} as="font" type="font/woff2" crossorigin />
 		<title>{title}</title>
 		<script is:inline>
 			(() => {

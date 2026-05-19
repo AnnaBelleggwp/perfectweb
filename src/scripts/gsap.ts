@@ -1,5 +1,4 @@
 import gsap from 'gsap';
-import { InertiaPlugin } from 'gsap/InertiaPlugin';
 import { Observer } from 'gsap/Observer';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -7,7 +6,7 @@ let isRegistered = false;
 
 export const getGsap = () => {
 	if (!isRegistered) {
-		gsap.registerPlugin(ScrollTrigger, Observer, InertiaPlugin);
+		gsap.registerPlugin(ScrollTrigger, Observer);
 		ScrollTrigger.config({ ignoreMobileResize: true });
 		isRegistered = true;
 	}
@@ -15,4 +14,4 @@ export const getGsap = () => {
 	return gsap;
 };
 
-export { InertiaPlugin, Observer, ScrollTrigger };
+export { Observer, ScrollTrigger };

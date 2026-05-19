@@ -11,8 +11,8 @@ APP_PORT=3000
 echo ">>> Обновляем систему"
 apt update && apt upgrade -y
 
-echo ">>> Устанавливаем Node.js 20"
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+echo ">>> Устанавливаем Node.js 22"
+curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
 apt install -y nodejs
 
 echo ">>> Устанавливаем PM2"

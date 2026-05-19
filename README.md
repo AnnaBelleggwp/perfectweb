@@ -18,6 +18,7 @@
 **Бэкенд**
 - Node.js (Astro SSR)
 - Файловая CMS (`storage/site-content.json`)
+- Закрытая админка `/admin` через логин/пароль и httpOnly-сессию
 - JSONL-хранилище для отзывов и заявок
 - API-эндпоинты с rate-limiting (`/api/reviews.json`, `/api/contact.json`, `/api/cms/*`)
 
@@ -63,6 +64,10 @@ HOST=0.0.0.0 PORT=3000 pnpm start
 
 ## Переменные окружения
 
-- `CMS_TOKEN` — токен авторизации для админ-API
+- `CMS_USERNAME` — логин для входа в `/admin`
+- `CMS_PASSWORD` — пароль для входа в `/admin`
+- `CMS_SESSION_SECRET` — секрет подписи админ-сессии
+- `CMS_ALLOW_TOKEN_LOGIN` — разрешает fallback-вход `admin` + `CMS_TOKEN`; в production по умолчанию выключен
+- `CMS_TOKEN` — опциональный Bearer-токен для CMS API и совместимости
 - `HOST` — адрес привязки сервера
 - `PORT` — порт сервера

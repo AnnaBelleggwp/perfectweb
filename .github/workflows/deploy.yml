@@ -44,13 +44,33 @@ jobs:
 
       - name: Install deps and restart
         uses: appleboy/ssh-action@v1
+        env:
+          CMS_USERNAME: ${{ secrets.CMS_USERNAME }}
+          CMS_PASSWORD: ${{ secrets.CMS_PASSWORD }}
+          CMS_SESSION_SECRET: ${{ secrets.CMS_SESSION_SECRET }}
+          CMS_ALLOW_TOKEN_LOGIN: ${{ secrets.CMS_ALLOW_TOKEN_LOGIN }}
+          CMS_TOKEN: ${{ secrets.CMS_TOKEN }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          envs: CMS_USERNAME,CMS_PASSWORD,CMS_SESSION_SECRET,CMS_ALLOW_TOKEN_LOGIN,CMS_TOKEN
           script: |
             export PATH=$PATH:/usr/local/bin:/root/.local/share/pnpm
+            if [ -z "$CMS_USERNAME" ] || [ -z "$CMS_PASSWORD" ]; then
+              echo "CMS_USERNAME and CMS_PASSWORD secrets are required"
+              exit 1
+            fi
             cd /var/www/perfectweb
+            mkdir -p storage/media/assets
+            umask 077
+            {
+              printf 'CMS_USERNAME=%s\n' "$CMS_USERNAME"
+              printf 'CMS_PASSWORD=%s\n' "$CMS_PASSWORD"
+              printf 'CMS_SESSION_SECRET=%s\n' "$CMS_SESSION_SECRET"
+              printf 'CMS_ALLOW_TOKEN_LOGIN=%s\n' "$CMS_ALLOW_TOKEN_LOGIN"
+              printf 'CMS_TOKEN=%s\n' "$CMS_TOKEN"
+            } > .env.production
             pnpm install --prod --frozen-lockfile
             pm2 restart perfectweb --update-env || pm2 start ecosystem.config.cjs
             pm2 save
