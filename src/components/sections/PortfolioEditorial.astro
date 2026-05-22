@@ -171,7 +171,9 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 		<div class="pf-detail-backdrop" data-pf-backdrop></div>
 		<article class="pf-detail" data-pf-detail role="dialog" aria-modal="true" aria-label="детали проекта">
 			<button type="button" class="pf-detail__close" data-pf-detail-close aria-label="закрыть">
-				<span aria-hidden="true">×</span>
+				<svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+					<path d="M6 6L22 22M22 6L6 22" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+				</svg>
 			</button>
 
 			<div class="pf-detail__layout">
@@ -784,11 +786,10 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	top: 10px;
 	right: 10px;
 	z-index: 3;
+	display: flex;
 	padding: 0;
 	border: none;
 	background: none;
-	font-size: 2.8rem;
-	line-height: 1;
 	color: var(--color-text-muted);
 	cursor: pointer;
 	transition: color 180ms ease;
