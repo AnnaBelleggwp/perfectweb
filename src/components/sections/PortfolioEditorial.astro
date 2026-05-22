@@ -704,12 +704,7 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	}
 
 	.pf-bottom__cta {
-		font-size: clamp(1.4rem, 5.5vw, 1.9rem);
-		justify-content: center;
-		padding: 0.6rem 0;
-		border: 1px solid var(--divider-subtle);
-		border-radius: var(--radius-card);
-		white-space: nowrap;
+		display: none;
 	}
 
 	.pf-counter {
@@ -786,22 +781,29 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 
 .pf-detail__close {
 	position: absolute;
-	top: 1rem;
-	right: 1rem;
+	top: 0.75rem;
+	right: 0.75rem;
 	z-index: 3;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
 	padding: 0;
-	border: none;
-	background: none;
-	font-size: 1.5rem;
+	border: 1px solid var(--divider-subtle);
+	border-radius: 8px;
+	background: var(--card-bg);
+	font-size: 1.6rem;
 	line-height: 1;
 	color: var(--color-text-muted);
 	cursor: pointer;
-	transition: color 180ms ease;
+	transition: color 180ms ease, border-color 180ms ease;
 }
 
 .pf-detail__close:hover,
 .pf-detail__close:focus-visible {
 	color: var(--color-accent);
+	border-color: color-mix(in srgb, var(--color-accent) 50%, transparent);
 	outline: none;
 }
 
@@ -837,24 +839,9 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 }
 
 .pf-detail__logo {
-	position: absolute;
-	bottom: -10%;
-	left: -10%;
-	width: 70%;
-	height: auto;
-	opacity: 0.12;
-	filter: grayscale(1) brightness(1.8);
-	pointer-events: none;
-	user-select: none;
-}
-
-:global(:root[data-theme="light"]) .pf-detail__logo {
-	filter: grayscale(1) brightness(0.6);
-}
-
-.pf-detail__logo[src=""] {
 	display: none;
 }
+
 
 .pf-detail__info {
 	position: relative;
