@@ -784,26 +784,19 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	top: 0.75rem;
 	right: 0.75rem;
 	z-index: 3;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 44px;
-	height: 44px;
 	padding: 0;
-	border: 1px solid var(--divider-subtle);
-	border-radius: 8px;
-	background: var(--card-bg);
-	font-size: 1.6rem;
+	border: none;
+	background: none;
+	font-size: 2.8rem;
 	line-height: 1;
 	color: var(--color-text-muted);
 	cursor: pointer;
-	transition: color 180ms ease, border-color 180ms ease;
+	transition: color 180ms ease;
 }
 
 .pf-detail__close:hover,
 .pf-detail__close:focus-visible {
 	color: var(--color-accent);
-	border-color: color-mix(in srgb, var(--color-accent) 50%, transparent);
 	outline: none;
 }
 
