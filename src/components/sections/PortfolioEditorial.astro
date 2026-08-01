@@ -366,7 +366,7 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	border-radius: 14px;
 	overflow: visible;
 	background: var(--card-bg);
-	border: 2px solid var(--divider-subtle);
+	border: 1px solid var(--divider-subtle);
 	box-shadow: var(--card-shadow);
 	transform-origin: 50% 50%;
 	transform-style: preserve-3d;
@@ -742,7 +742,7 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	position: fixed;
 	overflow: hidden;
 	background: var(--card-bg);
-	border: 2px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
+	border: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
 	border-radius: 14px;
 	box-shadow:
 		var(--card-shadow),
@@ -765,7 +765,8 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	width: var(--pf-detail-close-size);
 	height: var(--pf-detail-close-size);
 	padding: 0;
-	border: 2px solid var(--color-accent);
+	/* линия бокса приглушена, сам крестик — акцентный */
+	border: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
 	border-radius: 4px;
 	background: none;
 	color: var(--color-accent);
