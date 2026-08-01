@@ -221,6 +221,12 @@ const sanitizeText = (value: unknown, fallback: string, max = 1200) => {
 	return trimmed.slice(0, max);
 };
 
+/** Как sanitizeText, но пустая строка — осознанно стёртое поле, а не повод вернуть плейсхолдер. */
+const sanitizeOptionalText = (value: unknown, fallback: string, max = 1200) => {
+	if (typeof value !== 'string') return fallback;
+	return value.trim().slice(0, max);
+};
+
 const sanitizeArray = (value: unknown, fallback: string[], maxLen = 20, itemMax = 80) => {
 	if (!Array.isArray(value)) return fallback;
 	const next = value
@@ -422,7 +428,7 @@ const sanitizePortfolio = (value: unknown): PortfolioItem[] => {
 				animDur: sanitizeFloat(record.animDur, fallback.animDur, 0.5, 12),
 				category: sanitizeText(record.category, fallback.category, 120),
 				title,
-				client: sanitizeText(record.client, fallback.client, 160),
+				client: sanitizeOptionalText(record.client, fallback.client, 160),
 				description: sanitizeText(record.description, fallback.description, 1600),
 				tags: sanitizeArray(record.tags, fallback.tags, 24, 60),
 				year: sanitizeInt(record.year, fallback.year, 2000, 2100),

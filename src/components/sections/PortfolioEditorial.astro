@@ -182,7 +182,7 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 				<div class="pf-detail__info" data-lenis-prevent>
 					<div class="pf-detail__head">
 						<div class="pf-detail__id">
-							<p class="pf-detail__title" data-pf-detail-title></p>
+							<p class="pf-detail__title"><a class="pf-detail__title-link" data-pf-detail-title target="_blank" rel="noopener"></a></p>
 							<p class="pf-detail__cat" data-pf-detail-cat></p>
 						</div>
 						<div class="pf-detail__year" data-pf-detail-year></div>
@@ -194,7 +194,7 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 
 					<div class="pf-detail__foot" data-pf-detail-foot>
 						<span data-pf-detail-duration></span>
-						<span class="pf-detail__dot">•</span>
+						<span class="pf-detail__dot" data-pf-detail-dot>•</span>
 						<span data-pf-detail-client></span>
 					</div>
 
@@ -857,6 +857,20 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	line-height: 1;
 }
 
+.pf-detail__title-link {
+	color: inherit;
+	text-decoration: none;
+	transition: color 180ms ease;
+}
+
+.pf-detail__title-link[href]:hover,
+.pf-detail__title-link[href]:focus-visible {
+	color: var(--color-accent);
+	outline: none;
+	text-decoration: underline;
+	text-underline-offset: 0.18em;
+}
+
 .pf-detail__cat {
 	margin: 0;
 	font-size: 0.92rem;
@@ -1199,18 +1213,26 @@ if (section) {
 			const linkEl = detail.querySelector<HTMLAnchorElement>('[data-pf-detail-link]');
 			const durationEl = detail.querySelector('[data-pf-detail-duration]');
 			const clientEl = detail.querySelector('[data-pf-detail-client]');
+			const dotEl = detail.querySelector<HTMLElement>('[data-pf-detail-dot]');
 			const footEl = detail.querySelector<HTMLElement>('[data-pf-detail-foot]');
 			const imgEl = detail.querySelector<HTMLImageElement>('[data-pf-detail-img]');
 			const logoEl = detail.querySelector<HTMLImageElement>('[data-pf-detail-logo]');
 			const tagsContainer = detail.querySelector('[data-pf-detail-tags]');
 
-			if (titleEl) titleEl.textContent = title;
+			const hasLiveUrl = Boolean(liveUrl) && liveUrl !== '#';
+			if (titleEl) {
+				titleEl.textContent = title;
+				// Без ссылки якорь остаётся якорем без href — рендерится обычным текстом
+				if (hasLiveUrl) titleEl.setAttribute('href', liveUrl);
+				else titleEl.removeAttribute('href');
+			}
 			if (catEl) catEl.textContent = cat;
 			if (yearEl) yearEl.textContent = year;
 			if (descEl) descEl.textContent = desc;
-			if (linkEl) { linkEl.href = liveUrl; linkEl.hidden = !liveUrl || liveUrl === '#'; }
+			if (linkEl) { linkEl.href = liveUrl; linkEl.hidden = !hasLiveUrl; }
 			if (durationEl) durationEl.textContent = duration;
 			if (clientEl) clientEl.textContent = client;
+			if (dotEl) dotEl.hidden = !duration || !client;
 			if (footEl) footEl.hidden = !duration && !client;
 			if (imgEl) { imgEl.src = previewUrl; imgEl.alt = title; }
 			previewPanel.classList.toggle('is-contain', card.dataset.previewFit === 'contain');
