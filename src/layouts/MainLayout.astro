@@ -1,6 +1,5 @@
 ---
 import '../styles/global.css';
-import ThemeToggle from '../components/navigation/ThemeToggle.astro';
 import alumniSansCyrillic400 from '@fontsource/alumni-sans/files/alumni-sans-cyrillic-400-normal.woff2?url';
 import alumniSansLatin400 from '@fontsource/alumni-sans/files/alumni-sans-latin-400-normal.woff2?url';
 
@@ -16,7 +15,7 @@ const {
 ---
 
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-theme="dark">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -32,23 +31,8 @@ const {
 		<link rel="preload" href={alumniSansCyrillic400} as="font" type="font/woff2" crossorigin />
 		<link rel="preload" href={alumniSansLatin400} as="font" type="font/woff2" crossorigin />
 		<title>{title}</title>
-		<script is:inline>
-			(() => {
-				try {
-					const stored = localStorage.getItem('theme');
-					const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-					const theme = stored === 'light' || stored === 'dark'
-						? stored
-						: (prefersLight ? 'light' : 'dark');
-					document.documentElement.setAttribute('data-theme', theme);
-				} catch (_) {
-					document.documentElement.setAttribute('data-theme', 'dark');
-				}
-			})();
-		</script>
 	</head>
 	<body>
 		<slot />
-		<ThemeToggle />
 	</body>
 </html>
