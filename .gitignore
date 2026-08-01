@@ -12,6 +12,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# local work log — заметки по сессиям, не для репозитория
+worklog/
+
 
 # environment variables
 .env
