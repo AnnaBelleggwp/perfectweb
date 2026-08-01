@@ -764,7 +764,7 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 .pf-detail__close {
 	position: absolute;
 	top: 10px;
-	right: 10px;
+	left: 10px;
 	z-index: 3;
 	display: flex;
 	padding: 0;
@@ -846,7 +846,7 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
    Живёт вне скроллера, поэтому не уезжает вместе с содержимым. */
 .pf-detail__scroll-hint {
 	position: absolute;
-	right: clamp(1.5rem, 3vw, 2.5rem);
+	left: clamp(1.5rem, 3vw, 2.5rem);
 	bottom: clamp(1.5rem, 3vw, 2.5rem);
 	z-index: 2;
 	display: flex;
