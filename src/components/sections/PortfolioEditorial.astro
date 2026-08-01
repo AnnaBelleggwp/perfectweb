@@ -58,7 +58,6 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 
 			<div class="pf-deck" data-pf-deck>
 				{items.map((item, idx) => {
-					const num = String(idx + 1).padStart(2, '0');
 					const isTpl = isTemplateCard(item);
 
 					return (
@@ -75,6 +74,7 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 							data-all-tags={isTpl ? undefined : JSON.stringify(item.tags)}
 							data-description={isTpl ? undefined : item.description}
 							data-preview-url={isTpl ? undefined : (item.preview?.variants[0]?.url || item.preview?.originalUrl || '')}
+							data-preview-fit={isTpl ? undefined : item.previewFit}
 						>
 							{!isTpl && item.logo && (
 								<img
@@ -85,9 +85,6 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 								/>
 							)}
 							<div class="pf-card3d__top">
-								<div class="pf-card3d__num" aria-hidden="true">
-									<span>{isTpl ? '?' : num}</span>
-								</div>
 								<div class="pf-card3d__id">
 									{isTpl ? (
 										<>
@@ -184,9 +181,6 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 
 				<div class="pf-detail__info">
 					<div class="pf-detail__head">
-						<div class="pf-detail__num-box">
-							<span data-pf-detail-num></span>
-						</div>
 						<div class="pf-detail__id">
 							<p class="pf-detail__title" data-pf-detail-title></p>
 							<p class="pf-detail__cat" data-pf-detail-cat></p>
@@ -432,32 +426,9 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 /* ── Card 3d content ──────────────────────────────── */
 .pf-card3d__top {
 	display: grid;
-	grid-template-columns: 56px 1fr auto;
+	grid-template-columns: 1fr auto;
 	align-items: center;
 	gap: 0.85rem;
-}
-
-.pf-card3d__num {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 56px;
-	height: 56px;
-	border-radius: 6px;
-	border: 1px solid var(--divider-subtle);
-	background: var(--avatar-bg);
-	color: var(--color-text-muted);
-	font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
-	font-size: 1.1rem;
-}
-
-.pf-card3d.is-template .pf-card3d__num {
-	background: transparent;
-	border-style: dashed;
-	border-color: color-mix(in srgb, var(--color-text-muted) 55%, transparent);
-	font-size: 1.7rem;
-	font-weight: 300;
-	opacity: 0.7;
 }
 
 .pf-card3d__id {
@@ -729,13 +700,7 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	}
 
 	.pf-card3d__top {
-		grid-template-columns: 48px 1fr auto;
 		gap: 0.65rem;
-	}
-
-	.pf-card3d__num {
-		width: 48px;
-		height: 48px;
 	}
 }
 
@@ -836,6 +801,16 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	object-fit: cover;
 }
 
+/* Превью-логотип: цвет карточки вместо затемнения, картинка вписана и отодвинута от краёв */
+.pf-detail__preview.is-contain {
+	background: var(--card-bg);
+}
+
+.pf-detail__preview.is-contain .pf-detail__img {
+	object-fit: contain;
+	padding: clamp(1.75rem, 9%, 3.5rem);
+}
+
 .pf-detail__img[src=""] {
 	display: none;
 }
@@ -853,29 +828,18 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	gap: clamp(1rem, 2.5vw, 1.5rem);
 	padding: clamp(1.5rem, 3vw, 2.5rem);
 	overflow-y: auto;
+	/* html/body под оверлеем стоят с touch-action: none — возвращаем жест панели */
+	touch-action: pan-y;
+	overscroll-behavior: contain;
 	scrollbar-width: thin;
 	scrollbar-color: var(--color-accent) transparent;
 }
 
 .pf-detail__head {
 	display: grid;
-	grid-template-columns: 56px 1fr auto;
+	grid-template-columns: 1fr auto;
 	align-items: center;
 	gap: 0.85rem;
-}
-
-.pf-detail__num-box {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 56px;
-	height: 56px;
-	border-radius: 6px;
-	border: 1px solid var(--divider-subtle);
-	background: var(--avatar-bg);
-	color: var(--color-text-muted);
-	font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
-	font-size: 1.1rem;
 }
 
 .pf-detail__id {
@@ -1021,19 +985,14 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	}
 
 	.pf-detail__head {
-		grid-template-columns: 48px 1fr auto;
 		gap: 0.65rem;
-	}
-
-	.pf-detail__num-box {
-		width: 48px;
-		height: 48px;
 	}
 }
 </style>
 
 <script>
 import { getGsap, ScrollTrigger } from '../../scripts/gsap';
+import { getLenis } from '../../scripts/lenis';
 
 const gsap = getGsap();
 const section = document.querySelector<HTMLElement>('#portfolio');
@@ -1221,7 +1180,6 @@ if (section) {
 		const isMobile = () => window.innerWidth < 768;
 
 		const populateDetail = (card: HTMLElement) => {
-			const num = card.querySelector('.pf-card3d__num span')?.textContent ?? '';
 			const title = card.querySelector('.pf-card3d__title')?.textContent ?? '';
 			const cat = card.querySelector('.pf-card3d__cat')?.textContent ?? '';
 			const year = card.querySelector('.pf-card3d__year')?.textContent ?? '';
@@ -1234,7 +1192,6 @@ if (section) {
 			let tags: string[] = [];
 			try { tags = JSON.parse(card.dataset.allTags ?? '[]'); } catch {}
 
-			const numEl = detail.querySelector('[data-pf-detail-num]');
 			const titleEl = detail.querySelector('[data-pf-detail-title]');
 			const catEl = detail.querySelector('[data-pf-detail-cat]');
 			const yearEl = detail.querySelector('[data-pf-detail-year]');
@@ -1247,7 +1204,6 @@ if (section) {
 			const logoEl = detail.querySelector<HTMLImageElement>('[data-pf-detail-logo]');
 			const tagsContainer = detail.querySelector('[data-pf-detail-tags]');
 
-			if (numEl) numEl.textContent = num;
 			if (titleEl) titleEl.textContent = title;
 			if (catEl) catEl.textContent = cat;
 			if (yearEl) yearEl.textContent = year;
@@ -1257,6 +1213,7 @@ if (section) {
 			if (clientEl) clientEl.textContent = client;
 			if (footEl) footEl.hidden = !duration && !client;
 			if (imgEl) { imgEl.src = previewUrl; imgEl.alt = title; }
+			previewPanel.classList.toggle('is-contain', card.dataset.previewFit === 'contain');
 			if (logoEl) logoEl.src = logoSrc;
 
 			if (tagsContainer) {
@@ -1322,6 +1279,9 @@ if (section) {
 			overlay.hidden = false;
 			overlay.setAttribute('aria-hidden', 'false');
 			document.documentElement.classList.add('is-pf-detail-open');
+			// Lenis перехватывает wheel на window: пока он жив, страница под оверлеем
+			// продолжает скроллиться, а внутренняя панель — нет.
+			getLenis()?.stop();
 
 			const centerTop = Math.max(16, (vh - expandedH) / 2);
 			const centerLeft = Math.max(16, (vw - expandedW) / 2);
@@ -1389,6 +1349,7 @@ if (section) {
 					overlay.hidden = true;
 					overlay.setAttribute('aria-hidden', 'true');
 					document.documentElement.classList.remove('is-pf-detail-open');
+					getLenis()?.start();
 					resetDetail();
 					gsap.set(infoChildren, { clearProps: 'all' });
 					if (card) card.style.visibility = '';

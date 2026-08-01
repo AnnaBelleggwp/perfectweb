@@ -33,6 +33,9 @@ export type PortfolioMediaVariant = {
 	format: PortfolioMediaFormat;
 };
 
+/** Как показывать превью в открытой карточке: кадрировать фото или вписать логотип целиком. */
+export type PortfolioPreviewFit = 'cover' | 'contain';
+
 export type PortfolioMedia = {
 	assetId: string;
 	alt: string;
@@ -59,6 +62,7 @@ export type PortfolioItem = {
 	liveUrl: string;
 	caseUrl: string;
 	preview: PortfolioMedia | null;
+	previewFit: PortfolioPreviewFit;
 	detail: PortfolioMedia | null;
 	mockup: PortfolioMedia | null;
 	logo: string;
@@ -127,6 +131,7 @@ const DEFAULT_PORTFOLIO: PortfolioItem[] = [
 		liveUrl: '#',
 		caseUrl: '#',
 		preview: null,
+		previewFit: 'cover',
 		detail: null,
 		mockup: null,
 		logo: '/logos/mervis.svg',
@@ -148,6 +153,7 @@ const DEFAULT_PORTFOLIO: PortfolioItem[] = [
 		liveUrl: '#',
 		caseUrl: '#',
 		preview: null,
+		previewFit: 'cover',
 		detail: null,
 		mockup: null,
 		logo: '',
@@ -169,6 +175,7 @@ const DEFAULT_PORTFOLIO: PortfolioItem[] = [
 		liveUrl: '#',
 		caseUrl: '#',
 		preview: null,
+		previewFit: 'cover',
 		detail: null,
 		mockup: null,
 		logo: '',
@@ -190,6 +197,7 @@ const DEFAULT_PORTFOLIO: PortfolioItem[] = [
 		liveUrl: '#',
 		caseUrl: '#',
 		preview: null,
+		previewFit: 'cover',
 		detail: null,
 		mockup: null,
 		logo: '',
@@ -422,6 +430,7 @@ const sanitizePortfolio = (value: unknown): PortfolioItem[] => {
 				liveUrl: sanitizeUrl(record.liveUrl, fallback.liveUrl, 500),
 				caseUrl: sanitizeUrl(record.caseUrl, fallback.caseUrl, 500),
 				preview: sanitizeMedia(record.preview),
+				previewFit: record.previewFit === 'contain' ? 'contain' : 'cover',
 				detail: sanitizeMedia(record.detail),
 				mockup: sanitizeMedia(record.mockup),
 				logo: sanitizeText(record.logo, fallback.logo, 500),

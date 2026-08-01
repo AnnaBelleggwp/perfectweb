@@ -196,6 +196,7 @@ const newPortfolioItem = (index: number): PortfolioItem => ({
 	liveUrl: '#',
 	caseUrl: '#',
 	preview: null,
+	previewFit: 'cover',
 	detail: null,
 	mockup: null,
 	logo: '',
