@@ -8,13 +8,13 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           version: 9
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: pnpm
@@ -57,3 +57,17 @@ jobs:
             pm2 delete perfectweb 2>/dev/null || true
             pm2 start ecosystem.config.cjs
             pm2 save
+
+      # Прод — источник истины для storage/: контент и медиатека правятся там
+      # (админка / site-content.json). Этот шаг только доливает недостающие
+      # ассеты: --ignore-existing не трогает то, что уже лежит на сервере,
+      # и никогда не перезаписывает manifest.json.
+      - name: Backfill media assets (never overwrites, never deletes)
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz --ignore-existing --exclude=.DS_Store
+          path: storage/media/assets/
+          remote_path: /var/www/perfectweb/storage/media/assets/
+          remote_host: ${{ secrets.VPS_HOST }}
+          remote_user: ${{ secrets.VPS_USER }}
+          remote_key: ${{ secrets.VPS_SSH_KEY }}
