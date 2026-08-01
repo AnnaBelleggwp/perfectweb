@@ -188,6 +188,13 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 						<div class="pf-detail__year" data-pf-detail-year></div>
 					</div>
 
+					<a class="pf-detail__cta" data-pf-detail-link href="#" target="_blank" rel="noopener">
+						перейти на сайт
+						<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+							<path d="M1 13L13 1M13 1H5M13 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</a>
+
 					<blockquote class="pf-detail__desc" data-pf-detail-desc></blockquote>
 
 					<div class="pf-detail__tags" data-pf-detail-tags></div>
@@ -197,13 +204,6 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 						<span class="pf-detail__dot" data-pf-detail-dot>•</span>
 						<span data-pf-detail-client></span>
 					</div>
-
-					<a class="pf-detail__cta" data-pf-detail-link href="#" target="_blank" rel="noopener">
-						перейти на сайт
-						<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-							<path d="M1 13L13 1M13 1H5M13 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-						</svg>
-					</a>
 				</div>
 			</div>
 
@@ -759,25 +759,39 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 		var(--card-shadow),
 		0 0 80px rgba(255, 215, 0, 0.06);
 	z-index: 101;
+
+	/* Крестик и подсказка скролла стоят на одной вертикали: обе величины
+	   считаются от этих двух переменных, менять только их. */
+	--pf-detail-inset: clamp(1.25rem, 2.5vw, 1.75rem);
+	--pf-detail-close-size: 40px;
+	--pf-detail-hint-width: 16px;
 }
 
 .pf-detail__close {
 	position: absolute;
-	top: 10px;
-	left: 10px;
+	top: var(--pf-detail-inset);
+	left: var(--pf-detail-inset);
 	z-index: 3;
 	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--pf-detail-close-size);
+	height: var(--pf-detail-close-size);
 	padding: 0;
-	border: none;
+	border: 1px solid var(--color-accent);
+	border-radius: 4px;
 	background: none;
-	color: var(--color-text-muted);
+	color: var(--color-accent);
 	cursor: pointer;
-	transition: color 180ms ease;
+	transition:
+		color 180ms ease,
+		background-color 180ms ease;
 }
 
 .pf-detail__close:hover,
 .pf-detail__close:focus-visible {
-	color: var(--color-accent);
+	color: var(--card-bg);
+	background: var(--color-accent);
 	outline: none;
 }
 
@@ -846,8 +860,12 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
    Живёт вне скроллера, поэтому не уезжает вместе с содержимым. */
 .pf-detail__scroll-hint {
 	position: absolute;
-	left: clamp(1.5rem, 3vw, 2.5rem);
-	bottom: clamp(1.5rem, 3vw, 2.5rem);
+	/* центр иконки совпадает с центром крестика */
+	left: calc(
+		var(--pf-detail-inset) +
+		(var(--pf-detail-close-size) - var(--pf-detail-hint-width)) / 2
+	);
+	bottom: 0.75rem;
 	z-index: 2;
 	display: flex;
 	color: var(--color-accent);
@@ -985,9 +1003,8 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 .pf-detail__cta {
 	display: inline-flex;
 	align-items: center;
+	align-self: flex-start;
 	gap: 0.5rem;
-	margin-top: auto;
-	padding-top: 0.5rem;
 	font-size: clamp(1.1rem, 2vw, 1.3rem);
 	font-weight: 300;
 	color: var(--color-accent);
