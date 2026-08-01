@@ -179,7 +179,7 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 					<img class="pf-detail__logo" data-pf-detail-logo src="" alt="" aria-hidden="true" decoding="async" />
 				</div>
 
-				<div class="pf-detail__info">
+				<div class="pf-detail__info" data-lenis-prevent>
 					<div class="pf-detail__head">
 						<div class="pf-detail__id">
 							<p class="pf-detail__title" data-pf-detail-title></p>
@@ -1279,8 +1279,8 @@ if (section) {
 			overlay.hidden = false;
 			overlay.setAttribute('aria-hidden', 'false');
 			document.documentElement.classList.add('is-pf-detail-open');
-			// Lenis перехватывает wheel на window: пока он жив, страница под оверлеем
-			// продолжает скроллиться, а внутренняя панель — нет.
+			// Lenis перехватывает wheel на window, поэтому overflow: hidden страницу не держит.
+			// stop() глушит колесо целиком — панель с data-lenis-prevent он пропускает мимо себя.
 			getLenis()?.stop();
 
 			const centerTop = Math.max(16, (vh - expandedH) / 2);
