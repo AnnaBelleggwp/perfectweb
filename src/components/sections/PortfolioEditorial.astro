@@ -102,7 +102,6 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 										</>
 									)}
 								</div>
-								<div class="pf-card3d__year">{isTpl ? '____' : item.year}</div>
 							</div>
 
 							<blockquote class="pf-card3d__body">
@@ -184,16 +183,20 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 						<div class="pf-detail__id">
 							<p class="pf-detail__title" data-pf-detail-title></p>
 							<p class="pf-detail__cat" data-pf-detail-cat></p>
+							<a class="pf-detail__cta" data-pf-detail-link href="#" target="_blank" rel="noopener">
+								перейти на сайт
+								<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+									<path d="M1 13L13 1M13 1H5M13 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+							</a>
 						</div>
-						<div class="pf-detail__year" data-pf-detail-year></div>
+						<span class="pf-detail__scroll-hint" data-pf-detail-scroll-hint aria-hidden="true" hidden>
+							<svg width="16" height="24" viewBox="0 0 16 24" fill="none">
+								<rect x="0.75" y="0.75" width="14.5" height="22.5" rx="7.25" stroke="currentColor" stroke-width="1.5" opacity="0.4" />
+								<rect class="pf-detail__scroll-dot" x="7" y="5" width="2" height="5" rx="1" fill="currentColor" opacity="0.7" />
+							</svg>
+						</span>
 					</div>
-
-					<a class="pf-detail__cta" data-pf-detail-link href="#" target="_blank" rel="noopener">
-						перейти на сайт
-						<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-							<path d="M1 13L13 1M13 1H5M13 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-						</svg>
-					</a>
 
 					<blockquote class="pf-detail__desc" data-pf-detail-desc></blockquote>
 
@@ -206,13 +209,6 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 					</div>
 				</div>
 			</div>
-
-			<span class="pf-detail__scroll-hint" data-pf-detail-scroll-hint aria-hidden="true" hidden>
-				<svg width="16" height="24" viewBox="0 0 16 24" fill="none">
-					<rect x="0.75" y="0.75" width="14.5" height="22.5" rx="7.25" stroke="currentColor" stroke-width="1.5" opacity="0.4" />
-					<rect class="pf-detail__scroll-dot" x="7" y="5" width="2" height="5" rx="1" fill="currentColor" opacity="0.7" />
-				</svg>
-			</span>
 		</article>
 	</div>
 </section>
@@ -370,7 +366,7 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	border-radius: 14px;
 	overflow: visible;
 	background: var(--card-bg);
-	border: 1px solid var(--divider-subtle);
+	border: 2px solid var(--divider-subtle);
 	box-shadow: var(--card-shadow);
 	transform-origin: 50% 50%;
 	transform-style: preserve-3d;
@@ -433,7 +429,7 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 /* ── Card 3d content ──────────────────────────────── */
 .pf-card3d__top {
 	display: grid;
-	grid-template-columns: 1fr auto;
+	grid-template-columns: 1fr;
 	align-items: center;
 	gap: 0.85rem;
 }
@@ -478,13 +474,6 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	font-size: 0.85rem;
 	color: var(--color-text-muted);
 	opacity: 0.6;
-}
-
-.pf-card3d__year {
-	font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
-	font-size: 0.85rem;
-	color: var(--color-text-muted);
-	letter-spacing: 0.08em;
 }
 
 .pf-card3d__body {
@@ -753,18 +742,16 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	position: fixed;
 	overflow: hidden;
 	background: var(--card-bg);
-	border: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
+	border: 2px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
 	border-radius: 14px;
 	box-shadow:
 		var(--card-shadow),
 		0 0 80px rgba(255, 215, 0, 0.06);
 	z-index: 101;
 
-	/* Крестик и подсказка скролла стоят на одной вертикали: обе величины
-	   считаются от этих двух переменных, менять только их. */
+	/* Отступ и размер бокса крестика. */
 	--pf-detail-inset: clamp(1.25rem, 2.5vw, 1.75rem);
 	--pf-detail-close-size: 40px;
-	--pf-detail-hint-width: 16px;
 }
 
 .pf-detail__close {
@@ -778,7 +765,7 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	width: var(--pf-detail-close-size);
 	height: var(--pf-detail-close-size);
 	padding: 0;
-	border: 1px solid var(--color-accent);
+	border: 2px solid var(--color-accent);
 	border-radius: 4px;
 	background: none;
 	color: var(--color-accent);
@@ -857,16 +844,8 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 }
 
 /* Подсказка о прокрутке панели — та же «мышка», что в блоке услуг.
-   Живёт вне скроллера, поэтому не уезжает вместе с содержимым. */
+   Стоит в шапке на месте года, поэтому уезжает вместе с содержимым панели. */
 .pf-detail__scroll-hint {
-	position: absolute;
-	/* центр иконки совпадает с центром крестика */
-	left: calc(
-		var(--pf-detail-inset) +
-		(var(--pf-detail-close-size) - var(--pf-detail-hint-width)) / 2
-	);
-	bottom: 0.75rem;
-	z-index: 2;
 	display: flex;
 	color: var(--color-accent);
 	opacity: 0.9;
@@ -901,7 +880,8 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 .pf-detail__head {
 	display: grid;
 	grid-template-columns: 1fr auto;
-	align-items: center;
+	/* подсказка скролла стоит там, где раньше был год — по верхней строке */
+	align-items: start;
 	gap: 0.85rem;
 }
 
@@ -926,13 +906,6 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	color: var(--color-accent);
 	line-height: 1;
 	opacity: 0.85;
-}
-
-.pf-detail__year {
-	font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
-	font-size: 0.85rem;
-	color: var(--color-text-muted);
-	letter-spacing: 0.08em;
 }
 
 .pf-detail__desc {
@@ -1260,7 +1233,6 @@ if (section) {
 		const populateDetail = (card: HTMLElement) => {
 			const title = card.querySelector('.pf-card3d__title')?.textContent ?? '';
 			const cat = card.querySelector('.pf-card3d__cat')?.textContent ?? '';
-			const year = card.querySelector('.pf-card3d__year')?.textContent ?? '';
 			const desc = card.dataset.description ?? '';
 			const liveUrl = card.dataset.liveUrl ?? '#';
 			const duration = card.dataset.duration ?? '';
@@ -1272,7 +1244,6 @@ if (section) {
 
 			const titleEl = detail.querySelector('[data-pf-detail-title]');
 			const catEl = detail.querySelector('[data-pf-detail-cat]');
-			const yearEl = detail.querySelector('[data-pf-detail-year]');
 			const descEl = detail.querySelector('[data-pf-detail-desc]');
 			const linkEl = detail.querySelector<HTMLAnchorElement>('[data-pf-detail-link]');
 			const durationEl = detail.querySelector('[data-pf-detail-duration]');
@@ -1286,7 +1257,6 @@ if (section) {
 			const hasLiveUrl = Boolean(liveUrl) && liveUrl !== '#';
 			if (titleEl) titleEl.textContent = title;
 			if (catEl) catEl.textContent = cat;
-			if (yearEl) yearEl.textContent = year;
 			if (descEl) descEl.textContent = desc;
 			if (linkEl) { linkEl.href = liveUrl; linkEl.hidden = !hasLiveUrl; }
 			if (durationEl) durationEl.textContent = duration;
