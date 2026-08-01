@@ -522,6 +522,14 @@ const categories = ['все проекты', ...new Set(items.map((p) => p.categ
 	margin: 0;
 }
 
+.pf-card3d.is-filled .pf-card3d__body p:not(.pf-card3d__stack) {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 6;
+	line-clamp: 6;
+	overflow: hidden;
+}
+
 .pf-card3d.is-filled .pf-card3d__body p:not(.pf-card3d__stack)::before {
 	font-family: Georgia, "Times New Roman", serif;
 	color: var(--color-accent);
